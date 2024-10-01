@@ -92,8 +92,25 @@
                          (concat user-org-directory "resources/zotero-group-junghanacs.bib")))
 
 ;; elisp-demos
-(setq elisp-demos-user-files (list (concat org-directory "notes/20240926T170706--이맥스리스프-데모__demo_emacslisp_notes.org")))
+(setq elisp-demos-user-files (list (concat org-directory
+"/notes/20240926T170706--elisp-demos__emacslisp_notes.org")))
 
 (defvar org-user-contacts-files (list (my/org-contacts-file)))
 
 (defvar +org-journal-today-file nil)
+
+;;;; fortune
+
+(setq user-initial-scratch-message
+      (format "%s"
+              (if (executable-find "fortune")
+                  (string-join
+                   (mapcar
+                    (lambda (l) (concat "\n " (string-fill l 72)))
+                    (if (string-suffix-p "Android" (string-trim (shell-command-to-string "uname -a")))
+                        (string-lines (shell-command-to-string "fortune"))
+                      (string-lines
+                       (shell-command-to-string
+                        "fortune -c 90% advice 10% .")))))
+                ("\nLearn how to take a 20-minute power nap without embarrassment.\n"))
+              "\n"))
