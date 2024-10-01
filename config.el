@@ -642,7 +642,7 @@
   ;; :bind (("M-c t" . complete-tag)
   ;;        ("C-c M-." . my/goto-etags))
   :init
-  (add-hook 'doom-after-init-hook #'ten-mode)
+  ;; (add-hook 'doom-after-init-hook #'ten-mode)
   ;; Enabling `ten' in text-mode and other major modes that inherit it,
   ;; such as `org-mode' and `markdown-mode'. If you wish to be more
   ;; specific, remove `text-mode' and add other more specific modes to
