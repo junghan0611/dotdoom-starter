@@ -97,7 +97,7 @@
 (package! evil-terminal-cursor-changer :disable t) ; conflict on kitty
 (package! kkp :disable t) ; conflict on term-keys
 
-;;; org
+;;; org-mode for latex-preview-auto-mode
 
 (package! org :recipe
   (:host nil :repo "https://git.tecosaur.net/mirrors/org-mode.git" :remote "mirror" :fork

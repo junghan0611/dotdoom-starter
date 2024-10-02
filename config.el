@@ -473,7 +473,6 @@
   ;; (setq org-attach-use-inheritance nil) ; selective
 
   ;; overide here! important
-  (setq org-startup-with-latex-preview nil) ; doom nil
   (setq org-insert-heading-respect-content nil) ; doom t
   ;; org-indent-mode 사용하면 org-hide-leading-stars 자동 on
   ;; (setq org-hide-leading-stars nil) ; doom t
@@ -830,11 +829,11 @@
   )
 
 (use-package! org-modern
-  :init
-  (after! org
-    (require 'org-modern)
-    (add-hook 'org-mode-hook #'org-modern-mode)
-    (add-hook 'org-agenda-finalize-hook #'org-modern-agenda))
+  ;; :init
+  ;; (after! org
+  ;;   (require 'org-modern)
+  ;;   (add-hook 'org-mode-hook #'org-modern-mode)
+  ;;   (add-hook 'org-agenda-finalize-hook #'org-modern-agenda))
   :custom
   (org-modern-table nil)
   (org-modern-keyword nil)
@@ -852,6 +851,9 @@
 
 (use-package! org-latex-preview
   :config
+  (setq org-startup-with-latex-preview t) ; doom nil
+  (setq org-highlight-latex-and-related '(native script entities)) ; doom org +pretty
+  ;; (setq org-highlight-latex-and-related '(native)) ; doom nil
   ;; Increase preview width
   (plist-put org-latex-preview-appearance-options
              :page-width 0.8)
@@ -860,8 +862,8 @@
   ;; You don't need this, it's the default:
   (setq org-latex-preview-process-default 'dvisvgm)
 
-  ;; Turn on auto-mode, it's built into Org and much faster/more featured than
-  ;; org-fragtog. (Remember to turn off/uninstall org-fragtog.)
+  ;; Turn on auto-mode, it's built into Org and much faster/more featured than org-fragtog.
+  ;; (Remember to turn off/uninstall org-fragtog.)
   (add-hook 'org-mode-hook 'org-latex-preview-auto-mode)
 
   ;; Block C-n and C-p from opening up previews when using auto-mode
@@ -877,7 +879,8 @@
   (setq org-latex-preview-live t)
 
   ;; More immediate live-previews -- the default delay is 1 second
-  (setq org-latex-preview-live-debounce 0.25))
+  (setq org-latex-preview-live-debounce 0.25)
+  )
 
 ;;;; citar
 
@@ -1365,6 +1368,10 @@
 (global-set-key (kbd "M-O") 'embark-dwim) ;; good alternative: M-.
 
 (global-set-key (kbd "C-h B") 'embark-bindings) ;; alternative for `describe-bindings'
+
+(global-set-key (kbd "C-c l") 'org-store-link)
+(global-set-key (kbd "C-c i") 'org-insert-link)
+(global-set-key (kbd "C-c a") 'org-agenda)
 
 ;; persp-mode and projectile in different prefixes
 ;; (setq! persp-keymap-prefix (kbd "C-c w"))

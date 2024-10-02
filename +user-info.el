@@ -21,7 +21,9 @@
 ;; `load-theme' function. This is the default:
 
 (when (display-graphic-p)
-  (setq modus-themes-variable-pitch-ui t)
+  (setq modus-themes-variable-pitch-ui t
+        modus-themes-org-blocks t
+        modus-themes-bold-constructs t)
   (setq doom-theme 'modus-operandi)
   )
 
