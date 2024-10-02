@@ -303,7 +303,81 @@
    (display-buffer-no-window)
    (allow-no-window . t)))
 
-;;; overide doomemacs
+;;; evil
+
+(after! evil
+  ;; C-h is backspace in insert state
+  ;; (setq evil-want-C-h-delete t) ; default nil
+  (setq evil-want-C-w-delete t) ; default t
+  (setq evil-want-C-u-scroll t) ; default t
+
+  ;; use C-i / C-o  evil-jump-backward/forward
+  ;; (setq evil-want-C-i-jump t) ; default nil
+
+  ;;  /home/junghan/sync/man/dotsamples/vanilla/mpereira-dotfiles-evil-clojure/configuration.org
+  ;; FIXME: this correctly causes '*' to match on whole symbols (e.g., on a
+  ;; Clojure file pressing '*' on 'foo.bar' matches the whole thing, instead of
+  ;; just 'foo' or 'bar', BUT, it won't match 'foo.bar' in something like
+  ;; '(foo.bar/baz)', which I don't like.
+  ;; (setq-default evil-symbol-word-search t)
+  ;; (setq evil-jumps-cross-buffers nil)
+  (setq evil-want-Y-yank-to-eol t) ; doom t
+
+  ;; 'Important' Prevent the cursor from moving beyond the end of line.
+  ;; Don't move the block cursor when toggling insert mode
+  (setq evil-move-cursor-back nil) ; nil is better - default t
+  (setq evil-move-beyond-eol nil) ; default nil
+
+  (setq +evil-want-o/O-to-continue-comments nil) ; doom t
+  (setq +default-want-RET-continue-comments nil) ; doom t
+
+  (setq evil-want-fine-undo t) ; doom 'nil
+
+  ;; Don't put overwritten text in the kill ring
+  (setq evil-kill-on-visual-paste nil) ; default t
+  ;; Don't create a kill entry on every visual movement.
+  ;; More details: https://emacs.stackexchange.com/a/15054:
+  (fset 'evil-visual-update-x-selection 'ignore)
+
+  ;; Prevent evil-motion-state from shadowing previous/next sexp
+  (with-eval-after-load 'evil-maps
+    (define-key evil-motion-state-map "L" nil)
+    (define-key evil-motion-state-map "M" nil)
+
+    (evil-global-set-key 'normal (kbd "DEL") 'evil-switch-to-windows-last-buffer) ; Backspace
+
+    ;; Replace Emacs Tabs key bindings with Workspace key bindings
+    ;; replace "." search with consul-line in Evil normal state
+    ;; use default "/" evil search
+
+    ;; disable evil macro
+    (define-key evil-normal-state-map (kbd "q") 'nil) ; evil macro disable
+    (define-key evil-normal-state-map (kbd "Q") 'evil-record-macro)
+
+    ;; o :: ace-link-info 이거면 충분하다.
+    (define-key evil-insert-state-map (kbd "C-]") 'forward-char) ; very useful
+
+    ;; =C-w= 'insert 'evil-delete-backward-word
+    ;; =C-w= 'visual 'evil-window-map
+    ;; use evil bindings $ ^
+
+    ;; M-d region delete and C-d char delete
+    (define-key evil-insert-state-map (kbd "C-d") 'delete-forward-char)
+
+    ;; Don't put overwritten text in the kill ring
+    ;; evil-delete-char -> delete-forward-char
+    (define-key evil-normal-state-map "x" 'delete-forward-char)
+    (define-key evil-normal-state-map "X" 'delete-backward-char)
+    )
+
+  ;; evil-org
+  (with-eval-after-load 'evil-org
+    ;; (evil-define-key 'insert 'evil-org-mode-map (kbd "C-d") 'delete-forward-char)
+    (evil-define-key 'normal 'evil-org-mode-map "x" 'delete-forward-char)
+    (evil-define-key 'insert 'evil-org-mode-map (kbd "C-k") 'org-kill-line)
+    (evil-define-key 'insert 'org-mode-map (kbd "C-k") 'org-kill-line)
+    (evil-define-key 'normal 'evil-org-mode-map "X" 'delete-backward-char))
+  )
 
 ;; ,. as Esc key binding
 ;; https://discourse.doomemacs.org/t/typing-jk-deletes-j-and-returns-to-normal-mode/59/7
@@ -405,6 +479,286 @@
   ;; (setq org-hide-leading-stars nil) ; doom t
   )
 
+(after! org
+
+;;;; org-todo-keywords : whhone
+
+(progn
+  ;; https://whhone.com/emacs-config/
+  (setq org-todo-keywords '((sequence "TODO(t)" "NEXT(n)" "DOING(i)" "|" "DONE(d)" "CANCELLED(c)")))
+
+  (with-no-warnings
+    (custom-declare-face '+org-todo-todo  '((t (:inherit (bold error org-todo)))) "")
+    (custom-declare-face '+org-todo-next  '((t (:inherit (bold warning org-todo)))) "")
+    (custom-declare-face '+org-todo-done  '((t (:inherit (bold success org-todo)))) "")
+    (custom-declare-face '+org-todo-doing  '((t (:inherit (bold font-lock-constant-face org-todo)))) "")
+    (custom-declare-face '+org-todo-cancelled '((t (:inherit (bold font-lock-doc-face org-todo)))) "")
+    )
+
+  (setq org-todo-keyword-faces
+        '(("TODO" . +org-todo-todo) ;; red
+          ("DONE" . +org-todo-done) ;; green
+          ("NEXT" . +org-todo-next) ;; yellow
+          ("DOING" . +org-todo-doing) ; blue
+          ("CANCELLED" . +org-todo-cancelled) ;; green
+          ))
+
+  ;; https://orgmode.org/worg/org-tutorials/org-custom-agenda-commands.html
+  (setq org-agenda-custom-commands
+        '(("n" "Agenda / DOING / NEXT"
+           ((agenda "" nil)
+            (tags "INBOX+LEVEL=2|CATEGORY=\"Inbox\"+LEVEL=1")
+            (todo "DOING" nil)
+            (todo "NEXT" nil)
+            ;; (todo "TODO" nil) ;; 2024-03-18 add
+            ) nil)
+          (" " "Agenda and all TODOs" ; default' view
+           ((agenda "")
+            (alltodo "")))))
+  )
+
+;;;; DONT custom agenda files
+
+;; ;; (setq org-agenda-files org-user-agenda-files)
+
+(setq org-agenda-diary-file (my/org-diary-file))
+(setq org-default-notes-file (my/org-inbox-file))
+
+;; doom-emacs capture files : absolute path
+(setq +org-capture-todo-file (my/org-inbox-file))
+(setq +org-capture-notes-file (my/org-inbox-file))
+(setq +org-capture-changelog-file (my/org-inbox-file))
+(setq +org-capture-projects-file (my/org-tasks-file))
+(setq +org-capture-journal-file (my/org-diary-file))
+
+;;;; org-agenda
+
+;; Use sticky agenda since I need different agenda views (personal and work) at the same time.
+(setq org-agenda-sticky t) ; default nil
+
+;; Shift the agenda to show the previous 3 days and the next 7 days for
+;; better context on your week. The past is less important than the future.
+(setq org-agenda-span 'day) ; default 'week, doom 10
+
+;; Hide all scheduled todo.
+(setq org-agenda-todo-ignore-scheduled 'all)
+
+;; Ignores "far" deadline TODO items from TODO list.
+(setq org-agenda-todo-ignore-deadlines 'far)
+
+;; Hide all scheduled todo, from tags search view, like tags-todo.
+(setq org-agenda-tags-todo-honor-ignore-options t)
+
+;; Hide all done todo in agenda
+(setq org-agenda-skip-scheduled-if-done t)
+
+;; Hide task until the scheduled date.
+(setq org-agenda-skip-deadline-prewarning-if-scheduled 'pre-scheduled)
+
+(setq org-log-into-drawer t)
+
+(setq org-log-done 'time)
+
+;; (setcdr (assoc 'note org-log-note-headings) "%d")
+;; Interstitial Journaling: add note to CLOCK entry after clocking out
+;; https://emacs.stackexchange.com/questions/37526/add-note-to-clock-entry-after-clocking-out
+(setq org-log-note-clock-out t)
+
+;; 4 priorities to model Eisenhower's matrix.
+;; - [#A] means +important +urgent
+;; - [#B] means +important -urgent
+;; - [#C] means -important +urgent
+;; - [#D] means -important -urgent
+(setq org-priority-default 68
+      org-priority-lowest 68)
+
+;;;; diary-file
+
+(setq diary-file (concat doom-user-dir "diary"))
+(setq org-agenda-include-diary t)
+
+;;;; org-agenda-log-mode and clock-mode
+
+;; Show all agenda dates - even if they are empty
+(setq org-agenda-show-all-dates t)
+(setq org-agenda-start-with-log-mode t)
+
+;; Agenda log mode items to display (closed clock : default)
+;; 이전 이맥스는 state 가 기본이었다. 지금은 시간 기준으로 표기한다.
+;; closed    Show entries that have been closed on that day.
+;; clock     Show entries that have received clocked time on that day.
+;; state     Show all logged state changes.
+;; (setq org-agenda-log-mode-items '(closed clock state))
+(setq org-agenda-log-mode-add-notes nil)
+
+;; sort 관련 기능을 확인해보고 정의한 함수들이 필요 없으면 빼면 된다.
+(setq org-agenda-sort-notime-is-late t) ; Org 9.4
+(setq org-agenda-sort-noeffort-is-high t) ; Org 9.4
+
+;; Time Clocking
+(setq org-clock-idle-time 30) ; 10
+(setq org-clock-reminder-timer (run-with-timer
+                                t (* org-clock-idle-time 20) ; 60
+                                (lambda ()
+                                  (unless (org-clocking-p)
+                                    (alert "Do you forget to clock-in?"
+                                           :title "Org Clock")))))
+;; (org-clock-auto-clockout-insinuate) ; auto-clockout
+;; modeline 에 보이는 org clock 정보가 너무 길어서 줄임
+(setq org-clock-string-limit 30) ; default 0
+
+;; org-clock-persist for share with machines
+(setq org-clock-persist-query-save t)
+(setq org-clock-persist-query-resume t)
+
+;; current  Only the time in the current instance of the clock
+;; today    All time clocked into this task today
+;; repeat   All time clocked into this task since last repeat
+;; all      All time ever recorded for this task
+;; auto     Automatically, either all, or repeat for repeating tasks
+(setq org-clock-mode-line-entry t)
+(setq org-clock-mode-line-line-total 'auto) ; default nil
+
+;; global Effort estimate values
+;; global STYLE property values for completion
+(setq org-global-properties
+      (quote
+       (("Effort_ALL" . "0:15 0:30 0:45 1:00 2:00 3:00 4:00 5:00 6:00 8:00")
+        ("STYLE_ALL" . "habit"))))
+
+;;;; org-tag and category
+
+;; (setq org-auto-align-tags nil) ; default t, use doom's custom
+;; (setq org-tags-column 0) ; default -77
+(setq org-agenda-tags-column -80) ;; 'auto ; org-tags-column
+(setq org-agenda-show-inherited-tags nil)
+
+(setq org-tag-alist (quote (
+                            (:startgroup) ;; Action
+                            ("later" . ?.)
+                            ("now" . ?,)
+                            (:endgroup)
+                            ("important" . ?i) ; 별도 처리
+                            ("waiting" . ?w)
+                            ("next" . ?n)
+                            ("hold" . ?h)
+                            ;; ("crypt" . ?E)
+                            ("note" . ?o)
+                            ("noexport" . ?x)
+                            ("nonum" . ?u)
+                            ("ATTACH" . ?a)
+                            ("latest" . ?l) ;; latest version
+                            )))
+
+(add-to-list 'org-tags-exclude-from-inheritance "projects") ; projects 왜 구분했었지?
+
+;;;; org-agenda-custom-commands
+
+;; ol-doi ol-w3m ol-bbdb ol-docview ol-gnus ol-info ol-irc ol-mhe ol-rmail
+;; ol-eww ol-bibtex
+;; Adapted from http://stackoverflow.com/a/12751732/584121
+;; (require 'org-protocol)
+(setq org-protocol-default-template-key "L")
+(setq org-modules `(org-habit org-protocol))
+
+;; (setq org-agenda-prefix-format
+;;       '((agenda  . " %i %-14:c%?-12t% s")
+;;         (todo  . " %i %-14:c")
+;;         (tags  . " %i %-14:c")
+;;         (search . " %i %-14:c")))
+
+;; https://www.pygopar.com/creating-new-columns-in-org-agenda
+;; Originally from here: https://stackoverflow.com/a/59001859/2178312
+(defun gopar/get-schedule-or-deadline-if-available ()
+  (let ((scheduled (org-get-scheduled-time (point)))
+        (deadline (org-get-deadline-time (point))))
+    (if (not (or scheduled deadline))
+        (format " ")
+      ;; (format "🗓️ ")
+      "   ")))
+
+(setq org-agenda-prefix-format
+      '((agenda . " %-4e %i %-12:c%?-12t% s ")
+        (todo . " %i %-10:c %-5e %(gopar/get-schedule-or-deadline-if-available)")
+        (tags . " %i %-12:c")
+        (search . " %i %-12:c")))
+
+(when IS-TERMUX
+  (setq org-agenda-prefix-format
+        '((agenda  . " %i %?-12t% s")
+          (todo  . " %i ")
+          (tags  . " %i ")
+          (search . " %i "))))
+
+(setq org-agenda-category-icon-alist nil)
+
+(setq org-agenda-hide-tags-regexp
+      "agenda\\|CANCELLED\\|LOG\\|ATTACH\\|GENERAL\\|BIRTHDAY\\|PERSONAL\\|PROFESSIONAL\\|TRAVEL\\|PEOPLE\\|HOME\\|FINANCE\\|PURCHASES")
+
+(add-hook 'org-agenda-finalize-hook
+          (lambda ()
+            ;; (setq-local line-spacing 0.2)
+            (define-key org-agenda-mode-map [(double-mouse-1)] 'org-agenda-goto-mouse)))
+
+(defun cc/org-agenda-goto-now ()
+  "Redo agenda view and move point to current time '← now'"
+  (interactive)
+  (org-agenda-redo)
+  (org-agenda-goto-today)
+
+  (if window-system
+      (search-forward "← now ─")
+    (search-forward "now -"))
+  )
+
+(add-hook 'org-agenda-mode-hook
+          (lambda ()
+            (define-key org-agenda-mode-map (kbd "<f2>") 'org-save-all-org-buffers)
+            (define-key org-agenda-mode-map (kbd "<backspace>") #'evil-switch-to-windows-last-buffer)
+            (define-key org-agenda-mode-map (kbd "DEL") #'evil-switch-to-windows-last-buffer)
+            ;; (define-key org-agenda-mode-map (kbd "M-p") 'org-pomodoro)
+            ;; (define-key org-agenda-mode-map (kbd "M-P") 'ash/org-pomodoro-til-meeting)
+            (define-key org-agenda-mode-map (kbd "M-.") 'cc/org-agenda-goto-now)))
+
+;; (setq org-archive-location "archives/%s_archive::")
+(setq org-archive-location (file-name-concat org-directory "archives/%s::"))
+
+;; nil 이면 C-c C-o 으로 접근한다.
+;; (setq org-mouse-1-follows-link t) ; default 450
+
+(setq org-capture-template-dir (concat doom-user-dir "captures/"))
+(setq org-datetree-add-timestamp t)
+
+;;;; Simple is Better
+
+;; See https://orgmode.org/manual/Template-elements.html#index-org_002ddefault_002dnotes_002dfile-1
+(setq org-capture-templates nil)
+(add-to-list
+ 'org-capture-templates
+ `("i" "Inbox" entry (file+headline ,(my/org-inbox-file) "Inbox")
+   "* %?\n%i\n%a"))
+
+(add-to-list
+ 'org-capture-templates
+ `("I" "Inbox (Work)" entry (file+headline ,(my/org-inbox-file) "Inbox")
+   "* %? :work:\n%i\n%a"))
+
+(add-to-list
+ 'org-capture-templates
+ `("p" "Project /w template" entry (file+headline ,(my/org-tasks-file) "Projects")
+   (file ,(concat org-capture-template-dir "project.capture"))))
+
+(add-to-list
+ 'org-capture-templates
+ `("l" "links" entry (file ,(my/org-links-file))
+   "* TODO %(org-cliplink-capture)" :immediate-finish t))
+
+(add-to-list
+ 'org-capture-templates
+ `("T" "Personal Todo /w clock-in" entry (file ,(my/org-inbox-file))
+   "* TODO [#C] %?\n%T\n%a\n" :clock-in t :clock-resume t))
+)
+
 ;;;; org-glossary
 
 (use-package! org-glossary
@@ -495,6 +849,35 @@
   (org-modern-statistics nil)
   (org-modern-progress nil)
   )
+
+;; (use-package! org-latex-preview
+;;   :config
+;;   ;; Increase preview width
+;;   (plist-put org-latex-preview-appearance-options
+;;              :page-width 0.8)
+
+;;   ;; Use dvisvgm to generate previews
+;;   ;; You don't need this, it's the default:
+;;   (setq org-latex-preview-process-default 'dvisvgm)
+
+;;   ;; Turn on auto-mode, it's built into Org and much faster/more featured than
+;;   ;; org-fragtog. (Remember to turn off/uninstall org-fragtog.)
+;;   (add-hook 'org-mode-hook 'org-latex-preview-auto-mode)
+
+;;   ;; Block C-n and C-p from opening up previews when using auto-mode
+;;   (add-hook 'org-latex-preview-auto-ignored-commands 'next-line)
+;;   (add-hook 'org-latex-preview-auto-ignored-commands 'previous-line)
+
+;;   ;; Enable consistent equation numbering
+;;   (setq org-latex-preview-numbered t)
+
+;;   ;; Bonus: Turn on live previews.  This shows you a live preview of a LaTeX
+;;   ;; fragment and updates the preview in real-time as you edit it.
+;;   ;; To preview only environments, set it to '(block edit-special) instead
+;;   (setq org-latex-preview-live t)
+
+;;   ;; More immediate live-previews -- the default delay is 1 second
+;;   (setq org-latex-preview-live-debounce 0.25))
 
 ;;;; citar
 
@@ -666,6 +1049,16 @@
   ;; need to. The switching experience is not intuitive and it's a TODO
   ;; to improve it.)
   ;; (setq ten-tags-file-default "~/sync/emacs/git/default/ten/ten-TAGS")
+  )
+
+(progn
+  (require 'anddo)
+  (defun anddo--create-tables ()
+    (unless anddo--db
+      (setq-local anddo--db
+                  (sqlite-open
+                   (expand-file-name "resources/anddo.sqlite" org-directory)))
+      (sqlite-execute anddo--db "create table if not exists item (id integer primary key, status text, subject text, body text, entry_time text, modification_time text)")))
   )
 
 ;;;; llmclient
@@ -1056,3 +1449,63 @@
       :desc "ews-denote-map"                "n d" ews-denote-map
       :desc "org-journal-open-today" "n SPC" #'org-journal-open-current-journal-file
       )
+
+;;;; org-mode
+
+(after! org
+  (define-key org-mode-map (kbd "C-c H") 'org-insert-heading)
+  (define-key org-mode-map (kbd "C-c S") 'org-insert-subheading)
+
+  (evil-define-key '(normal visual) org-mode-map (kbd "C-n") 'org-next-visible-heading)
+  (evil-define-key '(normal visual) org-mode-map (kbd "C-p") 'org-previous-visible-heading)
+
+  ;; evil-collection
+  (evil-define-key '(normal visual) org-mode-map (kbd "C-j") 'org-forward-heading-same-level)
+  (evil-define-key '(normal visual) org-mode-map (kbd "C-k") 'org-backward-heading-same-level)
+
+  (evil-define-key '(normal visual) org-mode-map (kbd "C-S-p") 'outline-up-heading)
+
+  (evil-define-key '(normal visual) org-mode-map "zu" 'outline-up-heading)
+
+  (evil-define-key '(insert) org-mode-map (kbd "C-n") 'next-line)
+  (evil-define-key '(insert) org-mode-map (kbd "C-p") 'previous-line)
+  )
+
+(after! outline
+  (evil-define-key '(normal visual) outli-mode-map (kbd "C-n") 'outline-next-heading)
+  (evil-define-key '(normal visual) outli-mode-map (kbd "C-p") 'outline-previous-heading)
+
+  (evil-define-key '(insert) outli-mode-map (kbd "C-n") 'next-line)
+  (evil-define-key '(insert) outli-mode-map (kbd "C-p") 'previous-line)
+
+  (evil-define-key '(normal visual) outline-mode-map (kbd "C-S-p") 'outline-up-heading)
+  (evil-define-key '(normal visual) outline-mode-map "zu" 'outline-up-heading)
+
+  (define-key prog-mode-map (kbd "C-c H") 'outline-insert-heading)
+  )
+
+;;; user-keybindings
+
+;;;; transient: casual-anddo
+
+(when (locate-library "anddo")
+  (require 'anddo)
+
+  (transient-define-prefix casual-anddo-tmenu ()
+    "Transient menu for anddo"
+    [["anddo"
+      ("n" "new-item"          anddo-new-item)
+      ("e" "edit-item"          anddo-edit-item)
+      ("s" "change-status"          anddo-change-status)
+      ("r" "refresh-toggle-listing" anddo-toggle-listing-mode)
+      ("<RET>" "show-body"          anddo-show-body)
+      ("l" "show-body"          anddo-show-body)
+      ("D" "delete-item"          anddo-delete-item)]
+     ["Miscellaneous"
+      ("q" "quit" transient-quit-one)
+      ("Q" "Kill-buffer-window" kill-buffer-and-window)
+      ]
+     ]
+    )
+  (keymap-set anddo-mode-map "C-;" #'casual-anddo-tmenu)
+  )

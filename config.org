@@ -8,6 +8,8 @@
 #+author: Junghan Kim
 #+email: junghanacs@gmail.com
 
+possiblly minimum but useful
+
 * Installation
 ** 설정
 
@@ -91,11 +93,6 @@ StartupWMClass=DoomEmacs
 
 * 히스토리
 - 2024-09-12 Denote 까지 지원. 핵심 전략 서술.
-
-* 참고 파일
-
-- [[file:/home/junghan/sync/man/dotsamples/doom/tecosaur-dot-doom/config.org]]
-- [[file:/home/junghan/sync/man/dotsamples/doom/cashpw-dotfiles-node/config/doom/config-personal.org::+title: Emacs Config: Personal]]
 
 * Doom config file overview
 
@@ -290,7 +287,6 @@ All necessary settings are therefore set by hand as part of this configuration f
 (when (boundp 'pgtk-use-im-context-on-new-connection)
   (setq pgtk-use-im-context-on-new-connection nil))
 
-
 ;;;; Termux
 
 (setq-default root-path "/")
@@ -464,6 +460,39 @@ All necessary settings are therefore set by hand as part of this configuration f
 (package! kkp :disable t) ; conflict on term-keys
 
 #+end_src
+** TODO org-latex-preview-auto
+
+#+begin_src emacs-lisp :tangle packages.el
+
+;;; org
+
+;; (package! org :recipe
+;;   (:host nil :repo "https://git.tecosaur.net/mirrors/org-mode.git" :remote "mirror" :fork
+;;          (:host nil :repo "https://git.tecosaur.net/tec/org-mode.git" :branch "dev" :remote "tecosaur")
+;;          :files
+;;          (:defaults "etc")
+;;          :build t :pre-build
+;;          (with-temp-file "org-version.el"
+;;            (require 'lisp-mnt)
+;;            (let
+;;                ((version
+;;                  (with-temp-buffer
+;;                    (insert-file-contents "lisp/org.el")
+;;                    (lm-header "version")))
+;;                 (git-version
+;;                  (string-trim
+;;                   (with-temp-buffer
+;;                     (call-process "git" nil t nil "rev-parse" "--short" "HEAD")
+;;                     (buffer-string)))))
+;;              (insert
+;;               (format "(defun org-release () \"The release version of Org.\" %S)\n" version)
+;;               (format "(defun org-git-version () \"The truncate git commit hash of Org mode.\" %S)\n" git-version)
+;;               "(provide 'org-version)\n"))))
+;;   :pin nil)
+
+;; (unpin! org)
+
+#+end_src
 
 ** additional packages
 
@@ -501,6 +530,7 @@ All necessary settings are therefore set by hand as part of this configuration f
 (package! org-rainbow-tags)
 (package! org-glossary :recipe (:host github :repo "tecosaur/org-glossary" :files ("*.el" "*.org" "*.texi")))
 (package! ten :recipe (:host sourcehut :repo "nobiot/ten")) ;; https://git.sr.ht/~nobiot/ten
+(package! anddo :recipe (:host github :repo "junghan0611/anddo.el"))
 
 ;;;; tools
 
@@ -537,7 +567,11 @@ All necessary settings are therefore set by hand as part of this configuration f
 ;; There are two ways to load a theme. Both assume the theme is installed and
 ;; available. You can either set `doom-theme' or manually load a theme with the
 ;; `load-theme' function. This is the default:
-(setq doom-theme 'modus-operandi)
+
+(when (display-graphic-p)
+  (setq modus-themes-variable-pitch-ui t)
+  (setq doom-theme 'modus-operandi)
+  )
 
 ;;;; directory path
 
@@ -611,7 +645,7 @@ All necessary settings are therefore set by hand as part of this configuration f
 
 ;; elisp-demos
 (setq elisp-demos-user-files (list (concat org-directory
-"/notes/20240926T170706--elisp-demos__emacslisp_notes.org")))
+                                           "/notes/20240926T170706--elisp-demos__emacslisp_notes.org")))
 
 (defvar org-user-contacts-files (list (my/org-contacts-file)))
 
@@ -920,7 +954,81 @@ All necessary settings are therefore set by hand as part of this configuration f
 ** editing
 *** evil
 #+begin_src emacs-lisp :tangle config.el
-;;; overide doomemacs
+;;; evil
+
+(after! evil
+  ;; C-h is backspace in insert state
+  ;; (setq evil-want-C-h-delete t) ; default nil
+  (setq evil-want-C-w-delete t) ; default t
+  (setq evil-want-C-u-scroll t) ; default t
+
+  ;; use C-i / C-o  evil-jump-backward/forward
+  ;; (setq evil-want-C-i-jump t) ; default nil
+
+  ;;  /home/junghan/sync/man/dotsamples/vanilla/mpereira-dotfiles-evil-clojure/configuration.org
+  ;; FIXME: this correctly causes '*' to match on whole symbols (e.g., on a
+  ;; Clojure file pressing '*' on 'foo.bar' matches the whole thing, instead of
+  ;; just 'foo' or 'bar', BUT, it won't match 'foo.bar' in something like
+  ;; '(foo.bar/baz)', which I don't like.
+  ;; (setq-default evil-symbol-word-search t)
+  ;; (setq evil-jumps-cross-buffers nil)
+  (setq evil-want-Y-yank-to-eol t) ; doom t
+
+  ;; 'Important' Prevent the cursor from moving beyond the end of line.
+  ;; Don't move the block cursor when toggling insert mode
+  (setq evil-move-cursor-back nil) ; nil is better - default t
+  (setq evil-move-beyond-eol nil) ; default nil
+
+  (setq +evil-want-o/O-to-continue-comments nil) ; doom t
+  (setq +default-want-RET-continue-comments nil) ; doom t
+
+  (setq evil-want-fine-undo t) ; doom 'nil
+
+  ;; Don't put overwritten text in the kill ring
+  (setq evil-kill-on-visual-paste nil) ; default t
+  ;; Don't create a kill entry on every visual movement.
+  ;; More details: https://emacs.stackexchange.com/a/15054:
+  (fset 'evil-visual-update-x-selection 'ignore)
+
+  ;; Prevent evil-motion-state from shadowing previous/next sexp
+  (with-eval-after-load 'evil-maps
+    (define-key evil-motion-state-map "L" nil)
+    (define-key evil-motion-state-map "M" nil)
+
+    (evil-global-set-key 'normal (kbd "DEL") 'evil-switch-to-windows-last-buffer) ; Backspace
+
+    ;; Replace Emacs Tabs key bindings with Workspace key bindings
+    ;; replace "." search with consul-line in Evil normal state
+    ;; use default "/" evil search
+
+    ;; disable evil macro
+    (define-key evil-normal-state-map (kbd "q") 'nil) ; evil macro disable
+    (define-key evil-normal-state-map (kbd "Q") 'evil-record-macro)
+
+    ;; o :: ace-link-info 이거면 충분하다.
+    (define-key evil-insert-state-map (kbd "C-]") 'forward-char) ; very useful
+
+    ;; =C-w= 'insert 'evil-delete-backward-word
+    ;; =C-w= 'visual 'evil-window-map
+    ;; use evil bindings $ ^
+
+    ;; M-d region delete and C-d char delete
+    (define-key evil-insert-state-map (kbd "C-d") 'delete-forward-char)
+
+    ;; Don't put overwritten text in the kill ring
+    ;; evil-delete-char -> delete-forward-char
+    (define-key evil-normal-state-map "x" 'delete-forward-char)
+    (define-key evil-normal-state-map "X" 'delete-backward-char)
+    )
+
+  ;; evil-org
+  (with-eval-after-load 'evil-org
+    ;; (evil-define-key 'insert 'evil-org-mode-map (kbd "C-d") 'delete-forward-char)
+    (evil-define-key 'normal 'evil-org-mode-map "x" 'delete-forward-char)
+    (evil-define-key 'insert 'evil-org-mode-map (kbd "C-k") 'org-kill-line)
+    (evil-define-key 'insert 'org-mode-map (kbd "C-k") 'org-kill-line)
+    (evil-define-key 'normal 'evil-org-mode-map "X" 'delete-backward-char))
+  )
 
 ;; ,. as Esc key binding
 ;; https://discourse.doomemacs.org/t/typing-jk-deletes-j-and-returns-to-normal-mode/59/7
@@ -929,7 +1037,6 @@ All necessary settings are therefore set by hand as part of this configuration f
   (setq evil-escape-unordered-key-sequence nil)
   (setq evil-escape-delay 1.0) ;; 0.5, default 0.1
   (evil-escape-mode 1))
-
 #+end_src
 *** structural editing
 
@@ -1013,7 +1120,7 @@ All necessary settings are therefore set by hand as part of this configuration f
   (use-package! tempel-collection))
 
 #+end_src
-** :lang org
+** org
 *** org
 #+begin_src emacs-lisp :tangle config.el
 ;;;; org
@@ -1037,7 +1144,7 @@ All necessary settings are therefore set by hand as part of this configuration f
 #+end_src
 *** org2
 
-#+BEGIN_SRC elisp
+#+begin_src emacs-lisp :tangle config.el
 
 (after! org
 
@@ -1219,10 +1326,7 @@ All necessary settings are therefore set by hand as part of this configuration f
 ;; Adapted from http://stackoverflow.com/a/12751732/584121
 ;; (require 'org-protocol)
 (setq org-protocol-default-template-key "L")
-(setq org-modules `(
-                    org-habit
-                    org-protocol
-                    ))
+(setq org-modules `(org-habit org-protocol))
 
 ;; (setq org-agenda-prefix-format
 ;;       '((agenda  . " %i %-14:c%?-12t% s")
@@ -1321,7 +1425,7 @@ All necessary settings are therefore set by hand as part of this configuration f
  `("T" "Personal Todo /w clock-in" entry (file ,(my/org-inbox-file))
    "* TODO [#C] %?\n%T\n%a\n" :clock-in t :clock-resume t))
 )
-#+END_SRC
+#+end_src
 
 *** org extra packages
 
@@ -1433,6 +1537,39 @@ All necessary settings are therefore set by hand as part of this configuration f
   (org-modern-statistics nil)
   (org-modern-progress nil)
   )
+
+#+end_src
+*** TODO org-latex-preview
+
+#+begin_src emacs-lisp :tangle config.el
+;; (use-package! org-latex-preview
+;;   :config
+;;   ;; Increase preview width
+;;   (plist-put org-latex-preview-appearance-options
+;;              :page-width 0.8)
+
+;;   ;; Use dvisvgm to generate previews
+;;   ;; You don't need this, it's the default:
+;;   (setq org-latex-preview-process-default 'dvisvgm)
+
+;;   ;; Turn on auto-mode, it's built into Org and much faster/more featured than
+;;   ;; org-fragtog. (Remember to turn off/uninstall org-fragtog.)
+;;   (add-hook 'org-mode-hook 'org-latex-preview-auto-mode)
+
+;;   ;; Block C-n and C-p from opening up previews when using auto-mode
+;;   (add-hook 'org-latex-preview-auto-ignored-commands 'next-line)
+;;   (add-hook 'org-latex-preview-auto-ignored-commands 'previous-line)
+
+;;   ;; Enable consistent equation numbering
+;;   (setq org-latex-preview-numbered t)
+
+;;   ;; Bonus: Turn on live previews.  This shows you a live preview of a LaTeX
+;;   ;; fragment and updates the preview in real-time as you edit it.
+;;   ;; To preview only environments, set it to '(block edit-special) instead
+;;   (setq org-latex-preview-live t)
+
+;;   ;; More immediate live-previews -- the default delay is 1 second
+;;   (setq org-latex-preview-live-debounce 0.25))
 
 #+end_src
 
@@ -1616,6 +1753,21 @@ All necessary settings are therefore set by hand as part of this configuration f
   ;; (setq ten-tags-file-default "~/sync/emacs/git/default/ten/ten-TAGS")
   )
 #+end_src
+*** anddo
+#+begin_src emacs-lisp :tangle config.el
+
+(progn
+  (require 'anddo)
+  (defun anddo--create-tables ()
+    (unless anddo--db
+      (setq-local anddo--db
+                  (sqlite-open
+                   (expand-file-name "resources/anddo.sqlite" org-directory)))
+      (sqlite-execute anddo--db "create table if not exists item (id integer primary key, status text, subject text, body text, entry_time text, modification_time text)")))
+  )
+
+#+end_src
+
 ** llm-client
 *** gptel
 #+begin_src emacs-lisp :tangle config.el
@@ -2058,8 +2210,76 @@ All necessary settings are therefore set by hand as part of this configuration f
       :desc "ews-denote-map"                "n d" ews-denote-map
       :desc "org-journal-open-today" "n SPC" #'org-journal-open-current-journal-file
       )
+#+end_src
+*** heading navigation - org-mode and outline-mode
+
+absolute minimum but useful
+
+#+begin_src emacs-lisp :tangle config.el
+;;;; org-mode
+
+(after! org
+  (define-key org-mode-map (kbd "C-c H") 'org-insert-heading)
+  (define-key org-mode-map (kbd "C-c S") 'org-insert-subheading)
+
+  (evil-define-key '(normal visual) org-mode-map (kbd "C-n") 'org-next-visible-heading)
+  (evil-define-key '(normal visual) org-mode-map (kbd "C-p") 'org-previous-visible-heading)
+
+  ;; evil-collection
+  (evil-define-key '(normal visual) org-mode-map (kbd "C-j") 'org-forward-heading-same-level)
+  (evil-define-key '(normal visual) org-mode-map (kbd "C-k") 'org-backward-heading-same-level)
+
+  (evil-define-key '(normal visual) org-mode-map (kbd "C-S-p") 'outline-up-heading)
+
+  (evil-define-key '(normal visual) org-mode-map "zu" 'outline-up-heading)
+
+  (evil-define-key '(insert) org-mode-map (kbd "C-n") 'next-line)
+  (evil-define-key '(insert) org-mode-map (kbd "C-p") 'previous-line)
+  )
+
+(after! outline
+  (evil-define-key '(normal visual) outli-mode-map (kbd "C-n") 'outline-next-heading)
+  (evil-define-key '(normal visual) outli-mode-map (kbd "C-p") 'outline-previous-heading)
+
+  (evil-define-key '(insert) outli-mode-map (kbd "C-n") 'next-line)
+  (evil-define-key '(insert) outli-mode-map (kbd "C-p") 'previous-line)
+
+  (evil-define-key '(normal visual) outline-mode-map (kbd "C-S-p") 'outline-up-heading)
+  (evil-define-key '(normal visual) outline-mode-map "zu" 'outline-up-heading)
+
+  (define-key prog-mode-map (kbd "C-c H") 'outline-insert-heading)
+  )
 
 #+end_src
 * useful-keybindings
 
 사용자 키바인딩
+
+#+begin_src emacs-lisp :tangle config.el
+;;; user-keybindings
+
+;;;; transient: casual-anddo
+
+(when (locate-library "anddo")
+  (require 'anddo)
+
+  (transient-define-prefix casual-anddo-tmenu ()
+    "Transient menu for anddo"
+    [["anddo"
+      ("n" "new-item"          anddo-new-item)
+      ("e" "edit-item"          anddo-edit-item)
+      ("s" "change-status"          anddo-change-status)
+      ("r" "refresh-toggle-listing" anddo-toggle-listing-mode)
+      ("<RET>" "show-body"          anddo-show-body)
+      ("l" "show-body"          anddo-show-body)
+      ("D" "delete-item"          anddo-delete-item)]
+     ["Miscellaneous"
+      ("q" "quit" transient-quit-one)
+      ("Q" "Kill-buffer-window" kill-buffer-and-window)
+      ]
+     ]
+    )
+  (keymap-set anddo-mode-map "C-;" #'casual-anddo-tmenu)
+  )
+
+#+end_src

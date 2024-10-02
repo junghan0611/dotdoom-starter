@@ -36,7 +36,6 @@
 (when (boundp 'pgtk-use-im-context-on-new-connection)
   (setq pgtk-use-im-context-on-new-connection nil))
 
-
 ;;;; Termux
 
 (setq-default root-path "/")

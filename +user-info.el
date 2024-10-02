@@ -19,7 +19,11 @@
 ;; There are two ways to load a theme. Both assume the theme is installed and
 ;; available. You can either set `doom-theme' or manually load a theme with the
 ;; `load-theme' function. This is the default:
-(setq doom-theme 'modus-operandi)
+
+(when (display-graphic-p)
+  (setq modus-themes-variable-pitch-ui t)
+  (setq doom-theme 'modus-operandi)
+  )
 
 ;;;; directory path
 
@@ -93,7 +97,7 @@
 
 ;; elisp-demos
 (setq elisp-demos-user-files (list (concat org-directory
-"/notes/20240926T170706--elisp-demos__emacslisp_notes.org")))
+                                           "/notes/20240926T170706--elisp-demos__emacslisp_notes.org")))
 
 (defvar org-user-contacts-files (list (my/org-contacts-file)))
 
