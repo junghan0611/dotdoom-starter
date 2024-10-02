@@ -1441,7 +1441,7 @@
 
 (map! :leader
       :desc "er/expand-region" "v" #'er/expand-region
-;      :desc "expand-menu" "V" #'expand-transient
+                                        ;      :desc "expand-menu" "V" #'expand-transient
       )
 
 
@@ -1462,39 +1462,36 @@
 (map! :map cdlatex-mode-map
       :i "TAB" #'cdlatex-tab)
 
-;;;; org-mode
+(map! (:map org-mode-map
+       :ni "C-c H" #'org-insert-heading
+       :ni "C-c S" #'org-insert-subheading
+       :i "C-n" #'next-line
+       :i "C-p" #'previous-line
+       :n "C-S-p" #'outline-up-heading
+       :n "C-j" #'org-forward-heading-same-level
+       :n "C-k" #'org-backward-heading-same-level
+       :n "C-n" #'org-next-visible-heading
+       :n "C-p" #'org-previous-visible-heading
+       :n "zu" #'outline-up-heading
+       ))
 
-(after! org
-  (define-key org-mode-map (kbd "C-c H") 'org-insert-heading)
-  (define-key org-mode-map (kbd "C-c S") 'org-insert-subheading)
+(map! (:map org-journal-mode-map
+       :n "]f"  #'org-journal-next-entry
+       :n "[f"  #'org-journal-previous-entry
+       :n "C-n" #'org-next-visible-heading ; overide
+       :n "C-p" #'org-previous-visible-heading)
+      (:map org-journal-search-mode-map
+            "C-n" #'org-journal-search-next
+            "C-p" #'org-journal-search-previous))
 
-  (evil-define-key '(normal visual) org-mode-map (kbd "C-n") 'org-next-visible-heading)
-  (evil-define-key '(normal visual) org-mode-map (kbd "C-p") 'org-previous-visible-heading)
-
-  ;; evil-collection
-  (evil-define-key '(normal visual) org-mode-map (kbd "C-j") 'org-forward-heading-same-level)
-  (evil-define-key '(normal visual) org-mode-map (kbd "C-k") 'org-backward-heading-same-level)
-
-  (evil-define-key '(normal visual) org-mode-map (kbd "C-S-p") 'outline-up-heading)
-
-  (evil-define-key '(normal visual) org-mode-map "zu" 'outline-up-heading)
-
-  (evil-define-key '(insert) org-mode-map (kbd "C-n") 'next-line)
-  (evil-define-key '(insert) org-mode-map (kbd "C-p") 'previous-line)
-  )
-
-(after! outline
-  (evil-define-key '(normal visual) outli-mode-map (kbd "C-n") 'outline-next-heading)
-  (evil-define-key '(normal visual) outli-mode-map (kbd "C-p") 'outline-previous-heading)
-
-  (evil-define-key '(insert) outli-mode-map (kbd "C-n") 'next-line)
-  (evil-define-key '(insert) outli-mode-map (kbd "C-p") 'previous-line)
-
-  (evil-define-key '(normal visual) outline-mode-map (kbd "C-S-p") 'outline-up-heading)
-  (evil-define-key '(normal visual) outline-mode-map "zu" 'outline-up-heading)
-
-  (define-key prog-mode-map (kbd "C-c H") 'outline-insert-heading)
-  )
+(map! (:map outline-mode-map
+            :n "C-n" #'outline-next-heading
+            :n "C-p" #'outline-previous-heading
+            :i "C-n" #'next-line
+            :i "C-p" #'previous-line
+            :n "C-S-p" #'outline-up-heading
+            :n "zu" #'outline-up-heading)
+      )
 
 ;;; user-keybindings
 
