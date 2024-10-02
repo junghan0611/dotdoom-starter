@@ -93,6 +93,7 @@ StartupWMClass=DoomEmacs
 
 * 히스토리
 - 2024-09-12 Denote 까지 지원. 핵심 전략 서술.
+- 2024-10-03 org-latex-preview-auto-mode
 
 * Doom config file overview
 
@@ -374,7 +375,7 @@ All necessary settings are therefore set by hand as part of this configuration f
        emacs-lisp        ; drown in parentheses
        ;; json  ; At least it ain't XML
        ;; (javascript +lsp) ;; all(hope(abandon(ye(who(enter(here))))))
-       ;; (latex +cdlatex +latexmk)    ; writing papers in Emacs has never been so fun
+       (latex +cdlatex +latexmk)    ; writing papers in Emacs has never been so fun
        markdown          ; writing docs for people to ignore
        (org                         ; organize your plain life in plain text
         +hugo                     ; use Emacs for hugo blogging
@@ -2231,6 +2232,12 @@ rm -Rf eln-cache
       :desc "ews-denote-map"                "n d" ews-denote-map
       :desc "org-journal-open-today" "n SPC" #'org-journal-open-current-journal-file
       )
+
+;;;; mode-map
+
+(map! :map cdlatex-mode-map
+      :i "TAB" #'cdlatex-tab)
+
 #+end_src
 *** heading navigation - org-mode and outline-mode
 

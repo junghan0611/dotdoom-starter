@@ -1457,6 +1457,11 @@
       :desc "org-journal-open-today" "n SPC" #'org-journal-open-current-journal-file
       )
 
+;;;; mode-map
+
+(map! :map cdlatex-mode-map
+      :i "TAB" #'cdlatex-tab)
+
 ;;;; org-mode
 
 (after! org
