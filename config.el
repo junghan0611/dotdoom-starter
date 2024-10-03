@@ -1069,6 +1069,10 @@
 (use-package! gptel
   :defer t)
 
+;;;; doom-modeline
+
+(setq doom-modeline-icon (display-graphic-p))
+
 ;;;; spacious-padding
 
 (use-package! spacious-padding
@@ -1311,6 +1315,14 @@
      (interactive)
      (other-window -1))))
 
+;;;; term-keys
+
+(use-package! term-keys
+  :unless window-system
+  :config
+  (unless (display-graphic-p) ; terminal
+    (term-keys-mode t)))
+
 ;;;; transient : casual-suite
 
 (require 'casual-suite)
@@ -1441,7 +1453,7 @@
 
 (map! :leader
       :desc "er/expand-region" "v" #'er/expand-region
-                                        ;      :desc "expand-menu" "V" #'expand-transient
+      ;; :desc "expand-menu" "V" #'expand-transient
       )
 
 

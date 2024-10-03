@@ -537,6 +537,7 @@ All necessary settings are therefore set by hand as part of this configuration f
 
 (package! dired-preview)
 (package! jinx) ; spell checker
+(package! term-keys :recipe (:host github :repo "junghan0611/term-keys"))
 
 ;;;; transient
 
@@ -1796,6 +1797,15 @@ rm -Rf eln-cache
   :defer t)
 #+end_src
 ** visual ui
+
+*** doom-modeline
+#+begin_src emacs-lisp :tangle config.el
+
+;;;; doom-modeline
+
+(setq doom-modeline-icon (display-graphic-p))
+#+end_src
+
 *** spacious-padding
 #+begin_src emacs-lisp :tangle config.el
 
@@ -2035,7 +2045,7 @@ rm -Rf eln-cache
   (consult-fd "."))
 #+end_src
 
-** termux
+** terminal and termux
 
 #+begin_src emacs-lisp :tangle config.el
 ;;;; fortune
@@ -2070,6 +2080,14 @@ rm -Rf eln-cache
    (lambda ()
      (interactive)
      (other-window -1))))
+
+;;;; term-keys
+
+(use-package! term-keys
+  :unless window-system
+  :config
+  (unless (display-graphic-p) ; terminal
+    (term-keys-mode t)))
 #+end_src
 
 ** transient menu with =casual= suite
@@ -2217,7 +2235,7 @@ rm -Rf eln-cache
 
 (map! :leader
       :desc "er/expand-region" "v" #'er/expand-region
-                                        ;      :desc "expand-menu" "V" #'expand-transient
+      ;; :desc "expand-menu" "V" #'expand-transient
       )
 
 
