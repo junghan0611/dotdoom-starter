@@ -8,8 +8,7 @@
 (setq doom-font (font-spec :family "Monoplex KR Nerd" :size 14.0)
       doom-big-font (font-spec :family "Monoplex KR Nerd" :size 24.0)
       doom-variable-pitch-font (font-spec :family "Pretendard Variable" :size 16.0)
-      doom-unicode-font (font-spec :family "Symbola" :size 14.0)
-      )
+      doom-unicode-font (font-spec :family "Symbola" :size 14.0))
 
 ;; If you or Emacs can't find your font, use 'M-x describe-font' to look them
 ;; up, `M-x eval-region' to execute elisp code, and 'M-x doom/reload-font' to
@@ -24,8 +23,7 @@
   (setq modus-themes-variable-pitch-ui t
         modus-themes-org-blocks t
         modus-themes-bold-constructs t)
-  (setq doom-theme 'modus-operandi)
-  )
+  (setq doom-theme 'modus-operandi))
 
 ;;;; directory path
 

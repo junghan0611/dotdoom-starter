@@ -303,6 +303,45 @@
    (display-buffer-no-window)
    (allow-no-window . t)))
 
+;;; completion
+
+;;;; corfu
+
+;; 2024-09-13 기본 설정, jump-out-of-pair 추가
+;; Tab 이 자동 완성이면 괄호 점프랑 충돌 난다. C-j/k C-n/p 는 직관적인 기본 설정이므로 건들이지 않는다.
+
+(after! corfu
+  ;; (setq corfu-auto-delay 0.5) ; doom 0.24
+  ;; (setq corfu-auto-prefix 3) ; doom 2
+  ;; (setq corfu-preselect 'valid) ; doom 'prompt
+  ;; ;; (setq completion-cycle-threshold 3) ; doom nil
+  ;; (setq tab-always-indent t) ; for jump-out-of-pair - doom 'complete
+  ;; (setq +corfu-want-minibuffer-completion nil) ; doom t
+
+  ;; from minemacs
+  ;; HACK: Prevent the annoting completion error when no `ispell' dictionary is set, prefer `cape-dict'
+  (when (eq emacs-major-version 30)
+    (setq text-mode-ispell-word-completion nil))
+
+  ;; IMO, modern editors have trained a bad habit into us all: a burning need for
+  ;; completion all the time -- as we type, as we breathe, as we pray to the
+  ;; ancient ones -- but how often do you *really* need that information? I say
+  ;; rarely. So opt for manual completion:
+  ;; doom/hlissner-dot-doom/config.el
+  ;; (setq corfu-auto nil)
+
+  ;; default 'C-S-s'
+  (define-key corfu-map (kbd "M-.") '+corfu-move-to-minibuffer)
+  )
+
+;;;; vertico
+
+;;;; consult
+
+(defun my/consult-fd ()
+  (interactive)
+  (consult-fd "."))
+
 ;;; evil
 
 (after! evil
@@ -407,7 +446,7 @@
 
   ;; org 모드에서 거슬린다. 제거. 굳.
   (sp-local-pair 'org-mode "(" ")" :actions '(rem)) ; for denote completion
-  (sp-local-pair 'org-mode "[" "]" :actions '(rem)) ; temporarly
+  ;; (sp-local-pair 'org-mode "[" "]" :actions '(rem)) ; temporarly
   (sp-local-pair 'org-mode "'" "'" :actions '(rem))
   (sp-local-pair 'org-mode "`" "`" :actions '(rem))
   (sp-local-pair 'org-mode "\"" "\"" :actions '(rem))
@@ -849,38 +888,38 @@
   (org-modern-progress nil)
   )
 
-(use-package! org-latex-preview
-  :config
-  (setq org-startup-with-latex-preview t) ; doom nil
-  (setq org-highlight-latex-and-related '(native script entities)) ; doom org +pretty
-  ;; (setq org-highlight-latex-and-related '(native)) ; doom nil
-  ;; Increase preview width
-  (plist-put org-latex-preview-appearance-options
-             :page-width 0.8)
+;; (use-package! org-latex-preview
+;;   :config
+;;   (setq org-startup-with-latex-preview t) ; doom nil
+;;   (setq org-highlight-latex-and-related '(native script entities)) ; doom org +pretty
+;;   ;; (setq org-highlight-latex-and-related '(native)) ; doom nil
+;;   ;; Increase preview width
+;;   (plist-put org-latex-preview-appearance-options
+;;              :page-width 0.8)
 
-  ;; Use dvisvgm to generate previews
-  ;; You don't need this, it's the default:
-  (setq org-latex-preview-process-default 'dvisvgm)
+;;   ;; Use dvisvgm to generate previews
+;;   ;; You don't need this, it's the default:
+;;   (setq org-latex-preview-process-default 'dvisvgm)
 
-  ;; Turn on auto-mode, it's built into Org and much faster/more featured than org-fragtog.
-  ;; (Remember to turn off/uninstall org-fragtog.)
-  (add-hook 'org-mode-hook 'org-latex-preview-auto-mode)
+;;   ;; Turn on auto-mode, it's built into Org and much faster/more featured than org-fragtog.
+;;   ;; (Remember to turn off/uninstall org-fragtog.)
+;;   (add-hook 'org-mode-hook 'org-latex-preview-auto-mode)
 
-  ;; Block C-n and C-p from opening up previews when using auto-mode
-  (add-hook 'org-latex-preview-auto-ignored-commands 'next-line)
-  (add-hook 'org-latex-preview-auto-ignored-commands 'previous-line)
+;;   ;; Block C-n and C-p from opening up previews when using auto-mode
+;;   (add-hook 'org-latex-preview-auto-ignored-commands 'next-line)
+;;   (add-hook 'org-latex-preview-auto-ignored-commands 'previous-line)
 
-  ;; Enable consistent equation numbering
-  (setq org-latex-preview-numbered t)
+;;   ;; Enable consistent equation numbering
+;;   (setq org-latex-preview-numbered t)
 
-  ;; Bonus: Turn on live previews.  This shows you a live preview of a LaTeX
-  ;; fragment and updates the preview in real-time as you edit it.
-  ;; To preview only environments, set it to '(block edit-special) instead
-  (setq org-latex-preview-live t)
+;;   ;; Bonus: Turn on live previews.  This shows you a live preview of a LaTeX
+;;   ;; fragment and updates the preview in real-time as you edit it.
+;;   ;; To preview only environments, set it to '(block edit-special) instead
+;;   (setq org-latex-preview-live t)
 
-  ;; More immediate live-previews -- the default delay is 1 second
-  (setq org-latex-preview-live-debounce 0.25)
-  )
+;;   ;; More immediate live-previews -- the default delay is 1 second
+;;   (setq org-latex-preview-live-debounce 0.25)
+;;   )
 
 ;;;; citar
 
@@ -1064,7 +1103,8 @@
       (sqlite-execute anddo--db "create table if not exists item (id integer primary key, status text, subject text, body text, entry_time text, modification_time text)")))
   )
 
-;;;; llmclient
+;;; llmclient
+;;;; gptel
 
 (use-package! gptel
   :defer t)
@@ -1246,41 +1286,6 @@
   ;; direct projectile to look for code in a specific folder.
   (setq projectile-project-search-path '("~/git"))
   )
-
-;;;; :completion corfu -
-;; Corfu and electric-Pair and Jump In/Out Parens
-
-;; Linux GUI : <tab> TAB
-;; Linux Terminal : TAB
-;; Linux GUI : S-<iso-lefttab>
-;; Linux Terminal : <backtab>
-
-(progn
-;;;###autoload
-  (defun jump-out-of-pair ()
-    (interactive)
-    (let ((found (search-forward-regexp "[])}\"'`*=]" nil t)))
-      (when found
-        (cond
-         ((or (looking-back "\\*\\*" 2)
-              (looking-back "``" 2)
-              (looking-back "\"\"" 2) ; 2023-10-02 added
-              (looking-back "''" 2) (looking-back "==" 2))
-          (forward-char))
-         (t
-          (forward-char 0))))))
-
-  (after! corfu
-    (evil-define-key '(insert) prog-mode-map (kbd "<tab>") 'jump-out-of-pair)
-    (evil-define-key '(insert) prog-mode-map (kbd "TAB") 'jump-out-of-pair)
-    ;; (evil-define-key '(insert) corfu-map (kbd "<tab>") 'jump-out-of-pair)
-    ;; (evil-define-key '(insert) corfu-map (kbd "TAB") 'jump-out-of-pair)
-    )
-  )
-
-(defun my/consult-fd ()
-  (interactive)
-  (consult-fd "."))
 
 ;;;; fortune
 
