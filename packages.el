@@ -116,6 +116,7 @@
 
 (package! tempel)
 (package! tempel-collection)
+(package! laas)
 
 ;;;; llmclient
 
@@ -130,6 +131,7 @@
 (package! org-glossary :recipe (:host github :repo "tecosaur/org-glossary" :files ("*.el" "*.org" "*.texi")))
 (package! ten :recipe (:host sourcehut :repo "nobiot/ten")) ;; https://git.sr.ht/~nobiot/ten
 (package! anddo :recipe (:host github :repo "junghan0611/anddo.el"))
+(package! org-fragtog)          ;; interactive toggling of inline latex formulas
 
 ;;;; tools
 

@@ -484,6 +484,7 @@ All necessary settings are therefore set by hand as part of this configuration f
 
 (package! tempel)
 (package! tempel-collection)
+(package! laas)
 
 ;;;; llmclient
 
@@ -498,6 +499,7 @@ All necessary settings are therefore set by hand as part of this configuration f
 (package! org-glossary :recipe (:host github :repo "tecosaur/org-glossary" :files ("*.el" "*.org" "*.texi")))
 (package! ten :recipe (:host sourcehut :repo "nobiot/ten")) ;; https://git.sr.ht/~nobiot/ten
 (package! anddo :recipe (:host github :repo "junghan0611/anddo.el"))
+(package! org-fragtog)          ;; interactive toggling of inline latex formulas
 
 ;;;; tools
 
@@ -975,6 +977,10 @@ CLOSED: [2024-10-21 Mon 20:36]
   ;; (setq tab-always-indent t) ; for jump-out-of-pair - doom 'complete
   ;; (setq +corfu-want-minibuffer-completion nil) ; doom t
 
+  (setq +corfu-want-tab-prefer-expand-snippets t) ; 2024-11-06
+  (setq +corfu-want-tab-prefer-navigating-snippets t)
+  ;; (setq +corfu-want-tab-prefer-navigating-org-tables t)
+
   ;; from minemacs
   ;; HACK: Prevent the annoting completion error when no `ispell' dictionary is set, prefer `cape-dict'
   (when (eq emacs-major-version 30)
@@ -1123,7 +1129,7 @@ CLOSED: [2024-10-21 Mon 20:36]
 
   ;; org 모드에서 거슬린다. 제거. 굳.
   (sp-local-pair 'org-mode "(" ")" :actions '(rem)) ; for denote completion
-  ;; (sp-local-pair 'org-mode "[" "]" :actions '(rem)) ; temporarly
+  (sp-local-pair 'org-mode "[" "]" :actions '(rem)) ; temporarly
   (sp-local-pair 'org-mode "'" "'" :actions '(rem))
   (sp-local-pair 'org-mode "`" "`" :actions '(rem))
   (sp-local-pair 'org-mode "\"" "\"" :actions '(rem))
@@ -1148,6 +1154,11 @@ CLOSED: [2024-10-21 Mon 20:36]
       'web-mode
     (sp-local-pair "{{#if" "{{/if")
     (sp-local-pair "{{#unless" "{{/unless"))
+
+  (sp-with-modes
+      'org-mode
+    (sp-local-pair "\\[" "\\]")
+    (sp-local-pair "$$" "$$"))
   )
 
 #+end_src
@@ -1180,6 +1191,15 @@ CLOSED: [2024-10-21 Mon 20:36]
 
   (use-package! tempel-collection))
 
+#+end_src
+*** latex - laas
+#+begin_src emacs-lisp :tangle config.el
+
+;;;; laas
+;; https://github.com/tecosaur/LaTeX-auto-activating-snippets
+(use-package! laas
+  :hook ((LaTeX-mode . laas-mode)
+	 (org-mode . laas-mode)))
 #+end_src
 ** org
 *** org
@@ -1599,6 +1619,14 @@ CLOSED: [2024-10-21 Mon 20:36]
   )
 
 #+end_src
+
+**** org-fragtog
+
+#+begin_src emacs-lisp :tangle config.el
+(use-package! org-fragtog
+  :after org
+  :hook (org-mode . org-fragtog-mode))
+#+end_src
 *** DONT org-latex-preview :noexport:
 CLOSED: [2024-10-21 Mon 20:38]
 
@@ -1649,7 +1677,6 @@ rm -Rf eln-cache
 ;;   )
 
 #+end_src
-
 ** pkm
 *** biblio - citar
 #+begin_src emacs-lisp :tangle config.el

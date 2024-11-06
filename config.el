@@ -318,6 +318,10 @@
   ;; (setq tab-always-indent t) ; for jump-out-of-pair - doom 'complete
   ;; (setq +corfu-want-minibuffer-completion nil) ; doom t
 
+  (setq +corfu-want-tab-prefer-expand-snippets t) ; 2024-11-06
+  (setq +corfu-want-tab-prefer-navigating-snippets t)
+  ;; (setq +corfu-want-tab-prefer-navigating-org-tables t)
+
   ;; from minemacs
   ;; HACK: Prevent the annoting completion error when no `ispell' dictionary is set, prefer `cape-dict'
   (when (eq emacs-major-version 30)
@@ -446,7 +450,7 @@
 
   ;; org 모드에서 거슬린다. 제거. 굳.
   (sp-local-pair 'org-mode "(" ")" :actions '(rem)) ; for denote completion
-  ;; (sp-local-pair 'org-mode "[" "]" :actions '(rem)) ; temporarly
+  (sp-local-pair 'org-mode "[" "]" :actions '(rem)) ; temporarly
   (sp-local-pair 'org-mode "'" "'" :actions '(rem))
   (sp-local-pair 'org-mode "`" "`" :actions '(rem))
   (sp-local-pair 'org-mode "\"" "\"" :actions '(rem))
@@ -471,6 +475,11 @@
       'web-mode
     (sp-local-pair "{{#if" "{{/if")
     (sp-local-pair "{{#unless" "{{/unless"))
+
+  (sp-with-modes
+      'org-mode
+    (sp-local-pair "\\[" "\\]")
+    (sp-local-pair "$$" "$$"))
   )
 
 ;;;; tempel
@@ -498,6 +507,12 @@
   (define-key tempel-map (kbd "M-p") #'tempel-previous)
 
   (use-package! tempel-collection))
+
+;;;; laas
+;; https://github.com/tecosaur/LaTeX-auto-activating-snippets
+(use-package! laas
+  :hook ((LaTeX-mode . laas-mode)
+	 (org-mode . laas-mode)))
 
 ;;;; org
 
@@ -887,6 +902,10 @@
   (org-modern-statistics nil)
   (org-modern-progress nil)
   )
+
+(use-package! org-fragtog
+  :after org
+  :hook (org-mode . org-fragtog-mode))
 
 ;; (use-package! org-latex-preview
 ;;   :config
