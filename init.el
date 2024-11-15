@@ -62,7 +62,7 @@
        (popup +defaults) ; tame sudden yet inevitable temporary windows
        treemacs          ; a project drawer, like neotree but cooler
        vc-gutter         ; vcs diff in the fringe
-       vi-tilde-fringe   ; fringe tildes to mark beyond EOB
+       ;; vi-tilde-fringe   ; fringe tildes to mark beyond EOB
        (window-select +numbers) ; visually switch windows
        workspaces        ; tab emulation, persistence & separate workspaces
        ;; zen            ; distraction-free coding or writing
@@ -91,7 +91,7 @@
        (:if (not (memq system-type '(cygwin windows-nt ms-dos))) vterm) ; the best terminal emulation in Emacs
 
        :checkers
-       ;; (syntax +flymake)
+       (syntax +flymake)
        ;; spell +flyspell ; +hunspell - tasing you for misspelling mispelling
        ;; grammar           ; tasing grammar mistake every you make
        :tools
@@ -101,7 +101,7 @@
 
        (eval +overlay)     ; run code, run (also, repls)
        lookup
-       ;; (lsp +eglot) ; +peek
+       (lsp +eglot) ; +peek
 
        magit  ; +forge a git porcelain for Emacs
 
@@ -119,10 +119,11 @@
        tty                 ; improve the terminal Emacs experience
 
        :lang
-       ;; data              ; config/data formats
+       (clojure +lsp) ; java with a lisp
+       data              ; config/data formats
        emacs-lisp        ; drown in parentheses
-       ;; json  ; At least it ain't XML
-       ;; (javascript +lsp) ;; all(hope(abandon(ye(who(enter(here))))))
+       json  ; At least it ain't XML
+       (javascript +lsp) ;; all(hope(abandon(ye(who(enter(here))))))
        (latex +cdlatex +latexmk)    ; writing papers in Emacs has never been so fun
        markdown          ; writing docs for people to ignore
        (org                         ; organize your plain life in plain text
@@ -138,8 +139,10 @@
         )                     ; wander around notes
        ;; sh                ; she sells {ba,z,fi}sh shells on the C xor
        ;; (python +lsp) ; +conda beautiful is better than ugly
-       ;; web ; the tubes
-       ;; yaml ; JSON, but readable
+       racket ; a DSL for DSLs
+       (scheme +mit) ;; +racket ; a fully conniving family of lisps
+       web ; the tubes
+       yaml ; JSON, but readable
 
        ;; :email
        ;;(mu4e +org +gmail)

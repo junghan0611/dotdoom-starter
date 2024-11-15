@@ -312,11 +312,11 @@
 
 (after! corfu
   ;; (setq corfu-auto-delay 0.5) ; doom 0.24
-  ;; (setq corfu-auto-prefix 3) ; doom 2
-  ;; (setq corfu-preselect 'valid) ; doom 'prompt
-  ;; ;; (setq completion-cycle-threshold 3) ; doom nil
-  ;; (setq tab-always-indent t) ; for jump-out-of-pair - doom 'complete
-  ;; (setq +corfu-want-minibuffer-completion nil) ; doom t
+  (setq corfu-auto-prefix 3) ; doom 2
+  (setq corfu-preselect 'valid) ; doom 'prompt
+  (setq completion-cycle-threshold 3) ; doom nil
+  (setq tab-always-indent t) ; for jump-out-of-pair - doom 'complete
+  (setq +corfu-want-minibuffer-completion nil) ; doom t
 
   (setq +corfu-want-tab-prefer-expand-snippets t) ; 2024-11-06
   (setq +corfu-want-tab-prefer-navigating-snippets t)
@@ -337,14 +337,6 @@
   ;; default 'C-S-s'
   (define-key corfu-map (kbd "M-.") '+corfu-move-to-minibuffer)
   )
-
-;;;; vertico
-
-;;;; consult
-
-(defun my/consult-fd ()
-  (interactive)
-  (consult-fd "."))
 
 ;;; evil
 
@@ -417,8 +409,8 @@
   (with-eval-after-load 'evil-org
     ;; (evil-define-key 'insert 'evil-org-mode-map (kbd "C-d") 'delete-forward-char)
     (evil-define-key 'normal 'evil-org-mode-map "x" 'delete-forward-char)
-    (evil-define-key 'insert 'evil-org-mode-map (kbd "C-k") 'org-kill-line)
-    (evil-define-key 'insert 'org-mode-map (kbd "C-k") 'org-kill-line)
+    ;; (evil-define-key 'insert 'evil-org-mode-map (kbd "C-k") 'org-kill-line)
+    ;; (evil-define-key 'insert 'org-mode-map (kbd "C-k") 'org-kill-line)
     (evil-define-key 'normal 'evil-org-mode-map "X" 'delete-backward-char))
   )
 
@@ -516,7 +508,7 @@
 
 ;;;; org
 
-(require 'ob-tangle)
+;; (require 'ob-tangle)
 
 (after! org
   (message "after org - config")
@@ -525,6 +517,9 @@
   ;; (load-file (concat doom-user-dir "lisp/org-config.el"))
   ;; (+org-init-keybinds-h) -> 2024-06-01 여기 키바인딩 관련 부분 뒤에서 다시 잡아줌
   ;; (setq org-attach-use-inheritance nil) ; selective
+
+  (setq org-id-locations-file
+        (file-name-concat org-directory (concat "." system-name "-orgids"))) ; ".org-id-locations"))
 
   ;; overide here! important
   (setq org-insert-heading-respect-content nil) ; doom t
@@ -907,6 +902,18 @@
   :after org
   :hook (org-mode . org-fragtog-mode))
 
+(use-package! org-transclusion
+  :after org
+  :defer 2
+  :commands org-transclusion-mode
+  :config
+  (set-face-attribute 'org-transclusion-fringe nil :foreground "light green" :background "lime green")
+  )
+
+(after! org-transclusion
+  (add-to-list 'org-transclusion-extensions 'org-transclusion-indent-mode)
+  (require 'org-transclusion-indent-mode))
+
 ;; (use-package! org-latex-preview
 ;;   :config
 ;;   (setq org-startup-with-latex-preview t) ; doom nil
@@ -999,11 +1006,7 @@
   (setq denote-excluded-directories-regexp "screenshot")
 
   (setq denote-org-front-matter
-        ":PROPERTIES:
-:ID: %4$s
-:CREATED: %2$s
-:END:
-#+title:      %1$s
+        "#+title:      %1$s
 #+filetags:   %3$s
 #+date:       %2$s
 #+identifier: %4$s
@@ -1014,15 +1017,7 @@
 
 #+hugo: more
 
- * #Keyword :noexport:
-#+BEGIN: denote-links :regexp \"000\" :excluded-dirs-regexp nil :sort-by-component nil :reverse-sort nil :id-only nil :include-date nil
-#+END:
-
- * #Backlink :noexport:
-#+BEGIN: denote-backlinks :excluded-dirs-regexp nil :sort-by-component nil :reverse-sort nil :id-only nil :this-heading-only nil :include-date nil
-#+END:
-
- * Related-Notes
+* Related-Notes
 #+print_bibliography:
 \n")
 
@@ -1110,16 +1105,6 @@
   ;; need to. The switching experience is not intuitive and it's a TODO
   ;; to improve it.)
   ;; (setq ten-tags-file-default "~/sync/emacs/git/default/ten/ten-TAGS")
-  )
-
-(progn
-  (require 'anddo)
-  (defun anddo--create-tables ()
-    (unless anddo--db
-      (setq-local anddo--db
-                  (sqlite-open
-                   (expand-file-name "resources/anddo.sqlite" org-directory)))
-      (sqlite-execute anddo--db "create table if not exists item (id integer primary key, status text, subject text, body text, entry_time text, modification_time text)")))
   )
 
 ;;; llmclient
@@ -1238,6 +1223,8 @@
   ;; (add-hook 'org-mode-hook 'outli-mode)
   )
 
+;;;; flymake
+
 (remove-hook! (prog-mode text-mode) #'flymake-mode)
 
 ;;;; jinx for spell
@@ -1305,6 +1292,35 @@
   ;; direct projectile to look for code in a specific folder.
   (setq projectile-project-search-path '("~/git"))
   )
+
+;;;; scheme with geiser-mit
+
+(use-package! geiser-mit
+  :config
+  (setenv "MITSCHEME_HEAP_SIZE" "100000") ; 16384
+  (setenv "MITSCHEME_LIBRARY_PATH" "/usr/lib/x86_64-linux-gnu/mit-scheme")
+  (setenv "MITSCHEME_BAND" "mechanics.com")
+
+  ;; (setenv "DISPLAY" ":0")
+  (setq geiser-active-implementations '(mit))
+  (setq geiser-mit-binary "/usr/bin/mit-scheme")
+  )
+
+;;;; core fuctions
+
+;;;###autoload
+(defun my/consult-fd ()
+  (interactive)
+  (consult-fd "."))
+
+;;;###autoload
+(defun my/org-store-link-id-optional (&optional arg)
+  "Stores a link, reversing the value of `org-id-link-to-org-use-id'.
+If it's globally set to create the ID property, then it wouldn't,
+and if it is set to nil, then it would forcefully create the ID."
+  (interactive "P")
+  (let ((org-id-link-to-org-use-id (not org-id-link-to-org-use-id)))
+    (org-store-link arg :interactive)))
 
 ;;;; fortune
 
@@ -1397,6 +1413,19 @@
 (require 'casual-editkit) ;
 (keymap-global-set "C-;" #'casual-editkit-main-tmenu)
 
+;;; global-unset-key
+
+(global-unset-key (kbd "<f2>"))
+
+(global-unset-key (kbd "M-a"))  ; unset forward-sentence -> use ')'
+(global-unset-key (kbd "M-c"))  ; unset capitalize-word
+(global-unset-key (kbd "M-e"))  ; unset backward-sentence -> use '('
+
+;;; Emacs Keys
+
+(global-set-key (kbd "C-M-;") 'pp-eval-expression) ; unbinded key
+(global-set-key (kbd "C-M-'") 'eldoc-toggle) ; unbinded key
+
 ;;;; embark
 
 (global-set-key (kbd "M-y") #'consult-yank-pop) ; yank-pop
@@ -1406,6 +1435,7 @@
 (global-set-key (kbd "C-h B") 'embark-bindings) ;; alternative for `describe-bindings'
 
 (global-set-key (kbd "C-c l") 'org-store-link)
+(global-set-key (kbd "C-c L") 'my/org-store-link-id-optional)
 (global-set-key (kbd "C-c i") 'org-insert-link)
 (global-set-key (kbd "C-c a") 'org-agenda)
 
@@ -1414,8 +1444,31 @@
 ;; (after! projectile
 ;;   (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map))
 
+(defvar-keymap ews-bibliography-map
+  :doc "Bibliograpic functions keymap."
+
+  "b" #'org-cite-insert
+  "c" #'citar-open
+  "d" #'citar-dwim
+  "e" #'citar-open-entry
+
+  "a" #'citar-denote-add-citekey
+  "1" #'citar-denote-find-citation ;; grep [cite @xxx]
+
+  "i" #'citar-insert-citation
+  "n" #'citar-create-note
+  "o" #'citar-open-note
+  "O" #'citar-open-links
+
+  "f" #'citar-denote-find-reference
+  "l" #'citar-denote-link-reference
+  ;; "e" #'citar-denote-open-reference-entry
+  ;; "k" #'citar-denote-remove-citekey
+  )
+
 (defvar-keymap ews-denote-map
   :doc "Denote keybindings."
+  "b" ews-bibliography-map
   "B" #'denote-org-extras-backlinks-for-heading
   "d" #'denote-create-note
 
@@ -1445,6 +1498,7 @@
   "SPC" #'org-journal-open-current-journal-file
 
   "j" #'org-journal-new-entry
+  "u" #'org-transclusion-mode
 
   "k" #'denote-rename-file-keywords
   "z" #'denote-rename-file-signature
@@ -1453,6 +1507,7 @@
   "M-b" #'denote-find-backlink
   )
 (keymap-set global-map "C-c n" ews-denote-map)
+(keymap-set global-map "M-e" ews-denote-map) ; ews-denote-map
 
 ;;; key
 
@@ -1488,10 +1543,13 @@
 ;;;; 'n' +notes denote
 
 (map! :leader
-      :desc "+default/org-notes-search"     "n g" #'+default/org-notes-search ; grep
-      :desc "ews-denote-map"                "n d" ews-denote-map
-      :desc "org-journal-open-today" "n SPC" #'org-journal-open-current-journal-file
-      )
+      (:prefix ("n" . "notes")
+               "g" #'+default/org-notes-search ; grep
+               "d" ews-denote-map
+               "SPC" #'org-journal-open-current-journal-file
+               "L" #'my/org-store-link-id-optional
+               "u" #'org-transclusion-mode
+               ))
 
 ;;;; mode-map
 
@@ -1499,6 +1557,7 @@
       :i "TAB" #'cdlatex-tab)
 
 (map! (:map org-mode-map
+       "<f12>" #'org-transclusion-mode
        :ni "C-c H" #'org-insert-heading
        :ni "C-c S" #'org-insert-subheading
        :i "C-n" #'next-line
@@ -1521,36 +1580,12 @@
             "C-p" #'org-journal-search-previous))
 
 (map! (:map outline-mode-map
-            :n "C-n" #'outline-next-heading
-            :n "C-p" #'outline-previous-heading
-            :i "C-n" #'next-line
-            :i "C-p" #'previous-line
-            :n "C-S-p" #'outline-up-heading
-            :n "zu" #'outline-up-heading)
+       :n "C-n" #'outline-next-heading
+       :n "C-p" #'outline-previous-heading
+       :i "C-n" #'next-line
+       :i "C-p" #'previous-line
+       :n "C-S-p" #'outline-up-heading
+       :n "zu" #'outline-up-heading)
       )
 
 ;;; user-keybindings
-
-;;;; transient: casual-anddo
-
-(when (locate-library "anddo")
-  (require 'anddo)
-
-  (transient-define-prefix casual-anddo-tmenu ()
-    "Transient menu for anddo"
-    [["anddo"
-      ("n" "new-item"          anddo-new-item)
-      ("e" "edit-item"          anddo-edit-item)
-      ("s" "change-status"          anddo-change-status)
-      ("r" "refresh-toggle-listing" anddo-toggle-listing-mode)
-      ("<RET>" "show-body"          anddo-show-body)
-      ("l" "show-body"          anddo-show-body)
-      ("D" "delete-item"          anddo-delete-item)]
-     ["Miscellaneous"
-      ("q" "quit" transient-quit-one)
-      ("Q" "Kill-buffer-window" kill-buffer-and-window)
-      ]
-     ]
-    )
-  (keymap-set anddo-mode-map "C-;" #'casual-anddo-tmenu)
-  )

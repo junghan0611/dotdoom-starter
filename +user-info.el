@@ -18,12 +18,7 @@
 ;; There are two ways to load a theme. Both assume the theme is installed and
 ;; available. You can either set `doom-theme' or manually load a theme with the
 ;; `load-theme' function. This is the default:
-
-(when (display-graphic-p)
-  (setq modus-themes-variable-pitch-ui t
-        modus-themes-org-blocks t
-        modus-themes-bold-constructs t)
-  (setq doom-theme 'modus-operandi))
+(setq doom-theme 'doom-homage-white)
 
 ;;;; directory path
 
@@ -90,10 +85,8 @@
 
 ;; bib
 (setq citar-notes-paths (list (concat user-org-directory "bib/")))
-;; (defvar config-bibfiles (list (concat user-org-directory "bib/zotero-biblatex.bib")))
 (defvar config-bibfiles (list
-                         (concat user-org-directory "resources/zotero-my-library.bib")
-                         (concat user-org-directory "resources/zotero-group-junghanacs.bib")))
+                         (concat user-org-directory "resources/zotero-my-library.bib")))
 
 ;; elisp-demos
 (setq elisp-demos-user-files (list (concat org-directory

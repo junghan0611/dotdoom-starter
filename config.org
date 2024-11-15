@@ -314,7 +314,7 @@ All necessary settings are therefore set by hand as part of this configuration f
        (popup +defaults) ; tame sudden yet inevitable temporary windows
        treemacs          ; a project drawer, like neotree but cooler
        vc-gutter         ; vcs diff in the fringe
-       vi-tilde-fringe   ; fringe tildes to mark beyond EOB
+       ;; vi-tilde-fringe   ; fringe tildes to mark beyond EOB
        (window-select +numbers) ; visually switch windows
        workspaces        ; tab emulation, persistence & separate workspaces
        ;; zen            ; distraction-free coding or writing
@@ -343,7 +343,7 @@ All necessary settings are therefore set by hand as part of this configuration f
        (:if (not (memq system-type '(cygwin windows-nt ms-dos))) vterm) ; the best terminal emulation in Emacs
 
        :checkers
-       ;; (syntax +flymake)
+       (syntax +flymake)
        ;; spell +flyspell ; +hunspell - tasing you for misspelling mispelling
        ;; grammar           ; tasing grammar mistake every you make
        :tools
@@ -353,7 +353,7 @@ All necessary settings are therefore set by hand as part of this configuration f
 
        (eval +overlay)     ; run code, run (also, repls)
        lookup
-       ;; (lsp +eglot) ; +peek
+       (lsp +eglot) ; +peek
 
        magit  ; +forge a git porcelain for Emacs
 
@@ -371,10 +371,11 @@ All necessary settings are therefore set by hand as part of this configuration f
        tty                 ; improve the terminal Emacs experience
 
        :lang
-       ;; data              ; config/data formats
+       (clojure +lsp) ; java with a lisp
+       data              ; config/data formats
        emacs-lisp        ; drown in parentheses
-       ;; json  ; At least it ain't XML
-       ;; (javascript +lsp) ;; all(hope(abandon(ye(who(enter(here))))))
+       json  ; At least it ain't XML
+       (javascript +lsp) ;; all(hope(abandon(ye(who(enter(here))))))
        (latex +cdlatex +latexmk)    ; writing papers in Emacs has never been so fun
        markdown          ; writing docs for people to ignore
        (org                         ; organize your plain life in plain text
@@ -390,8 +391,10 @@ All necessary settings are therefore set by hand as part of this configuration f
         )                     ; wander around notes
        ;; sh                ; she sells {ba,z,fi}sh shells on the C xor
        ;; (python +lsp) ; +conda beautiful is better than ugly
-       ;; web ; the tubes
-       ;; yaml ; JSON, but readable
+       racket ; a DSL for DSLs
+       (scheme +mit) ;; +racket ; a fully conniving family of lisps
+       web ; the tubes
+       yaml ; JSON, but readable
 
        ;; :email
        ;;(mu4e +org +gmail)
@@ -498,8 +501,13 @@ All necessary settings are therefore set by hand as part of this configuration f
 (package! org-rainbow-tags)
 (package! org-glossary :recipe (:host github :repo "tecosaur/org-glossary" :files ("*.el" "*.org" "*.texi")))
 (package! ten :recipe (:host sourcehut :repo "nobiot/ten")) ;; https://git.sr.ht/~nobiot/ten
-(package! anddo :recipe (:host github :repo "junghan0611/anddo.el"))
 (package! org-fragtog)          ;; interactive toggling of inline latex formulas
+(package! org-transclusion)
+
+;;;; code
+
+;; (package! aggressive-indent)
+;; (package! geiser-mit :recipe (:host github :repo "emacsmirror/geiser-mit"))
 
 ;;;; tools
 
@@ -571,12 +579,7 @@ CLOSED: [2024-10-21 Mon 20:36]
 ;; There are two ways to load a theme. Both assume the theme is installed and
 ;; available. You can either set `doom-theme' or manually load a theme with the
 ;; `load-theme' function. This is the default:
-
-(when (display-graphic-p)
-  (setq modus-themes-variable-pitch-ui t
-        modus-themes-org-blocks t
-        modus-themes-bold-constructs t)
-  (setq doom-theme 'modus-operandi))
+(setq doom-theme 'doom-homage-white)
 
 ;;;; directory path
 
@@ -643,10 +646,8 @@ CLOSED: [2024-10-21 Mon 20:36]
 
 ;; bib
 (setq citar-notes-paths (list (concat user-org-directory "bib/")))
-;; (defvar config-bibfiles (list (concat user-org-directory "bib/zotero-biblatex.bib")))
 (defvar config-bibfiles (list
-                         (concat user-org-directory "resources/zotero-my-library.bib")
-                         (concat user-org-directory "resources/zotero-group-junghanacs.bib")))
+                         (concat user-org-directory "resources/zotero-my-library.bib")))
 
 ;; elisp-demos
 (setq elisp-demos-user-files (list (concat org-directory
@@ -708,7 +709,7 @@ CLOSED: [2024-10-21 Mon 20:36]
     (load-file per-machine-filename)))
 #+end_src
 
-** configuration
+** basic configuration
 *** general
 #+begin_src emacs-lisp :tangle config.el
 
@@ -958,8 +959,6 @@ CLOSED: [2024-10-21 Mon 20:36]
 #+end_src
 ** completion
 
-*** corfu
-
 #+begin_src emacs-lisp :tangle config.el
 
 ;;; completion
@@ -971,11 +970,11 @@ CLOSED: [2024-10-21 Mon 20:36]
 
 (after! corfu
   ;; (setq corfu-auto-delay 0.5) ; doom 0.24
-  ;; (setq corfu-auto-prefix 3) ; doom 2
-  ;; (setq corfu-preselect 'valid) ; doom 'prompt
-  ;; ;; (setq completion-cycle-threshold 3) ; doom nil
-  ;; (setq tab-always-indent t) ; for jump-out-of-pair - doom 'complete
-  ;; (setq +corfu-want-minibuffer-completion nil) ; doom t
+  (setq corfu-auto-prefix 3) ; doom 2
+  (setq corfu-preselect 'valid) ; doom 'prompt
+  (setq completion-cycle-threshold 3) ; doom nil
+  (setq tab-always-indent t) ; for jump-out-of-pair - doom 'complete
+  (setq +corfu-want-minibuffer-completion nil) ; doom t
 
   (setq +corfu-want-tab-prefer-expand-snippets t) ; 2024-11-06
   (setq +corfu-want-tab-prefer-navigating-snippets t)
@@ -998,25 +997,6 @@ CLOSED: [2024-10-21 Mon 20:36]
   )
 
 #+end_src
-*** vertico
-[2024-10-21 Mon 20:42]
-
-#+begin_src emacs-lisp :tangle config.el
-;;;; vertico
-
-#+end_src
-
-*** consult
-
-#+begin_src emacs-lisp :tangle config.el
-;;;; consult
-
-(defun my/consult-fd ()
-  (interactive)
-  (consult-fd "."))
-
-#+end_src
-
 
 ** editing
 *** evil
@@ -1092,8 +1072,8 @@ CLOSED: [2024-10-21 Mon 20:36]
   (with-eval-after-load 'evil-org
     ;; (evil-define-key 'insert 'evil-org-mode-map (kbd "C-d") 'delete-forward-char)
     (evil-define-key 'normal 'evil-org-mode-map "x" 'delete-forward-char)
-    (evil-define-key 'insert 'evil-org-mode-map (kbd "C-k") 'org-kill-line)
-    (evil-define-key 'insert 'org-mode-map (kbd "C-k") 'org-kill-line)
+    ;; (evil-define-key 'insert 'evil-org-mode-map (kbd "C-k") 'org-kill-line)
+    ;; (evil-define-key 'insert 'org-mode-map (kbd "C-k") 'org-kill-line)
     (evil-define-key 'normal 'evil-org-mode-map "X" 'delete-backward-char))
   )
 
@@ -1206,7 +1186,7 @@ CLOSED: [2024-10-21 Mon 20:36]
 #+begin_src emacs-lisp :tangle config.el
 ;;;; org
 
-(require 'ob-tangle)
+;; (require 'ob-tangle)
 
 (after! org
   (message "after org - config")
@@ -1215,6 +1195,9 @@ CLOSED: [2024-10-21 Mon 20:36]
   ;; (load-file (concat doom-user-dir "lisp/org-config.el"))
   ;; (+org-init-keybinds-h) -> 2024-06-01 여기 키바인딩 관련 부분 뒤에서 다시 잡아줌
   ;; (setq org-attach-use-inheritance nil) ; selective
+
+  (setq org-id-locations-file
+        (file-name-concat org-directory (concat "." system-name "-orgids"))) ; ".org-id-locations"))
 
   ;; overide here! important
   (setq org-insert-heading-respect-content nil) ; doom t
@@ -1627,6 +1610,21 @@ CLOSED: [2024-10-21 Mon 20:36]
   :after org
   :hook (org-mode . org-fragtog-mode))
 #+end_src
+**** org-transclusion
+
+#+begin_src emacs-lisp :tangle config.el
+(use-package! org-transclusion
+  :after org
+  :defer 2
+  :commands org-transclusion-mode
+  :config
+  (set-face-attribute 'org-transclusion-fringe nil :foreground "light green" :background "lime green")
+  )
+
+(after! org-transclusion
+  (add-to-list 'org-transclusion-extensions 'org-transclusion-indent-mode)
+  (require 'org-transclusion-indent-mode))
+#+end_src
 *** DONT org-latex-preview :noexport:
 CLOSED: [2024-10-21 Mon 20:38]
 
@@ -1741,11 +1739,7 @@ rm -Rf eln-cache
   (setq denote-excluded-directories-regexp "screenshot")
 
   (setq denote-org-front-matter
-        ":PROPERTIES:
-:ID: %4$s
-:CREATED: %2$s
-:END:
-,#+title:      %1$s
+        "#+title:      %1$s
 ,#+filetags:   %3$s
 ,#+date:       %2$s
 ,#+identifier: %4$s
@@ -1756,15 +1750,7 @@ rm -Rf eln-cache
 
 ,#+hugo: more
 
- ,* #Keyword :noexport:
-,#+BEGIN: denote-links :regexp \"000\" :excluded-dirs-regexp nil :sort-by-component nil :reverse-sort nil :id-only nil :include-date nil
-,#+END:
-
- ,* #Backlink :noexport:
-,#+BEGIN: denote-backlinks :excluded-dirs-regexp nil :sort-by-component nil :reverse-sort nil :id-only nil :this-heading-only nil :include-date nil
-,#+END:
-
- ,* Related-Notes
+,* Related-Notes
 ,#+print_bibliography:
 \n")
 
@@ -1857,21 +1843,6 @@ rm -Rf eln-cache
   ;; (setq ten-tags-file-default "~/sync/emacs/git/default/ten/ten-TAGS")
   )
 #+end_src
-*** anddo
-#+begin_src emacs-lisp :tangle config.el
-
-(progn
-  (require 'anddo)
-  (defun anddo--create-tables ()
-    (unless anddo--db
-      (setq-local anddo--db
-                  (sqlite-open
-                   (expand-file-name "resources/anddo.sqlite" org-directory)))
-      (sqlite-execute anddo--db "create table if not exists item (id integer primary key, status text, subject text, body text, entry_time text, modification_time text)")))
-  )
-
-#+end_src
-
 ** llm
 *** gptel
 #+begin_src emacs-lisp :tangle config.el
@@ -2009,6 +1980,7 @@ rm -Rf eln-cache
 ** checker
 *** flymake
 #+begin_src emacs-lisp :tangle config.el
+;;;; flymake
 
 (remove-hook! (prog-mode text-mode) #'flymake-mode)
 
@@ -2086,7 +2058,45 @@ rm -Rf eln-cache
   )
 
 #+end_src
-** core functions
+
+** coding
+
+#+begin_src emacs-lisp :tangle config.el
+;;;; scheme with geiser-mit
+
+(use-package! geiser-mit
+  :config
+  (setenv "MITSCHEME_HEAP_SIZE" "100000") ; 16384
+  (setenv "MITSCHEME_LIBRARY_PATH" "/usr/lib/x86_64-linux-gnu/mit-scheme")
+  (setenv "MITSCHEME_BAND" "mechanics.com")
+
+  ;; (setenv "DISPLAY" ":0")
+  (setq geiser-active-implementations '(mit))
+  (setq geiser-mit-binary "/usr/bin/mit-scheme")
+  )
+#+end_src
+
+** user functions
+
+#+begin_src emacs-lisp :tangle config.el
+;;;; core fuctions
+
+;;;###autoload
+(defun my/consult-fd ()
+  (interactive)
+  (consult-fd "."))
+
+;;;###autoload
+(defun my/org-store-link-id-optional (&optional arg)
+  "Stores a link, reversing the value of `org-id-link-to-org-use-id'.
+If it's globally set to create the ID property, then it wouldn't,
+and if it is set to nil, then it would forcefully create the ID."
+  (interactive "P")
+  (let ((org-id-link-to-org-use-id (not org-id-link-to-org-use-id)))
+    (org-store-link arg :interactive)))
+
+#+end_src
+
 ** terminal and termux
 
 #+begin_src emacs-lisp :tangle config.el
@@ -2189,6 +2199,20 @@ rm -Rf eln-cache
 ** keybindings
 *** global map
 #+begin_src emacs-lisp :tangle config.el
+
+;;; global-unset-key
+
+(global-unset-key (kbd "<f2>"))
+
+(global-unset-key (kbd "M-a"))  ; unset forward-sentence -> use ')'
+(global-unset-key (kbd "M-c"))  ; unset capitalize-word
+(global-unset-key (kbd "M-e"))  ; unset backward-sentence -> use '('
+
+;;; Emacs Keys
+
+(global-set-key (kbd "C-M-;") 'pp-eval-expression) ; unbinded key
+(global-set-key (kbd "C-M-'") 'eldoc-toggle) ; unbinded key
+
 ;;;; embark
 
 (global-set-key (kbd "M-y") #'consult-yank-pop) ; yank-pop
@@ -2198,6 +2222,7 @@ rm -Rf eln-cache
 (global-set-key (kbd "C-h B") 'embark-bindings) ;; alternative for `describe-bindings'
 
 (global-set-key (kbd "C-c l") 'org-store-link)
+(global-set-key (kbd "C-c L") 'my/org-store-link-id-optional)
 (global-set-key (kbd "C-c i") 'org-insert-link)
 (global-set-key (kbd "C-c a") 'org-agenda)
 
@@ -2208,10 +2233,34 @@ rm -Rf eln-cache
 
 #+end_src
 *** denote-map
+
 #+begin_src emacs-lisp :tangle config.el
+
+(defvar-keymap ews-bibliography-map
+  :doc "Bibliograpic functions keymap."
+
+  "b" #'org-cite-insert
+  "c" #'citar-open
+  "d" #'citar-dwim
+  "e" #'citar-open-entry
+
+  "a" #'citar-denote-add-citekey
+  "1" #'citar-denote-find-citation ;; grep [cite @xxx]
+
+  "i" #'citar-insert-citation
+  "n" #'citar-create-note
+  "o" #'citar-open-note
+  "O" #'citar-open-links
+
+  "f" #'citar-denote-find-reference
+  "l" #'citar-denote-link-reference
+  ;; "e" #'citar-denote-open-reference-entry
+  ;; "k" #'citar-denote-remove-citekey
+  )
 
 (defvar-keymap ews-denote-map
   :doc "Denote keybindings."
+  "b" ews-bibliography-map
   "B" #'denote-org-extras-backlinks-for-heading
   "d" #'denote-create-note
 
@@ -2241,6 +2290,7 @@ rm -Rf eln-cache
   "SPC" #'org-journal-open-current-journal-file
 
   "j" #'org-journal-new-entry
+  "u" #'org-transclusion-mode
 
   "k" #'denote-rename-file-keywords
   "z" #'denote-rename-file-signature
@@ -2249,6 +2299,7 @@ rm -Rf eln-cache
   "M-b" #'denote-find-backlink
   )
 (keymap-set global-map "C-c n" ews-denote-map)
+(keymap-set global-map "M-e" ews-denote-map) ; ews-denote-map
 
 #+end_src
 *** doom key
@@ -2288,10 +2339,13 @@ rm -Rf eln-cache
 ;;;; 'n' +notes denote
 
 (map! :leader
-      :desc "+default/org-notes-search"     "n g" #'+default/org-notes-search ; grep
-      :desc "ews-denote-map"                "n d" ews-denote-map
-      :desc "org-journal-open-today" "n SPC" #'org-journal-open-current-journal-file
-      )
+      (:prefix ("n" . "notes")
+               "g" #'+default/org-notes-search ; grep
+               "d" ews-denote-map
+               "SPC" #'org-journal-open-current-journal-file
+               "L" #'my/org-store-link-id-optional
+               "u" #'org-transclusion-mode
+               ))
 
 ;;;; mode-map
 
@@ -2299,6 +2353,7 @@ rm -Rf eln-cache
       :i "TAB" #'cdlatex-tab)
 
 (map! (:map org-mode-map
+       "<f12>" #'org-transclusion-mode
        :ni "C-c H" #'org-insert-heading
        :ni "C-c S" #'org-insert-subheading
        :i "C-n" #'next-line
@@ -2321,12 +2376,12 @@ rm -Rf eln-cache
             "C-p" #'org-journal-search-previous))
 
 (map! (:map outline-mode-map
-            :n "C-n" #'outline-next-heading
-            :n "C-p" #'outline-previous-heading
-            :i "C-n" #'next-line
-            :i "C-p" #'previous-line
-            :n "C-S-p" #'outline-up-heading
-            :n "zu" #'outline-up-heading)
+       :n "C-n" #'outline-next-heading
+       :n "C-p" #'outline-previous-heading
+       :i "C-n" #'next-line
+       :i "C-p" #'previous-line
+       :n "C-S-p" #'outline-up-heading
+       :n "zu" #'outline-up-heading)
       )
 #+end_src
 * useful-keybindings
@@ -2336,28 +2391,5 @@ rm -Rf eln-cache
 #+begin_src emacs-lisp :tangle config.el
 ;;; user-keybindings
 
-;;;; transient: casual-anddo
-
-(when (locate-library "anddo")
-  (require 'anddo)
-
-  (transient-define-prefix casual-anddo-tmenu ()
-    "Transient menu for anddo"
-    [["anddo"
-      ("n" "new-item"          anddo-new-item)
-      ("e" "edit-item"          anddo-edit-item)
-      ("s" "change-status"          anddo-change-status)
-      ("r" "refresh-toggle-listing" anddo-toggle-listing-mode)
-      ("<RET>" "show-body"          anddo-show-body)
-      ("l" "show-body"          anddo-show-body)
-      ("D" "delete-item"          anddo-delete-item)]
-     ["Miscellaneous"
-      ("q" "quit" transient-quit-one)
-      ("Q" "Kill-buffer-window" kill-buffer-and-window)
-      ]
-     ]
-    )
-  (keymap-set anddo-mode-map "C-;" #'casual-anddo-tmenu)
-  )
 
 #+end_src
