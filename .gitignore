@@ -6,3 +6,4 @@ custom.el
 flycheck_config.el
 local/*
 per-machine.el
+tempel-templates.eld
