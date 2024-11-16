@@ -518,6 +518,12 @@
   ;; (+org-init-keybinds-h) -> 2024-06-01 여기 키바인딩 관련 부분 뒤에서 다시 잡아줌
   ;; (setq org-attach-use-inheritance nil) ; selective
 
+  (progn
+    (setq org-capture-bookmark nil)
+    (setq org-edit-src-content-indentation 0) ; default 2
+
+    )
+
   (setq org-id-locations-file
         (file-name-concat org-directory (concat "." system-name "-orgids"))) ; ".org-id-locations"))
 
@@ -646,8 +652,9 @@
                                   t (* org-clock-idle-time 20) ; 60
                                   (lambda ()
                                     (unless (org-clocking-p)
-                                      (alert "Do you forget to clock-in?"
-                                             :title "Org Clock")))))
+                                      (when (fboundp 'alert)
+                                        (alert "Do you forget to clock-in?"
+                                               :title "Org Clock"))))))
   ;; (org-clock-auto-clockout-insinuate) ; auto-clockout
   ;; modeline 에 보이는 org clock 정보가 너무 길어서 줄임
   (setq org-clock-string-limit 30) ; default 0
@@ -1223,6 +1230,10 @@
   ;; (add-hook 'org-mode-hook 'outli-mode)
   )
 
+;;;; modus-themes
+
+(setq modus-themes-region (quote (bg-only no-extend)))
+
 ;;;; flymake
 
 (remove-hook! (prog-mode text-mode) #'flymake-mode)
@@ -1312,6 +1323,27 @@
 (defun my/consult-fd ()
   (interactive)
   (consult-fd "."))
+
+;; spacemacs/layers/+completion/compleseus/funcs.el
+;;;###autoload
+(defun my/compleseus-search (use-initial-input initial-directory)
+  (let* ((initial-input
+          (if use-initial-input
+              (doom-pcre-quote ;; rxt-quote-pcre
+               (if (region-active-p)
+                   (buffer-substring-no-properties
+                    (region-beginning) (region-end))
+                 (or (thing-at-point 'symbol t) ""))) ""))
+         (default-directory
+          (or initial-directory
+              (read-directory-name "Start from directory: "))))
+    (consult-ripgrep default-directory initial-input)))
+
+;;;###autoload
+(defun +default/search-cwd-symbol-at-point ()
+  "Search current folder."
+  (interactive)
+  (my/compleseus-search t default-directory))
 
 ;;;###autoload
 (defun my/org-store-link-id-optional (&optional arg)
@@ -1522,6 +1554,8 @@ and if it is set to nil, then it would forcefully create the ID."
       ;; "." nil
       ;; "," nil
       :desc "M-x" "SPC" #'execute-extended-command
+      :desc "Search for symbol in cwd" "(" #'+default/search-cwd-symbol-at-point
+
       ;; :desc "Find file in project" "." #'projectile-find-file
       ;; :desc "Find file in cwd" "," #'my/consult-fd
       ;; :desc "consult-buffer" "`" #'consult-buffer
@@ -1587,5 +1621,36 @@ and if it is set to nil, then it would forcefully create the ID."
        :n "C-S-p" #'outline-up-heading
        :n "zu" #'outline-up-heading)
       )
+
+;; BUG Reset Here! modules/config/default/+emacs-bindings.el
+(map!
+ (:after smartparens
+  :map smartparens-mode-map
+
+  ;; Doom's Default - /modules/config/default/+emacs-bindings.el
+  "C-M-a"           #'sp-beginning-of-sexp
+  "C-M-e"           #'sp-end-of-sexp
+  "C-M-f"           #'sp-forward-sexp
+  "C-M-b"           #'sp-backward-sexp
+  "C-M-n"           #'sp-next-sexp
+  "C-M-p"           #'sp-previous-sexp
+  "C-M-u"           #'sp-up-sexp
+  "C-M-d"           #'sp-down-sexp
+  "C-M-k"           #'sp-kill-sexp
+  "C-M-t"           #'sp-transpose-sexp
+  "C-M-<backspace>" #'sp-splice-sexp
+
+  "C-<right>" #'sp-forward-slurp-sexp
+  "C-<left>" #'sp-forward-barf-sexp
+  "M-<left>" #'sp-backward-slurp-sexp
+  "M-<right>" #'sp-backward-barf-sexp
+
+  "M-<up>"  #'sp-splice-sexp-killing-backward
+  "M-<down>" #'sp-splice-sexp-killing-forward
+
+  "C-c (" #'sp-wrap-round
+  ;; "C-c [" #'sp-wrap-square ; conflict org-mode-map
+  ;; "C-c {" #'sp-wrap-curly
+  ))
 
 ;;; user-keybindings
