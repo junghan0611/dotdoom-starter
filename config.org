@@ -93,7 +93,8 @@ StartupWMClass=DoomEmacs
 
 * 히스토리
 - 2024-09-12 Denote 까지 지원. 핵심 전략 서술.
-- 2024-10-03 org-latex-preview-auto-mode
+- 2024-10-03 org-latex-preview-auto-mode for test
+- 2024-11-16 version 0.1 - eglot
 
 * Doom config file overview
 
@@ -390,7 +391,7 @@ All necessary settings are therefore set by hand as part of this configuration f
         +journal
         )                     ; wander around notes
        ;; sh                ; she sells {ba,z,fi}sh shells on the C xor
-       ;; (python +lsp) ; +conda beautiful is better than ugly
+       (python +lsp) ; +conda beautiful is better than ugly
        racket ; a DSL for DSLs
        (scheme +mit) ;; +racket ; a fully conniving family of lisps
        web ; the tubes
@@ -400,10 +401,10 @@ All necessary settings are therefore set by hand as part of this configuration f
        ;;(mu4e +org +gmail)
        ;; (notmuch +org)
 
-       ;; :app
+       :app
        ;; calendar
        ;; emms
-       ;; (rss +org +youtube)        ; emacs as an RSS reader
+       (rss +org +youtube)        ; emacs as an RSS reader
 
        :config
        ;; literate ; use manually
@@ -556,7 +557,7 @@ CLOSED: [2024-10-21 Mon 20:36]
 
 #+end_src
 
-* +user-info.el
+* =+user-info.el=
 
 #+begin_src emacs-lisp :tangle +user-info.el
 ;;; $DOOMDIR/+user-info.el -*- lexical-binding: t; -*-
@@ -676,7 +677,7 @@ CLOSED: [2024-10-21 Mon 20:36]
               "\n"))
 #+end_src
 
-* config.el
+* =config.el=
 
 ** load +user-info
 #+begin_src emacs-lisp :tangle config.el
@@ -760,7 +761,22 @@ CLOSED: [2024-10-21 Mon 20:36]
 
 #+end_src
 *** input-method with hangul
+
+Font test: " & ' ∀ ∃ ∅ ∈ ∉ ∏ ∑ √ ∞ ∧ ∨ ∩ ∪ ∫ ² ³ µ · × ∴ ∼
+≅ ≈ ≠ ≡ ≤ ≥ < > ⊂ ⊃ ⊄ ⊆ ⊇ ⊥ ∂ ∇ ∈ ∝ ⊕ ⊗ ← → ↑ ↓ ↔ ⇐ ⇒ ⇔
+□ ■ | © ¬ ± ° · ˜ Γ Δ α β γ δ ε φ ∀, ∃, ￢(~), ∨, ∧,⊂, ∈,
+⇒, ⇔ 𝑀＜1
+𝑻𝑼𝑽𝗔𝗕𝗖𝗗 𝞉𝞩𝟃 ϑϕϰ ⊰⊱⊲⊳⊴⊵⫕ 𝚢𝚣𝚤𝖿𝗀𝗁𝗂
+
 #+begin_src emacs-lisp :tangle config.el
+;;;; Font Test:
+
+;; Font test: " & ' ∀ ∃ ∅ ∈ ∉ ∏ ∑ √ ∞ ∧ ∨ ∩ ∪ ∫ ² ³ µ · × ∴ ∼
+;; ≅ ≈ ≠ ≡ ≤ ≥ < > ⊂ ⊃ ⊄ ⊆ ⊇ ⊥ ∂ ∇ ∈ ∝ ⊕ ⊗ ← → ↑ ↓ ↔ ⇐ ⇒ ⇔
+;; □ ■ | © ¬ ± ° · ˜ Γ Δ α β γ δ ε φ ∀, ∃, ￢(~), ∨, ∧,⊂, ∈,
+;; ⇒, ⇔ 𝑀＜1
+;; 𝑻𝑼𝑽𝗔𝗕𝗖𝗗 𝞉𝞩𝟃 ϑϕϰ ⊰⊱⊲⊳⊴⊵⫕ 𝚢𝚣𝚤𝖿𝗀𝗁𝗂
+
 ;;; Input-method +Hangul
 
 ;; +------------+------------+
@@ -819,6 +835,8 @@ CLOSED: [2024-10-21 Mon 20:36]
 
     (when (display-graphic-p) ; gui
       (set-fontset-font t 'unicode (font-spec :family "Symbola") nil 'prepend) ;; 2024-09-16 테스트 -- 𝑀＜1
+      (set-fontset-font t 'mathematical (font-spec :family "Symbola") nil 'prepend) ; best
+
       ;; (set-fontset-font t 'emoji (font-spec :family "Apple Color Emoji") nil 'prepend)
       (set-fontset-font t 'emoji (font-spec :family "Noto Color Emoji") nil)
       (set-fontset-font t 'emoji (font-spec :family "Noto Emoji") nil 'prepend) ; Top
@@ -2026,6 +2044,25 @@ rm -Rf eln-cache
       modus-themes-region '(bg-only no-extend)
       modus-themes-org-blocks 'gray-background)
 #+end_src
+
+*** doom-themes
+
+#+begin_src emacs-lisp :tangle config.el
+;;;; doom-themes
+
+(setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
+      doom-themes-enable-italic nil) ; if nil, italics is universally disabled
+(setq doom-themes-to-toggle
+      (let ((hr (nth 2 (decode-time))))
+        (if (or (< hr 6) (< 19 hr)) ; between 8 PM and 7 AM
+            '(doom-one doom-homage-white) ; load dark theme first
+          '(doom-homage-white doom-one))))
+(setq doom-theme (car doom-themes-to-toggle))
+
+(defun my/doom-themes-toggle () (interactive) (load-theme doom-theme t))
+(add-hook 'doom-after-reload-hook #'my/doom-themes-toggle)
+#+end_src
+
 ** checker
 *** flymake
 #+begin_src emacs-lisp :tangle config.el
@@ -2107,6 +2144,21 @@ rm -Rf eln-cache
   )
 
 #+end_src
+** app
+*** elfeed
+#+begin_src emacs-lisp :tangle config.el
+
+;; (setq rmh-elfeed-org-files '("path/to/your/elfeed/file.org")) ; default ~/org/elfeed.org
+;; gc copy-link
+(after! elfeed
+  ;; +rss-enable-sliced-images ;  default t
+  (setq elfeed-search-filter "") ; "@6-months-ago") ;;  "@1-month-ago +unread"
+  )
+
+(after! elfeed-tube
+  (require 'elfeed-tube)
+  (setq elfeed-tube-captions-languages '("en" "ko" "englsh (auto generated)")))
+#+end_src
 
 ** coding
 
@@ -2125,7 +2177,7 @@ rm -Rf eln-cache
   )
 #+end_src
 
-** user functions
+** user-functions
 
 #+begin_src emacs-lisp :tangle config.el
 ;;;; core fuctions
@@ -2212,6 +2264,60 @@ and if it is set to nil, then it would forcefully create the ID."
     (term-keys-mode t)))
 #+end_src
 
+** transient menu with =casual= suite
+
+#+begin_src emacs-lisp :tangle config.el
+;;;; transient : casual-suite
+
+(require 'casual-suite)
+
+(require 'casual-calc)
+(keymap-set calc-mode-map "<f2>" #'casual-calc-tmenu)
+(keymap-set calc-mode-map "C-;" #'casual-calc-tmenu)
+
+(keymap-set dired-mode-map "<f2>" #'casual-dired-tmenu)
+(keymap-set dired-mode-map "C-;" #'casual-dired-tmenu)
+
+(keymap-set isearch-mode-map "<f2>" #'casual-isearch-tmenu)
+(keymap-set isearch-mode-map "C-;" #'casual-isearch-tmenu)
+
+(keymap-set ibuffer-mode-map "<f2>" #'casual-ibuffer-tmenu)
+(keymap-set ibuffer-mode-map "C-;" #'casual-ibuffer-tmenu)
+
+(require 'casual-info)
+(keymap-set Info-mode-map "<f2>" #'casual-info-tmenu)
+(keymap-set Info-mode-map "C-;" #'casual-info-tmenu)
+
+(require 'casual-re-builder) ;; optional
+(keymap-set reb-mode-map "<f2>" #'casual-re-builder-tmenu)
+(keymap-set reb-lisp-mode-map "<f2>" #'casual-re-builder-tmenu)
+(keymap-set reb-mode-map "C-;" #'casual-re-builder-tmenu)
+(keymap-set reb-lisp-mode-map "C-;" #'casual-re-builder-tmenu)
+
+(require 'casual-avy)
+;; 'M-a' backward-sentence -> '(' evil-backward-sentence-begin
+(keymap-global-set "M-a" #'casual-avy-tmenu)
+
+(require 'casual-bookmarks) ;; optional
+(keymap-set bookmark-bmenu-mode-map "<f2>" #'casual-bookmarks-tmenu)
+(keymap-set bookmark-bmenu-mode-map "C-;" #'casual-bookmarks-tmenu)
+;; (evil-define-key 'normal bookmark-bmenu-mode-map (kbd "J") 'bookmark-jump)
+(keymap-set bookmark-bmenu-mode-map "J" #'bookmark-jump)
+(easy-menu-add-item global-map '(menu-bar) casual-bookmarks-main-menu "Tools")
+
+(require 'casual-agenda)
+(keymap-set org-agenda-mode-map "C-;" #'casual-agenda-tmenu)
+;; org-agenda-clock-goto ; optional
+;; bookmark-jump ; optional
+
+(require 'casual-symbol-overlay)
+(keymap-set prog-mode-map "C-'" #'casual-symbol-overlay-tmenu)
+;; (keymap-set symbol-overlay-map "M-n" #'casual-symbol-overlay-tmenu)
+
+(require 'casual-editkit) ;
+(keymap-global-set "C-;" #'casual-editkit-main-tmenu)
+
+#+end_src
 ** keybindings
 *** global-map
 #+begin_src emacs-lisp :tangle config.el
@@ -2434,61 +2540,7 @@ and if it is set to nil, then it would forcefully create the ID."
   ))
 
 #+end_src
-** transient menu with =casual= suite
-
-#+begin_src emacs-lisp :tangle config.el
-;;;; transient : casual-suite
-
-(require 'casual-suite)
-
-(require 'casual-calc)
-(keymap-set calc-mode-map "<f2>" #'casual-calc-tmenu)
-(keymap-set calc-mode-map "C-;" #'casual-calc-tmenu)
-
-(keymap-set dired-mode-map "<f2>" #'casual-dired-tmenu)
-(keymap-set dired-mode-map "C-;" #'casual-dired-tmenu)
-
-(keymap-set isearch-mode-map "<f2>" #'casual-isearch-tmenu)
-(keymap-set isearch-mode-map "C-;" #'casual-isearch-tmenu)
-
-(keymap-set ibuffer-mode-map "<f2>" #'casual-ibuffer-tmenu)
-(keymap-set ibuffer-mode-map "C-;" #'casual-ibuffer-tmenu)
-
-(require 'casual-info)
-(keymap-set Info-mode-map "<f2>" #'casual-info-tmenu)
-(keymap-set Info-mode-map "C-;" #'casual-info-tmenu)
-
-(require 'casual-re-builder) ;; optional
-(keymap-set reb-mode-map "<f2>" #'casual-re-builder-tmenu)
-(keymap-set reb-lisp-mode-map "<f2>" #'casual-re-builder-tmenu)
-(keymap-set reb-mode-map "C-;" #'casual-re-builder-tmenu)
-(keymap-set reb-lisp-mode-map "C-;" #'casual-re-builder-tmenu)
-
-(require 'casual-avy)
-;; 'M-a' backward-sentence -> '(' evil-backward-sentence-begin
-(keymap-global-set "M-a" #'casual-avy-tmenu)
-
-(require 'casual-bookmarks) ;; optional
-(keymap-set bookmark-bmenu-mode-map "<f2>" #'casual-bookmarks-tmenu)
-(keymap-set bookmark-bmenu-mode-map "C-;" #'casual-bookmarks-tmenu)
-;; (evil-define-key 'normal bookmark-bmenu-mode-map (kbd "J") 'bookmark-jump)
-(keymap-set bookmark-bmenu-mode-map "J" #'bookmark-jump)
-(easy-menu-add-item global-map '(menu-bar) casual-bookmarks-main-menu "Tools")
-
-(require 'casual-agenda)
-(keymap-set org-agenda-mode-map "C-;" #'casual-agenda-tmenu)
-;; org-agenda-clock-goto ; optional
-;; bookmark-jump ; optional
-
-(require 'casual-symbol-overlay)
-(keymap-set prog-mode-map "C-'" #'casual-symbol-overlay-tmenu)
-;; (keymap-set symbol-overlay-map "M-n" #'casual-symbol-overlay-tmenu)
-
-(require 'casual-editkit) ;
-(keymap-global-set "C-;" #'casual-editkit-main-tmenu)
-
-#+end_src
-* useful-keybindings
+*** TODO user-key
 
 사용자 키바인딩
 

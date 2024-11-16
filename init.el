@@ -138,7 +138,7 @@
         +journal
         )                     ; wander around notes
        ;; sh                ; she sells {ba,z,fi}sh shells on the C xor
-       ;; (python +lsp) ; +conda beautiful is better than ugly
+       (python +lsp) ; +conda beautiful is better than ugly
        racket ; a DSL for DSLs
        (scheme +mit) ;; +racket ; a fully conniving family of lisps
        web ; the tubes
@@ -148,10 +148,10 @@
        ;;(mu4e +org +gmail)
        ;; (notmuch +org)
 
-       ;; :app
+       :app
        ;; calendar
        ;; emms
-       ;; (rss +org +youtube)        ; emacs as an RSS reader
+       (rss +org +youtube)        ; emacs as an RSS reader
 
        :config
        ;; literate ; use manually

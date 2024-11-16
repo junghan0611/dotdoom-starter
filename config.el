@@ -119,6 +119,14 @@
 (map! :leader (:desc "+major-mode" "m" #'my/call-localleader))
 ;; (global-set-key (kbd "M-m") #'my/call-localleader)
 
+;;;; Font Test:
+
+;; Font test: " & ' ∀ ∃ ∅ ∈ ∉ ∏ ∑ √ ∞ ∧ ∨ ∩ ∪ ∫ ² ³ µ · × ∴ ∼
+;; ≅ ≈ ≠ ≡ ≤ ≥ < > ⊂ ⊃ ⊄ ⊆ ⊇ ⊥ ∂ ∇ ∈ ∝ ⊕ ⊗ ← → ↑ ↓ ↔ ⇐ ⇒ ⇔
+;; □ ■ | © ¬ ± ° · ˜ Γ Δ α β γ δ ε φ ∀, ∃, ￢(~), ∨, ∧,⊂, ∈,
+;; ⇒, ⇔ 𝑀＜1
+;; 𝑻𝑼𝑽𝗔𝗕𝗖𝗗 𝞉𝞩𝟃 ϑϕϰ ⊰⊱⊲⊳⊴⊵⫕ 𝚢𝚣𝚤𝖿𝗀𝗁𝗂
+
 ;;; Input-method +Hangul
 
 ;; +------------+------------+
@@ -177,6 +185,8 @@
 
     (when (display-graphic-p) ; gui
       (set-fontset-font t 'unicode (font-spec :family "Symbola") nil 'prepend) ;; 2024-09-16 테스트 -- 𝑀＜1
+      (set-fontset-font t 'mathematical (font-spec :family "Symbola") nil 'prepend) ; best
+
       ;; (set-fontset-font t 'emoji (font-spec :family "Apple Color Emoji") nil 'prepend)
       (set-fontset-font t 'emoji (font-spec :family "Noto Color Emoji") nil)
       (set-fontset-font t 'emoji (font-spec :family "Noto Emoji") nil 'prepend) ; Top
@@ -1267,6 +1277,20 @@
       modus-themes-region '(bg-only no-extend)
       modus-themes-org-blocks 'gray-background)
 
+;;;; doom-themes
+
+(setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
+      doom-themes-enable-italic nil) ; if nil, italics is universally disabled
+(setq doom-themes-to-toggle
+      (let ((hr (nth 2 (decode-time))))
+        (if (or (< hr 6) (< 19 hr)) ; between 8 PM and 7 AM
+            '(doom-one doom-homage-white) ; load dark theme first
+          '(doom-homage-white doom-one))))
+(setq doom-theme (car doom-themes-to-toggle))
+
+(defun my/doom-themes-toggle () (interactive) (load-theme doom-theme t))
+(add-hook 'doom-after-reload-hook #'my/doom-themes-toggle)
+
 ;;;; flymake
 
 (remove-hook! (prog-mode text-mode) #'flymake-mode)
@@ -1336,6 +1360,17 @@
   ;; direct projectile to look for code in a specific folder.
   (setq projectile-project-search-path '("~/git"))
   )
+
+;; (setq rmh-elfeed-org-files '("path/to/your/elfeed/file.org")) ; default ~/org/elfeed.org
+;; gc copy-link
+(after! elfeed
+  ;; +rss-enable-sliced-images ;  default t
+  (setq elfeed-search-filter "") ; "@6-months-ago") ;;  "@1-month-ago +unread"
+  )
+
+(after! elfeed-tube
+  (require 'elfeed-tube)
+  (setq elfeed-tube-captions-languages '("en" "ko" "englsh (auto generated)")))
 
 ;;;; scheme with geiser-mit
 
@@ -1427,6 +1462,56 @@ and if it is set to nil, then it would forcefully create the ID."
   :config
   (unless (display-graphic-p) ; terminal
     (term-keys-mode t)))
+
+;;;; transient : casual-suite
+
+(require 'casual-suite)
+
+(require 'casual-calc)
+(keymap-set calc-mode-map "<f2>" #'casual-calc-tmenu)
+(keymap-set calc-mode-map "C-;" #'casual-calc-tmenu)
+
+(keymap-set dired-mode-map "<f2>" #'casual-dired-tmenu)
+(keymap-set dired-mode-map "C-;" #'casual-dired-tmenu)
+
+(keymap-set isearch-mode-map "<f2>" #'casual-isearch-tmenu)
+(keymap-set isearch-mode-map "C-;" #'casual-isearch-tmenu)
+
+(keymap-set ibuffer-mode-map "<f2>" #'casual-ibuffer-tmenu)
+(keymap-set ibuffer-mode-map "C-;" #'casual-ibuffer-tmenu)
+
+(require 'casual-info)
+(keymap-set Info-mode-map "<f2>" #'casual-info-tmenu)
+(keymap-set Info-mode-map "C-;" #'casual-info-tmenu)
+
+(require 'casual-re-builder) ;; optional
+(keymap-set reb-mode-map "<f2>" #'casual-re-builder-tmenu)
+(keymap-set reb-lisp-mode-map "<f2>" #'casual-re-builder-tmenu)
+(keymap-set reb-mode-map "C-;" #'casual-re-builder-tmenu)
+(keymap-set reb-lisp-mode-map "C-;" #'casual-re-builder-tmenu)
+
+(require 'casual-avy)
+;; 'M-a' backward-sentence -> '(' evil-backward-sentence-begin
+(keymap-global-set "M-a" #'casual-avy-tmenu)
+
+(require 'casual-bookmarks) ;; optional
+(keymap-set bookmark-bmenu-mode-map "<f2>" #'casual-bookmarks-tmenu)
+(keymap-set bookmark-bmenu-mode-map "C-;" #'casual-bookmarks-tmenu)
+;; (evil-define-key 'normal bookmark-bmenu-mode-map (kbd "J") 'bookmark-jump)
+(keymap-set bookmark-bmenu-mode-map "J" #'bookmark-jump)
+(easy-menu-add-item global-map '(menu-bar) casual-bookmarks-main-menu "Tools")
+
+(require 'casual-agenda)
+(keymap-set org-agenda-mode-map "C-;" #'casual-agenda-tmenu)
+;; org-agenda-clock-goto ; optional
+;; bookmark-jump ; optional
+
+(require 'casual-symbol-overlay)
+(keymap-set prog-mode-map "C-'" #'casual-symbol-overlay-tmenu)
+;; (keymap-set symbol-overlay-map "M-n" #'casual-symbol-overlay-tmenu)
+
+(require 'casual-editkit) ;
+(keymap-global-set "C-;" #'casual-editkit-main-tmenu)
 
 ;;; global-unset-key
 
@@ -1635,55 +1720,5 @@ and if it is set to nil, then it would forcefully create the ID."
   ;; "C-c [" #'sp-wrap-square ; conflict org-mode-map
   ;; "C-c {" #'sp-wrap-curly
   ))
-
-;;;; transient : casual-suite
-
-(require 'casual-suite)
-
-(require 'casual-calc)
-(keymap-set calc-mode-map "<f2>" #'casual-calc-tmenu)
-(keymap-set calc-mode-map "C-;" #'casual-calc-tmenu)
-
-(keymap-set dired-mode-map "<f2>" #'casual-dired-tmenu)
-(keymap-set dired-mode-map "C-;" #'casual-dired-tmenu)
-
-(keymap-set isearch-mode-map "<f2>" #'casual-isearch-tmenu)
-(keymap-set isearch-mode-map "C-;" #'casual-isearch-tmenu)
-
-(keymap-set ibuffer-mode-map "<f2>" #'casual-ibuffer-tmenu)
-(keymap-set ibuffer-mode-map "C-;" #'casual-ibuffer-tmenu)
-
-(require 'casual-info)
-(keymap-set Info-mode-map "<f2>" #'casual-info-tmenu)
-(keymap-set Info-mode-map "C-;" #'casual-info-tmenu)
-
-(require 'casual-re-builder) ;; optional
-(keymap-set reb-mode-map "<f2>" #'casual-re-builder-tmenu)
-(keymap-set reb-lisp-mode-map "<f2>" #'casual-re-builder-tmenu)
-(keymap-set reb-mode-map "C-;" #'casual-re-builder-tmenu)
-(keymap-set reb-lisp-mode-map "C-;" #'casual-re-builder-tmenu)
-
-(require 'casual-avy)
-;; 'M-a' backward-sentence -> '(' evil-backward-sentence-begin
-(keymap-global-set "M-a" #'casual-avy-tmenu)
-
-(require 'casual-bookmarks) ;; optional
-(keymap-set bookmark-bmenu-mode-map "<f2>" #'casual-bookmarks-tmenu)
-(keymap-set bookmark-bmenu-mode-map "C-;" #'casual-bookmarks-tmenu)
-;; (evil-define-key 'normal bookmark-bmenu-mode-map (kbd "J") 'bookmark-jump)
-(keymap-set bookmark-bmenu-mode-map "J" #'bookmark-jump)
-(easy-menu-add-item global-map '(menu-bar) casual-bookmarks-main-menu "Tools")
-
-(require 'casual-agenda)
-(keymap-set org-agenda-mode-map "C-;" #'casual-agenda-tmenu)
-;; org-agenda-clock-goto ; optional
-;; bookmark-jump ; optional
-
-(require 'casual-symbol-overlay)
-(keymap-set prog-mode-map "C-'" #'casual-symbol-overlay-tmenu)
-;; (keymap-set symbol-overlay-map "M-n" #'casual-symbol-overlay-tmenu)
-
-(require 'casual-editkit) ;
-(keymap-global-set "C-;" #'casual-editkit-main-tmenu)
 
 ;;; user-keybindings
