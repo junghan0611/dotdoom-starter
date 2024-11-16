@@ -286,12 +286,12 @@
 
 (after! which-key
   (setq
+   which-key-max-description-length 36 ; doom 27, spacemacs 36
    which-key-idle-delay 0.4
    which-key-idle-secondary-delay 0.01
   ;;  which-key-ellipsis ".."
   ;;  which-key-allow-multiple-replacements nil
   ;;  which-key-use-C-h-commands t) ; paging key maps
-  ;; (setq which-key-max-description-length 36) ; doom 27, spacemacs 36
   ))
 
 ;;;; popup-rule
@@ -1241,9 +1241,6 @@
       modus-themes-paren-match '(bold intense) ; underline
       modus-themes-region '(bg-only no-extend)
       modus-themes-org-blocks 'gray-background)
-
-(modus-themes-toggle)
-(spacious-padding-mode +1)
 
 ;;;; flymake
 
