@@ -1232,8 +1232,6 @@
 
 ;;;; modus-themes
 
-(require 'modus-themes)
-
 (setq modus-themes-bold-constructs t
       modus-themes-subtle-line-numbers t
       modus-themes-mode-line '(borderless)

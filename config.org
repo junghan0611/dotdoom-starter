@@ -1989,8 +1989,6 @@ rm -Rf eln-cache
 #+begin_src emacs-lisp :tangle config.el
 ;;;; modus-themes
 
-(require 'modus-themes)
-
 (setq modus-themes-bold-constructs t
       modus-themes-subtle-line-numbers t
       modus-themes-mode-line '(borderless)
