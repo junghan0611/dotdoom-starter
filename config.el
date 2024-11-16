@@ -1134,21 +1134,22 @@
 (setq doom-modeline-enable-word-count nil)
 ;; (setq doom-modeline-continuous-word-count-modes '(markdown-mode gfm-mod)) ; org-mode
 
-(setq doom-modeline-icon (display-graphic-p))
-(setq doom-modeline-modal-icon t)
-(setq doom-modeline-major-mode-icon t)
-(setq doom-modeline-buffer-modification-icon t)
+(after! doom-modeline
+  (setq doom-modeline-icon (display-graphic-p))
+  (setq doom-modeline-modal-icon t)
+  (setq doom-modeline-major-mode-icon t)
+  (setq doom-modeline-buffer-modification-icon t)
 
-(setq doom-modeline-height 35)
-(setq doom-modeline-bar-width 4)
+  (setq doom-modeline-height 35)
+  (setq doom-modeline-bar-width 4)
 
-(setq doom-modeline-persp-name t) ; doom nil
+  (setq doom-modeline-persp-name t) ; doom nil
 
-(setq doom-modeline-repl t)
-(setq doom-modeline-github t)
-(setq doom-modeline-lsp t)
-(setq doom-modeline-indent-info t)
-(setq doom-modeline-hud nil)
+  (setq doom-modeline-repl t)
+  (setq doom-modeline-github t)
+  (setq doom-modeline-lsp t)
+  (setq doom-modeline-indent-info t)
+  (setq doom-modeline-hud nil))
 
 ;;;; spacious-padding
 
