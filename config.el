@@ -1287,6 +1287,7 @@
             '(doom-one doom-homage-white) ; load dark theme first
           '(doom-homage-white doom-one))))
 (setq doom-theme (car doom-themes-to-toggle))
+(doom-themes-visual-bell-config)
 
 (defun my/doom-themes-toggle () (interactive) (load-theme doom-theme t))
 (add-hook 'doom-after-reload-hook #'my/doom-themes-toggle)

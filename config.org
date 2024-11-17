@@ -581,8 +581,7 @@ CLOSED: [2024-10-21 Mon 20:36]
 ;; available. You can either set `doom-theme' or manually load a theme with the
 ;; `load-theme' function. This is the default:
 
-(setq doom-theme 'doom-homage-white)
-(doom-themes-visual-bell-config)
+;; (setq doom-theme 'doom-homage-white)
 
 ;;;; directory path
 
@@ -2058,6 +2057,7 @@ rm -Rf eln-cache
             '(doom-one doom-homage-white) ; load dark theme first
           '(doom-homage-white doom-one))))
 (setq doom-theme (car doom-themes-to-toggle))
+(doom-themes-visual-bell-config)
 
 (defun my/doom-themes-toggle () (interactive) (load-theme doom-theme t))
 (add-hook 'doom-after-reload-hook #'my/doom-themes-toggle)
