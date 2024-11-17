@@ -1727,17 +1727,11 @@ rm -Rf eln-cache
   ;; (setq citar-format-reference-function 'citar-citeproc-format-reference)
   (setq citar-format-reference-function 'citar-format-reference)
 
-  (setq
-   citar-templates
-   '((main
-      .
-      "[${urldate:10}] ${author:20} ${translator:8} (${date year issued:4}) @${=key= id:12} ${title:68} ")  ; 2024-09-12 김정한
-     (suffix
-      . "${shorttitle:25} ${=type=:10} ${namea:16} ${tags keywords:*}")
-     (preview
-      .
-      "- ${author} ${year issued date:4} \"${title}\" ${translator}\n ${namea}\n ${abstract}\n ${shorttitle}")
-     (note . "#+title: ${author translator}, ${title}")))
+  (setq citar-templates
+        '((main . "[${dateadded:10}] \{${datemodified:10}\} ${author editor:20} ${translator:8} (${date year issued:4}) @${=key= id:12} ${title:68} ")  ; 2024-09-12 김정한
+          (suffix . "${shorttitle:25} ${=type=:10} ${namea:16} ${url:20} ${tags keywords:*}") ; 2024-11-17 add url
+          (preview . "${author} ${title} ${translator}\n- ${namea}\n- ${abstract}\n- ${shorttitle}") ; citar-copy-reference - ${year issued date:4}
+          (note . "#+title: ${author translator:10}, ${title}")))
 
   (add-hook 'bibtex-mode-hook 'display-line-numbers-mode)
   (setq bibtex-dialect 'biblatex)
