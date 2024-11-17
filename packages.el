@@ -102,6 +102,7 @@
 ;;;; ui
 (unpin! doom-themes)
 (package! doom-themes :recipe (:host github :repo "junghan0611/doom-themes" :branch "ko"))
+(package! standard-themes)
 (package! spacious-padding)
 (package! keycast)
 (package! outli :recipe (:host github :repo "jdtsmith/outli" :files ("*.el")))

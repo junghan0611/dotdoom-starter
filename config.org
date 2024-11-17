@@ -474,6 +474,7 @@ All necessary settings are therefore set by hand as part of this configuration f
 ;;;; ui
 (unpin! doom-themes)
 (package! doom-themes :recipe (:host github :repo "junghan0611/doom-themes" :branch "ko"))
+(package! standard-themes)
 (package! spacious-padding)
 (package! keycast)
 (package! outli :recipe (:host github :repo "jdtsmith/outli" :files ("*.el")))
@@ -2036,6 +2037,15 @@ rm -Rf eln-cache
       modus-themes-paren-match '(bold intense) ; underline
       modus-themes-region '(bg-only no-extend)
       modus-themes-org-blocks 'gray-background)
+#+end_src
+
+*** standard-themes
+
+#+begin_src emacs-lisp :tangle config.el
+;;;; standard-themes
+
+(use-package! standard-themes)
+
 #+end_src
 
 *** doom-themes

@@ -1271,6 +1271,10 @@
       modus-themes-region '(bg-only no-extend)
       modus-themes-org-blocks 'gray-background)
 
+;;;; standard-themes
+
+(use-package! standard-themes)
+
 ;;;; doom-themes
 
 (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
