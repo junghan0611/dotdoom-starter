@@ -1955,7 +1955,31 @@ rm -Rf eln-cache
 ;;;; gptel
 
 (use-package! gptel
-  :defer t)
+  ;; OPTIONAL configuration
+  :config
+  (setq gptel-default-mode 'org-mode)
+  (setq gptel-temperature 0.3) ; gptel 1.0, Perplexity 0.2
+  (setq
+   gptel-model   'grok-beta
+   gptel-backend
+   (gptel-make-openai "xAI"           ;Any name you want
+     :host "api.x.ai"
+     :key user-xai-api-key
+     :endpoint "/v1/chat/completions"
+     :stream t
+     :models '(grok-beta)))
+  (gptel-make-openai "Perplexity"
+    :host "api.perplexity.ai"
+    :key user-perplexity-api-key
+    :endpoint "/chat/completions"
+    :stream t
+    :models '(;; has many more, check perplexity.ai
+              "llama-3.1-70b-instruct"
+              "llama-3.1-sonar-large-128k-chat"
+              "llama-3.1-sonar-small-128k-chat"
+              "llama-3.1-8b-instruct"
+              ))
+  )
 #+end_src
 ** ui
 
