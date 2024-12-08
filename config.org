@@ -80,6 +80,66 @@ StartupWMClass=DoomEmacs
 
 ** TODO termux
 
+
+** Reproducible information
+This configuration is continuingly being improved. I build my own Emacs from
+source in order to take advantage of some experimental features. There are also
+=(packages! ...)= calls to external Emacs packages that are unpinned to any
+specific version. As such, there might be incompabilities if one blindly copies
+codes from this configurations. Although I'll try to document which features are
+based on developing softwares and are likely to be changed in the future, it is
+inevitable that some bits of information are going to fall through the cracks.
+
+In this section, I reiterate the relevant info about the version of the software
+I'm using here, in case someone finds this infomation useful. Here's my current
+build of Emacs:
+
+#+BEGIN_SRC emacs-lisp :exports output :tangle no :eval t
+(emacs-version)
+#+END_SRC
+
+#+RESULTS:
+: GNU Emacs 30.0.92 (build 1, x86_64-pc-linux-gnu, GTK+ Version 3.24.41, cairo version 1.18.0)
+:  of 2024-11-22
+
+: GNU Emacs 29.4.50 (build 2, x86_64-pc-linux-gnu, GTK+ Version 3.24.41, cairo version 1.18.0)
+:  of 2024-09-16
+
+: GNU Emacs 29.1.50 (build 2, x86_64-pc-linux-gnu, GTK+ Version 3.24.37, cairo version 1.16.0)
+:  of 2023-09-13
+
+: GNU Emacs 29.0.90 (build 2, x86_64-pc-linux-gnu, GTK+ Version 3.24.33, cairo version 1.16.0)
+:  of 2023-04-16
+
+: GNU Emacs 29.0.60 (build 2, x86_64-pc-linux-gnu, GTK+ Version 3.24.33, cairo version 1.16.0)
+:  of 2023-02-23
+
+This Emacs is built with the following configuration options:
+
+#+BEGIN_SRC emacs-lisp :exports output :tangle no :eval t
+system-configuration-options
+#+END_SRC
+
+#+RESULTS:
+
+- 29.4.5
+: --prefix=/usr/ --with-native-compilation --with-json --without-pop --with-gnutls --without-mailutils --with-sqlite3 --with-rsvg --with-png --with-jpeg --with-tiff --with-imagemagick --without-xim --with-xwidgets --with-x-toolkit=gtk3 --with-tree-sitter --with-cairo --with-lcms2 --with-modules '--program-transform-name=s/^ctags$/ctags.emacs/' 'CFLAGS=-O2 -pipe -mtune=native -march=native -fomit-frame-pointer'
+
+
+: --with-native-compilation --with-json --without-pop --with-gnutls --without-mailutils --with-sqlite3 --with-rsvg --with-png --with-jpeg --with-tiff --with-imagemagick --with-tree-sitter --with-cairo --with-lcms2 --with-modules --with-xwidgets --with-x-toolkit=gtk3 '--program-transform-name=s/^ctags$/ctags.emacs/' 'CFLAGS=-O2 -pipe -mtune=native -march=native -fomit-frame-pointer'
+:  of 2023-09-13
+
+: --with-native-compilation --with-json --without-pop --with-gnutls --without-mailutils --with-sqlite3 --with-rsvg --with-png --with-jpeg --with-tiff --with-imagemagick --with-tree-sitter=ifavailable --with-cairo --with-lcms2 --with-modules --with-xwidgets --with-x-toolkit=gtk3 '--program-transform-name=s/^ctags$/ctags.emacs/' 'CFLAGS=-O2 -pipe -mtune=native -march=native -fomit-frame-pointer'
+
+: --with-native-compilation --with-json --without-pop --with-gnutls --without-mailutils --with-sqlite3 --with-tree-sitter=ifavailable --with-cairo --with-lcms2 --with-modules --with-xwidgets --with-x-toolkit=gtk3 '--program-transform-name=s/^ctags$/ctags.emacs/' 'CFLAGS=-O2 -pipe -mtune=native -march=native -fomit-frame-pointer'
+
+** TODO Install DEV packages =cask= :noexport:
+[2023-03-23 Thu 13:20]
+#+BEGIN_EXAMPLE
+# how to install 'cask'
+git clone https://github.com/cask/cask ~/.cask
+PATH=$HOME/.cask/bin:$PATH
+#+END_EXAMPLE
 * TODO [#A] 둠이맥스 스타터
 
 - 이맥스 스타터로써 무엇이 좋은가? 여기에 대한 답을 남기는 것. 잠시만. 여기에 쓰지 말자.
@@ -481,7 +541,8 @@ All necessary settings are therefore set by hand as part of this configuration f
 
 ;;;; denote
 
-(package! denote)
+;; (package! denote)
+(package! denote :pin "87001ba4887fa5955b4d779a300c3add3b4876c5")
 (package! consult-notes)
 (package! citar-denote)
 
@@ -2562,7 +2623,6 @@ and if it is set to nil, then it would forcefully create the ID."
       ;; :desc "expand-menu" "V" #'expand-transient
       )
 
-
 ;;;; window
 
 ;; doom-leader-map w C-S-w 'ace-swap-window
@@ -2577,6 +2637,13 @@ and if it is set to nil, then it would forcefully create the ID."
                "L" #'my/org-store-link-id-optional
                "u" #'org-transclusion-mode
                ))
+
+;;;; 'i' insert
+
+(map! :leader
+      (:prefix "i"
+       :desc "time-stamp" "0" #'time-stamp
+       ))
 
 ;;;; mode-map
 

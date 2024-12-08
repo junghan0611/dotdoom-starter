@@ -109,7 +109,8 @@
 
 ;;;; denote
 
-(package! denote)
+;; (package! denote)
+(package! denote :pin "87001ba4887fa5955b4d779a300c3add3b4876c5")
 (package! consult-notes)
 (package! citar-denote)
 

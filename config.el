@@ -1733,7 +1733,6 @@ and if it is set to nil, then it would forcefully create the ID."
       ;; :desc "expand-menu" "V" #'expand-transient
       )
 
-
 ;;;; window
 
 ;; doom-leader-map w C-S-w 'ace-swap-window
@@ -1748,6 +1747,13 @@ and if it is set to nil, then it would forcefully create the ID."
                "L" #'my/org-store-link-id-optional
                "u" #'org-transclusion-mode
                ))
+
+;;;; 'i' insert
+
+(map! :leader
+      (:prefix "i"
+       :desc "time-stamp" "0" #'time-stamp
+       ))
 
 ;;;; mode-map
 
