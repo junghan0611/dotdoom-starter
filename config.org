@@ -10,7 +10,12 @@
 
 possiblly minimum but useful
 
-* Installation
+* CHANGELOG :noexport:
+- 2024-09-12 Denote 까지 지원. 핵심 전략 서술.
+- 2024-10-03 org-latex-preview-auto-mode for test
+- 2024-11-16 version 0.1 - eglot
+
+* NEXT Installation
 ** 설정
 
 .emacs.d 잡아 놓고
@@ -78,8 +83,7 @@ StartupNotify=true
 StartupWMClass=DoomEmacs
 #+END_EXAMPLE
 
-** TODO termux
-
+** TODO for termux
 
 ** Reproducible information
 This configuration is continuingly being improved. I build my own Emacs from
@@ -140,7 +144,7 @@ system-configuration-options
 git clone https://github.com/cask/cask ~/.cask
 PATH=$HOME/.cask/bin:$PATH
 #+END_EXAMPLE
-* TODO [#A] 둠이맥스 스타터
+* TODO [#A] Why dotdoom-starter
 
 - 이맥스 스타터로써 무엇이 좋은가? 여기에 대한 답을 남기는 것. 잠시만. 여기에 쓰지 말자.
 - 왜 둠이맥스 인가?!
@@ -150,11 +154,6 @@ PATH=$HOME/.cask/bin:$PATH
 - 최소 최대 효과를 누리는 방법을 찾아라
 - 둠이맥스 빌트인 로직으로 커버 할 수 있다. 중복 제거
 - 최소부터 단계로 나눠 본다.
-
-* 히스토리
-- 2024-09-12 Denote 까지 지원. 핵심 전략 서술.
-- 2024-10-03 org-latex-preview-auto-mode for test
-- 2024-11-16 version 0.1 - eglot
 
 * Doom config file overview
 
@@ -667,16 +666,19 @@ CLOSED: [2024-10-21 Mon 20:36]
 (defun my/expand-org-file-name (filename)
   (expand-file-name filename org-directory))
 
-(defun my/org-index-file () (my/expand-org-file-name "20240429T165725--index.org"))
-(defun my/org-now-file () (my/expand-org-file-name "20240618T125104--now.org"))
+(defconst user-inbox-file "20230202T020200--inbox-now__aprj.org")
+(defun my/org-inbox-file () (my/expand-org-file-name user-inbox-file))
+(defun my/org-tasks-file () (my/expand-org-file-name user-inbox-file))
+(defun my/org-now-file () (my/expand-org-file-name user-inbox-file))
+;; (defun my/org-now-file () (my/expand-org-file-name "20240618T125104--now.org"))
+;; (defun my/org-tasks-file () (my/expand-org-file-name "20230101T010100--tasks.org"))
+
 (defun my/org-about-file () (my/expand-org-file-name "20240326T053829--about.org"))
 (defun my/org-contacts-file () (my/expand-org-file-name "20230303T030300--contacts.org"))
 (defun my/org-links-file () (my/expand-org-file-name "20230219T035500--links.org"))
 
 (defun my/org-mobile-file () (my/expand-org-file-name "agenda/20240312T111900--mobile.org")) ;; agenda
 
-(defun my/org-inbox-file () (my/expand-org-file-name "20230202T020200--inbox.org"))
-(defun my/org-tasks-file () (my/expand-org-file-name "20230101T010100--tasks.org"))
 (defun my/org-diary-file () (my/expand-org-file-name "20220101T010100--diary.org"))
 (defun my/org-drill-file () (my/expand-org-file-name "20240124T164402--drill.org"))
 (defun my/org-quote-file () (my/expand-org-file-name "20240312T031200--quote.org"))
@@ -692,7 +694,8 @@ CLOSED: [2024-10-21 Mon 20:36]
 (defun my/org-glossary-file () (my/expand-org-file-name "dict/ithink.org"))
 
 ;; blog
-(defun my/org-blog-file () (my/expand-org-file-name "blog/20240104T061355--blog.org"))
+(defun my/org-blog-file ()
+  (my/expand-org-file-name "posts/20240104T061355--blog__aprj_posts_schedule.org"))
 
 ;; talks
 (defun my/org-talks-file () (my/expand-org-file-name "talks/20240827T150414--talks.org"))
@@ -711,11 +714,15 @@ CLOSED: [2024-10-21 Mon 20:36]
 ;; bib
 (setq citar-notes-paths (list (concat user-org-directory "bib/")))
 (defvar config-bibfiles (list
-                         (concat user-org-directory "resources/zotero-my-library.bib")))
+                         (concat user-org-directory "resources/Slipbox.bib")
+                         (concat user-org-directory "resources/Book.bib")
+                         (concat user-org-directory "resources/Category.bib")
+                         ;; (concat user-org-directory "resources/zotero-group-junghanacs.bib")
+                         ))
 
 ;; elisp-demos
-(setq elisp-demos-user-files (list (concat org-directory
-                                           "/notes/20240926T170706--elisp-demos__emacslisp_notes.org")))
+(setq elisp-demos-user-files
+      (list (concat org-directory "/notes/20240926T170706--elisp-demos__emacslisp_notes.org")))
 
 (defvar org-user-contacts-files (list (my/org-contacts-file)))
 
@@ -781,12 +788,12 @@ CLOSED: [2024-10-21 Mon 20:36]
 
 ;; This determines the style of line numbers in effect. If set to `nil', line
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
-(setq display-line-numbers-type 'relative)
+;; (setq display-line-numbers-type 'relative)
 
 ;; /doom/high-school-macos-emacs-dev-env/doom/init.el
-;; (setq-default x-stretch-cursor t) ; make the cursor wide over tabs, etc.
-;; (setq undo-limit 80000000) ; Raise undo-limit to 80Mb
-;; (setq truncate-string-ellipsis "…") ; Unicode ellispis are nicer than "...", and also save /precious/ space
+(setq-default x-stretch-cursor t) ; make the cursor wide over tabs, etc.
+(setq undo-limit 80000000) ; Raise undo-limit to 80Mb
+(setq truncate-string-ellipsis "…") ; Unicode ellispis are nicer than "...", and also save /precious/ space
 
 #+end_src
 *** startup message
@@ -2016,30 +2023,42 @@ rm -Rf eln-cache
 ;;;; gptel
 
 (use-package! gptel
-  ;; OPTIONAL configuration
   :config
   (setq gptel-default-mode 'org-mode)
   (setq gptel-temperature 0.3) ; gptel 1.0, Perplexity 0.2
-  (setq
-   gptel-model   'grok-beta
-   gptel-backend
-   (gptel-make-openai "xAI"           ;Any name you want
-     :host "api.x.ai"
-     :key user-xai-api-key
-     :endpoint "/v1/chat/completions"
-     :stream t
-     :models '(grok-beta)))
+  (set-popup-rule! "^\\*ChatGPT\\*$" :side 'right :size 84 :vslot 100 :quit t) ; size 0.4
+  (set-popup-rule! "^\\*xAI\\*$" :side 'right :size 84 :vslot 100 :quit t) ; size 0.4
+  (setq gptel-api-key user-openai-api-key)
+  (gptel-make-openai "xAI"
+    :host "api.x.ai"
+    :key user-xai-api-key
+    :endpoint "/v1/chat/completions"
+    :stream t
+    :models '(;; xAI now only offers `grok-beta` as of the time of this writing
+              grok-beta))
   (gptel-make-openai "Perplexity"
     :host "api.perplexity.ai"
     :key user-perplexity-api-key
     :endpoint "/chat/completions"
     :stream t
     :models '(;; has many more, check perplexity.ai
-              "llama-3.1-70b-instruct"
               "llama-3.1-sonar-large-128k-chat"
-              "llama-3.1-sonar-small-128k-chat"
-              "llama-3.1-8b-instruct"
-              ))
+              "llama-3.1-sonar-small-128k-chat"))
+
+  (with-eval-after-load 'gptel-org
+    (defun gptel-org-toggle-branching-context ()
+      "Toggle gptel context between doc and subheading."
+      (interactive)
+      (if gptel-org-branching-context
+          (progn
+            (setq-local gptel-org-branching-context nil)
+            (message "Context: whole doc"))
+        (setq-local gptel-org-branching-context t)
+        (message "Context: subheading")))
+    (setf (alist-get 'org-mode gptel-prompt-prefix-alist) "@user: "
+          (alist-get 'org-mode gptel-response-prefix-alist) "@assistant:\n"
+          (alist-get 'markdown-mode gptel-prompt-prefix-alist) "#### ")
+    (setq-default gptel-org-branching-context t))
   )
 #+end_src
 ** ui
@@ -2310,6 +2329,19 @@ rm -Rf eln-cache
   ;; direct projectile to look for code in a specific folder.
   (setq projectile-project-search-path '("~/git"))
   )
+
+#+end_src
+*** magit
+[2024-12-13 Fri 05:25]
+
+#+begin_src emacs-lisp :tangle config.el
+
+;;;; magit
+
+(setq magit-save-repository-buffers nil
+      ;; Don't restore the wconf after quitting magit, it's jarring
+      magit-inhibit-save-previous-winconf t
+      evil-collection-magit-want-horizontal-movement t)
 
 #+end_src
 ** app

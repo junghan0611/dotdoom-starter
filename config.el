@@ -86,12 +86,12 @@
 
 ;; This determines the style of line numbers in effect. If set to `nil', line
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
-(setq display-line-numbers-type 'relative)
+;; (setq display-line-numbers-type 'relative)
 
 ;; /doom/high-school-macos-emacs-dev-env/doom/init.el
-;; (setq-default x-stretch-cursor t) ; make the cursor wide over tabs, etc.
-;; (setq undo-limit 80000000) ; Raise undo-limit to 80Mb
-;; (setq truncate-string-ellipsis "…") ; Unicode ellispis are nicer than "...", and also save /precious/ space
+(setq-default x-stretch-cursor t) ; make the cursor wide over tabs, etc.
+(setq undo-limit 80000000) ; Raise undo-limit to 80Mb
+(setq truncate-string-ellipsis "…") ; Unicode ellispis are nicer than "...", and also save /precious/ space
 
 ;;; startup and dashboard
 
@@ -1200,30 +1200,42 @@
 ;;;; gptel
 
 (use-package! gptel
-  ;; OPTIONAL configuration
   :config
   (setq gptel-default-mode 'org-mode)
   (setq gptel-temperature 0.3) ; gptel 1.0, Perplexity 0.2
-  (setq
-   gptel-model   'grok-beta
-   gptel-backend
-   (gptel-make-openai "xAI"           ;Any name you want
-     :host "api.x.ai"
-     :key user-xai-api-key
-     :endpoint "/v1/chat/completions"
-     :stream t
-     :models '(grok-beta)))
+  (set-popup-rule! "^\\*ChatGPT\\*$" :side 'right :size 84 :vslot 100 :quit t) ; size 0.4
+  (set-popup-rule! "^\\*xAI\\*$" :side 'right :size 84 :vslot 100 :quit t) ; size 0.4
+  (setq gptel-api-key user-openai-api-key)
+  (gptel-make-openai "xAI"
+    :host "api.x.ai"
+    :key user-xai-api-key
+    :endpoint "/v1/chat/completions"
+    :stream t
+    :models '(;; xAI now only offers `grok-beta` as of the time of this writing
+              grok-beta))
   (gptel-make-openai "Perplexity"
     :host "api.perplexity.ai"
     :key user-perplexity-api-key
     :endpoint "/chat/completions"
     :stream t
     :models '(;; has many more, check perplexity.ai
-              "llama-3.1-70b-instruct"
               "llama-3.1-sonar-large-128k-chat"
-              "llama-3.1-sonar-small-128k-chat"
-              "llama-3.1-8b-instruct"
-              ))
+              "llama-3.1-sonar-small-128k-chat"))
+
+  (with-eval-after-load 'gptel-org
+    (defun gptel-org-toggle-branching-context ()
+      "Toggle gptel context between doc and subheading."
+      (interactive)
+      (if gptel-org-branching-context
+          (progn
+            (setq-local gptel-org-branching-context nil)
+            (message "Context: whole doc"))
+        (setq-local gptel-org-branching-context t)
+        (message "Context: subheading")))
+    (setf (alist-get 'org-mode gptel-prompt-prefix-alist) "@user: "
+          (alist-get 'org-mode gptel-response-prefix-alist) "@assistant:\n"
+          (alist-get 'markdown-mode gptel-prompt-prefix-alist) "#### ")
+    (setq-default gptel-org-branching-context t))
   )
 
 ;;;; doom-modeline
@@ -1456,6 +1468,13 @@
   ;; direct projectile to look for code in a specific folder.
   (setq projectile-project-search-path '("~/git"))
   )
+
+;;;; magit
+
+(setq magit-save-repository-buffers nil
+      ;; Don't restore the wconf after quitting magit, it's jarring
+      magit-inhibit-save-previous-winconf t
+      evil-collection-magit-want-horizontal-movement t)
 
 ;; (setq rmh-elfeed-org-files '("path/to/your/elfeed/file.org")) ; default ~/org/elfeed.org
 ;; gc copy-link

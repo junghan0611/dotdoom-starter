@@ -43,16 +43,19 @@
 (defun my/expand-org-file-name (filename)
   (expand-file-name filename org-directory))
 
-(defun my/org-index-file () (my/expand-org-file-name "20240429T165725--index.org"))
-(defun my/org-now-file () (my/expand-org-file-name "20240618T125104--now.org"))
+(defconst user-inbox-file "20230202T020200--inbox-now__aprj.org")
+(defun my/org-inbox-file () (my/expand-org-file-name user-inbox-file))
+(defun my/org-tasks-file () (my/expand-org-file-name user-inbox-file))
+(defun my/org-now-file () (my/expand-org-file-name user-inbox-file))
+;; (defun my/org-now-file () (my/expand-org-file-name "20240618T125104--now.org"))
+;; (defun my/org-tasks-file () (my/expand-org-file-name "20230101T010100--tasks.org"))
+
 (defun my/org-about-file () (my/expand-org-file-name "20240326T053829--about.org"))
 (defun my/org-contacts-file () (my/expand-org-file-name "20230303T030300--contacts.org"))
 (defun my/org-links-file () (my/expand-org-file-name "20230219T035500--links.org"))
 
 (defun my/org-mobile-file () (my/expand-org-file-name "agenda/20240312T111900--mobile.org")) ;; agenda
 
-(defun my/org-inbox-file () (my/expand-org-file-name "20230202T020200--inbox.org"))
-(defun my/org-tasks-file () (my/expand-org-file-name "20230101T010100--tasks.org"))
 (defun my/org-diary-file () (my/expand-org-file-name "20220101T010100--diary.org"))
 (defun my/org-drill-file () (my/expand-org-file-name "20240124T164402--drill.org"))
 (defun my/org-quote-file () (my/expand-org-file-name "20240312T031200--quote.org"))
@@ -68,7 +71,8 @@
 (defun my/org-glossary-file () (my/expand-org-file-name "dict/ithink.org"))
 
 ;; blog
-(defun my/org-blog-file () (my/expand-org-file-name "blog/20240104T061355--blog.org"))
+(defun my/org-blog-file ()
+  (my/expand-org-file-name "posts/20240104T061355--blog__aprj_posts_schedule.org"))
 
 ;; talks
 (defun my/org-talks-file () (my/expand-org-file-name "talks/20240827T150414--talks.org"))
@@ -87,11 +91,15 @@
 ;; bib
 (setq citar-notes-paths (list (concat user-org-directory "bib/")))
 (defvar config-bibfiles (list
-                         (concat user-org-directory "resources/zotero-my-library.bib")))
+                         (concat user-org-directory "resources/Slipbox.bib")
+                         (concat user-org-directory "resources/Book.bib")
+                         (concat user-org-directory "resources/Category.bib")
+                         ;; (concat user-org-directory "resources/zotero-group-junghanacs.bib")
+                         ))
 
 ;; elisp-demos
-(setq elisp-demos-user-files (list (concat org-directory
-                                           "/notes/20240926T170706--elisp-demos__emacslisp_notes.org")))
+(setq elisp-demos-user-files
+      (list (concat org-directory "/notes/20240926T170706--elisp-demos__emacslisp_notes.org")))
 
 (defvar org-user-contacts-files (list (my/org-contacts-file)))
 
