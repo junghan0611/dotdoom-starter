@@ -107,6 +107,11 @@
 (package! keycast)
 (package! outli :recipe (:host github :repo "jdtsmith/outli" :files ("*.el")))
 
+;;;; for ccmenu
+(package! transpose-frame)
+(package! google-this)
+(package! org-ql)
+
 ;;;; denote
 
 ;; (package! denote)

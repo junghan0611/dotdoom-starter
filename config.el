@@ -72,6 +72,11 @@
 
 (load! "+user-info")
 
+;;;; CCMemnu
+
+(when (display-graphic-p) ; gui
+  (add-to-list 'load-path (concat doom-user-dir "ccmenu/")))
+
 ;;; Load 'Per-Machine' - User Configs
 
 ;; Most of my per-environment config done via =customize= and is in .custom.el.
@@ -516,6 +521,14 @@
   :hook ((LaTeX-mode . laas-mode)
 	 (org-mode . laas-mode)))
 
+(use-package! remember
+  :commands remember
+  :init
+  (setq
+   remember-notes-initial-major-mode 'org-mode
+   remember-notes-auto-save-visited-file-name t)
+  :config (setq remember-data-file (my/org-remember-file)))
+
 ;;;; org
 
 ;; (require 'ob-tangle)
@@ -589,7 +602,7 @@
   (setq +org-capture-todo-file (my/org-inbox-file))
   (setq +org-capture-notes-file (my/org-inbox-file))
   (setq +org-capture-changelog-file (my/org-inbox-file))
-  (setq +org-capture-projects-file (my/org-tasks-file))
+  (setq +org-capture-projects-file (my/org-inbox-file))
   (setq +org-capture-journal-file (my/org-diary-file))
 
 ;;;; org-agenda
@@ -807,13 +820,13 @@
 
   (add-to-list
    'org-capture-templates
-   `("p" "Project /w template" entry (file+headline ,(my/org-tasks-file) "Projects")
+   `("p" "Project /w template" entry (file+headline ,(my/org-inbox-file) "Projects")
      (file ,(concat org-capture-template-dir "project.capture"))))
 
-  (add-to-list
-   'org-capture-templates
-   `("l" "links" entry (file ,(my/org-links-file))
-     "* TODO %(org-cliplink-capture)" :immediate-finish t))
+  ;; (add-to-list
+  ;;  'org-capture-templates
+  ;;  `("l" "links" entry (file ,(my/org-links-file))
+  ;;    "* TODO %(org-cliplink-capture)" :immediate-finish t))
 
   (add-to-list
    'org-capture-templates
@@ -1008,6 +1021,10 @@
 (after! org-transclusion
   (add-to-list 'org-transclusion-extensions 'org-transclusion-indent-mode)
   (require 'org-transclusion-indent-mode))
+
+(use-package! org-ql
+   :after org
+   :commands org-ql-search)
 
 ;; (use-package! org-latex-preview
 ;;   :config
@@ -1282,8 +1299,12 @@
   (add-hook 'doom-load-theme-hook #'spacious-padding-mode)
   :config
   (remove-hook 'doom-init-ui-hook #'window-divider-mode)
-  ;; (pixel-scroll-precision-mode 1) ; default nil
-  ;; (menu-bar-mode 1)
+  ;; (blink-cursor-mode t)
+  ;; (when (fboundp 'tooltip-mode) (tooltip-mode 1))
+  ;; (when (fboundp 'tool-bar-mode) (tool-bar-mode 1))
+  (when (display-graphic-p) ; gui
+    (menu-bar-mode +1))
+
   (spacious-padding-mode +1)
   )
 
@@ -1627,6 +1648,24 @@ and if it is set to nil, then it would forcefully create the ID."
 
 (require 'casual-editkit) ;
 (keymap-global-set "C-;" #'casual-editkit-main-tmenu)
+
+;;; LAST Options
+;;;; ccmenu: context-menu with casual
+
+(when (display-graphic-p) ;; gui
+  (require 'ccmenu))
+
+;;;; Terminal Mode
+
+;; README /doomemacs-junghan0611/lisp/doom-ui.el
+;; Terminal Mode
+(unless (display-graphic-p) ; terminal
+  (setq visible-cursor nil)
+  (xterm-mouse-mode -1) ; important
+  (setq fast-but-imprecise-scrolling nil)
+  (setq hscroll-step 0)
+  (show-paren-mode -1)
+  )
 
 ;;; global-unset-key
 
