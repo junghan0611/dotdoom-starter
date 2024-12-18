@@ -110,11 +110,13 @@
 ;;;; for ccmenu
 (package! transpose-frame)
 (package! google-this)
+(package! webpaste)
+(package! google-translate)
+;; (package! password-store-menu)
 
 ;;;; denote
 
-;; (package! denote)
-(package! denote :pin "87001ba4887fa5955b4d779a300c3add3b4876c5")
+(package! denote)
 (package! consult-notes)
 (package! citar-denote)
 

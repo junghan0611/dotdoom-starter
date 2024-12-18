@@ -53,9 +53,12 @@
                 ("\nLearn how to take a 20-minute power nap without embarrassment.\n"))
               "\n"))
 
-;;;; user-url-bookmarks
 
-(defvar user-url-bookmarks
-  '(("Google" . "https://www.google.com")
-    ;; Add Here
-    ))
+;;;; cc/url-bookmarks
+
+(setq cc/url-bookmarks
+      '(("Google" . "https://www.google.com")
+        ("GitHub" . "https://github.com")
+        ("Emacs Home" . "https://www.gnu.org/software/emacs/")
+        ;; 여기에 원하는 URL을 추가하세요
+        ))

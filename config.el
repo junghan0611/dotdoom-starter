@@ -1586,61 +1586,25 @@ and if it is set to nil, then it would forcefully create the ID."
   (unless (display-graphic-p) ; terminal
     (term-keys-mode t)))
 
-;;;; transient : casual-suite
-
-(require 'casual-suite)
-
-(require 'casual-calc)
-(keymap-set calc-mode-map "<f2>" #'casual-calc-tmenu)
-(keymap-set calc-mode-map "C-;" #'casual-calc-tmenu)
-
-(keymap-set dired-mode-map "<f2>" #'casual-dired-tmenu)
-(keymap-set dired-mode-map "C-;" #'casual-dired-tmenu)
-
-(keymap-set isearch-mode-map "<f2>" #'casual-isearch-tmenu)
-(keymap-set isearch-mode-map "C-;" #'casual-isearch-tmenu)
-
-(keymap-set ibuffer-mode-map "<f2>" #'casual-ibuffer-tmenu)
-(keymap-set ibuffer-mode-map "C-;" #'casual-ibuffer-tmenu)
-
-(require 'casual-info)
-(keymap-set Info-mode-map "<f2>" #'casual-info-tmenu)
-(keymap-set Info-mode-map "C-;" #'casual-info-tmenu)
-
-(require 'casual-re-builder) ;; optional
-(keymap-set reb-mode-map "<f2>" #'casual-re-builder-tmenu)
-(keymap-set reb-lisp-mode-map "<f2>" #'casual-re-builder-tmenu)
-(keymap-set reb-mode-map "C-;" #'casual-re-builder-tmenu)
-(keymap-set reb-lisp-mode-map "C-;" #'casual-re-builder-tmenu)
-
-(require 'casual-avy)
-;; 'M-a' backward-sentence -> '(' evil-backward-sentence-begin
-(keymap-global-set "M-a" #'casual-avy-tmenu)
-
-(require 'casual-bookmarks) ;; optional
-(keymap-set bookmark-bmenu-mode-map "<f2>" #'casual-bookmarks-tmenu)
-(keymap-set bookmark-bmenu-mode-map "C-;" #'casual-bookmarks-tmenu)
-;; (evil-define-key 'normal bookmark-bmenu-mode-map (kbd "J") 'bookmark-jump)
-(keymap-set bookmark-bmenu-mode-map "J" #'bookmark-jump)
-(easy-menu-add-item global-map '(menu-bar) casual-bookmarks-main-menu "Tools")
-
-(require 'casual-agenda)
-(keymap-set org-agenda-mode-map "C-;" #'casual-agenda-tmenu)
-;; org-agenda-clock-goto ; optional
-;; bookmark-jump ; optional
-
-(require 'casual-symbol-overlay)
-(keymap-set prog-mode-map "C-'" #'casual-symbol-overlay-tmenu)
-;; (keymap-set symbol-overlay-map "M-n" #'casual-symbol-overlay-tmenu)
-
-(require 'casual-editkit) ;
-(keymap-global-set "C-;" #'casual-editkit-main-tmenu)
-
 ;;; LAST Options
 ;;;; ccmenu: context-menu with casual
 
 (when (display-graphic-p) ;; gui
   (require 'ccmenu))
+
+(use-package! google-this
+  :init
+  (setq google-this-location-suffix "co.kr"))
+
+(use-package! webpaste
+  :bind (("C-c C-p C-b" . webpaste-paste-buffer)
+         ("C-c C-p C-r" . webpaste-paste-region)
+         ("C-c C-p C-p" . webpaste-paste-buffer-or-region)))
+
+(use-package! google-translate
+  :config
+  (setq google-translate-translation-directions-alist
+      '(("ko" . "en") ("en" . "ko"))))
 
 ;;;; Terminal Mode
 
