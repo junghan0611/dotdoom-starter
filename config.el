@@ -61,15 +61,6 @@
 
 ;; Place your private configuration here! Remember, you do not need to run 'doom
 ;; sync' after modifying this file!
-
-;; Most of my per-environment config done via =customize= and is in .custom.el.
-;; However, some config is more involved, such as packages I just want in one
-;; environment and not the others.  To that end, let's load a file that can contain
-;; those customizations.
-;; (let ((per-machine-filename (concat doom-user-dir "per-machine.el")))
-;;   (when (file-exists-p per-machine-filename)
-;;     (load-file per-machine-filename)))
-
 (load! "+user-info")
 
 ;;;; CCMemnu

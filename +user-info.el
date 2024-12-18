@@ -31,48 +31,11 @@
                                      (getenv "PROJECT_DIRECTORY")
                                    "~/git/"))
 
-;; org-hugo-base-dir
-(defconst user-hugo-blog-dir (concat user-project-directory "blog/"))
-
 ;;;; directories
 
 (if (boundp 'user-org-directory)
     (setq org-directory user-org-directory)
   (setq org-directory "~/org/"))
-
-(defun my/expand-org-file-name (filename)
-  (expand-file-name filename org-directory))
-
-(defconst user-inbox-file "20230202T020200--inbox-now__aprj.org")
-(defun my/org-inbox-file () (my/expand-org-file-name user-inbox-file))
-
-(defun my/org-contacts-file () (my/expand-org-file-name "20230303T030300--contacts.org"))
-(defun my/org-mobile-file () (my/expand-org-file-name "agenda/20240312T111900--mobile.org")) ;; agenda
-(defun my/org-diary-file () (my/expand-org-file-name "20220101T010100--diary.org"))
-(defun my/org-remember-file () (my/expand-org-file-name "20231020T210500--remember.org"))
-
-;; directory
-(defun my/org-calendar-directory () (my/expand-org-file-name ".calendar/"))
-(defun my/org-attachment-directory () (my/expand-org-file-name ".attach/"))
-(defun my/org-screenshot-directory () (my/expand-org-file-name "screenshot"))
-
-(defvar org-user-agenda-files (list user-org-directory))
-(defvar org-screenshot-path (concat user-org-directory "screenshot/"))
-
-;; bib
-(setq citar-notes-paths (list (concat user-org-directory "bib/")))
-(defvar config-bibfiles (list
-                         (concat user-org-directory "resources/Slipbox.bib")
-                         (concat user-org-directory "resources/Book.bib")
-                         (concat user-org-directory "resources/Category.bib")))
-
-;; elisp-demos
-(setq elisp-demos-user-files
-      (list (concat org-directory "/notes/20240926T170706--elisp-demos__emacslisp_notes.org")))
-
-(defvar org-user-contacts-files (list (my/org-contacts-file)))
-
-(defvar +org-journal-today-file nil)
 
 ;;;; fortune
 
@@ -89,3 +52,10 @@
                         "fortune -c 90% advice 10% .")))))
                 ("\nLearn how to take a 20-minute power nap without embarrassment.\n"))
               "\n"))
+
+;;;; user-url-bookmarks
+
+(defvar user-url-bookmarks
+  '(("Google" . "https://www.google.com")
+    ;; Add Here
+    ))
