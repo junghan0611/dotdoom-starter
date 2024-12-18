@@ -1022,10 +1022,6 @@
   (add-to-list 'org-transclusion-extensions 'org-transclusion-indent-mode)
   (require 'org-transclusion-indent-mode))
 
-(use-package! org-ql
-   :after org
-   :commands org-ql-search)
-
 ;; (use-package! org-latex-preview
 ;;   :config
 ;;   (setq org-startup-with-latex-preview t) ; doom nil

@@ -418,7 +418,6 @@ All necessary settings are therefore set by hand as part of this configuration f
 ;;;; for ccmenu
 (package! transpose-frame)
 (package! google-this)
-(package! org-ql)
 
 ;;;; denote
 
@@ -1674,13 +1673,6 @@ Font test: " & ' ∀ ∃ ∅ ∈ ∉ ∏ ∑ √ ∞ ∧ ∨ ∩ ∪ ∫ ² ³ �
 (after! org-transclusion
   (add-to-list 'org-transclusion-extensions 'org-transclusion-indent-mode)
   (require 'org-transclusion-indent-mode))
-#+end_src
-**** org-ql
-
-#+begin_src emacs-lisp :tangle config.el
-(use-package! org-ql
-   :after org
-   :commands org-ql-search)
 #+end_src
 *** DONT org-latex-preview :noexport:
 CLOSED: [2024-10-21 Mon 20:38]

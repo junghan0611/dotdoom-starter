@@ -110,7 +110,6 @@
 ;;;; for ccmenu
 (package! transpose-frame)
 (package! google-this)
-(package! org-ql)
 
 ;;;; denote
 
