@@ -155,6 +155,7 @@
 ;;;; transient
 
 (package! casual-suite)
+(package! nov)
 
 ;;; org-mode for latex-preview-auto-mode
 

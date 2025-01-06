@@ -1064,11 +1064,16 @@
   ;; (setq citar-format-reference-function 'citar-citeproc-format-reference)
   (setq citar-format-reference-function 'citar-format-reference)
 
-  (setq citar-templates
-        '((main . "[${dateadded:10}] \{${datemodified:10}\} ${author editor:20} ${translator:8} (${date year issued:4}) @${=key= id:12} ${title:68} ")  ; 2024-09-12 김정한
-          (suffix . "${shorttitle:25} ${=type=:10} ${namea:16} ${url:20} ${tags keywords:*}") ; 2024-11-17 add url
-          (preview . "${author} ${title} ${translator}\n- ${namea}\n- ${abstract}\n- ${shorttitle}") ; citar-copy-reference - ${year issued date:4}
-          (note . "#+title: ${author translator:10}, ${title}")))
+  (setq
+   citar-templates
+   '((main . ;; [${urldate:10}]
+      "[${dateadded:10}] \{${datemodified:10}\} ${author editor:20} ${translator:8} (${date year issued:4}) @${=key= id:12} ${title:68} ")  ; 2024-09-12 김정한
+     (suffix
+      . "${shorttitle:25} ${=type=:10} ${namea:16} ${url:20} ${tags keywords:*}") ; 2024-11-17 add url
+     (preview
+      .
+      "${title} :${year issued date:4}\n- ${author} ${translator} ${namea}\n- ${abstract}\n- ${shorttitle}") ; citar-copy-reference
+     (note . "#+title: ${author translator:10}, ${title}")))
 
   (add-hook 'bibtex-mode-hook 'display-line-numbers-mode)
   (setq bibtex-dialect 'biblatex)
@@ -1100,18 +1105,17 @@
 
   (setq denote-org-front-matter
         "#+title:      %1$s
+#+hugo_lastmod: Time-stamp: <>
 #+filetags:   %3$s
 #+date:       %2$s
 #+identifier: %4$s
 #+export_file_name: %4$s.md
-#+HUGO_CATEGORIES: noname
+#+description:
+#+HUGO_CATEGORIES: Noname
+#+filetags:   :fleeting:
 
-# #+hugo_custom_front_matter: :title \"%1$s\"
-
-#+hugo: more
-
-* Related-Notes
 #+print_bibliography:
+
 \n")
 
   ;; Automatically rename Denote buffers using the `denote-rename-buffer-format'.
@@ -1124,7 +1128,7 @@
         denote-save-buffers t) ; default nil
   (add-hook 'org-mode-hook (lambda ()
                              ;; (setq denote-rename-buffer-backlinks-indicator " @")
-                             (setq denote-rename-buffer-format "[D] %t%b")
+                             (setq denote-rename-buffer-format "%t%b")
                              (denote-rename-buffer-mode +1)))
 
   (use-package! consult-notes
@@ -1173,14 +1177,14 @@
   :defer 2
   ;; :bind (("M-c t" . complete-tag)
   ;;        ("C-c M-." . my/goto-etags))
+  ;; :hook ((org-mode Info-mode) . ten-font-lock-mode) ;; text-mode
   :init
   ;; (add-hook 'doom-after-init-hook #'ten-mode)
   ;; Enabling `ten' in text-mode and other major modes that inherit it,
   ;; such as `org-mode' and `markdown-mode'. If you wish to be more
   ;; specific, remove `text-mode' and add other more specific modes to
   ;; the list.
-  (setq ten-enabled-modes '(text-mode))
-  (setq ten-file-extensions '("org" "txt"))
+  ;; (setq ten-file-extensions '("org" "txt"))
   (setq ten-exclude-regexps '("/\\."))
   ;; I am listing two specific dictionary files in the `test/`
   ;; subdirectory as an example below. You can list the
