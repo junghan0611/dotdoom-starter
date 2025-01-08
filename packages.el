@@ -109,10 +109,10 @@
 
 ;;;; for ccmenu
 (package! transpose-frame)
-(package! google-this)
 (package! webpaste)
 (package! google-translate)
 ;; (package! password-store-menu)
+;; (package! google-this)
 
 ;;;; denote
 
@@ -154,6 +154,7 @@
 
 ;;;; transient
 
+(package! ccmenu :recipe (:host github :repo "junghan0611/ccmenu"))
 (package! casual-suite)
 (package! nov)
 

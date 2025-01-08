@@ -63,10 +63,10 @@
 ;; sync' after modifying this file!
 (load! "+user-info")
 
-;;;; CCMemnu
+;;;; CCMemu
 
-(when (display-graphic-p) ; gui
-  (add-to-list 'load-path (concat doom-user-dir "ccmenu/")))
+;; (when (display-graphic-p) ; gui
+;;   (add-to-list 'load-path (concat doom-user-dir "ccmenu/")))
 
 ;;; Load 'Per-Machine' - User Configs
 
@@ -964,11 +964,17 @@
 (progn
   (require 'org-journal)
   (setq org-journal-dir (concat user-org-directory "journal"))
-  (setq org-journal-date-format "%Y-%m-%d")
-  (setq org-journal-file-format "%Y%m%dT000000--%Y-%m-%d__journal.org")
-  ;; (setq org-journal-time-prefix "** ") ; default **
+  (setq org-journal-file-format "%Y%m%dT000000--%Y-%m-%d__journal_week%W.org")
+  (setq org-journal-date-format "%Y-%m-%d %A") ; Week%W:
+
   ;; (setq org-journal-time-format "%R ")
   (setq org-journal-carryover-items  "TODO=\"TODO\"|TODO=\"NEXT\"")
+
+  (setq org-journal-enable-agenda-integration t) ; default nil
+  (setq org-journal-file-type 'weekly)
+
+  (setq org-journal-tag-alist '(("meet" . ?m) ("dev" . ?d) ("idea" . ?i) ("emacs" . ?e) ("discuss" . ?c) ("1on1" . ?o))) ; default nil
+
   )
 
 (use-package! org-modern
@@ -1596,9 +1602,9 @@ and if it is set to nil, then it would forcefully create the ID."
 (when (display-graphic-p) ;; gui
   (require 'ccmenu))
 
-(use-package! google-this
-  :init
-  (setq google-this-location-suffix "co.kr"))
+;; (use-package! google-this
+;;   :init
+;;   (setq google-this-location-suffix "co.kr"))
 
 (use-package! webpaste
   :bind (("C-c C-p C-b" . webpaste-paste-buffer)
@@ -1738,6 +1744,12 @@ and if it is set to nil, then it would forcefully create the ID."
       ;; :desc "consult-buffer" "`" #'consult-buffer
       ;; :desc "Eval expression" "M-;" #'pp-eval-expression
       )
+
+;;;; Replace Doom `/' highlight with buffer-search
+
+(map! :after evil
+      :map evil-normal-state-map
+      "." #'+default/search-buffer) ;; / -> .
 
 ;;;; 'v' er/expand-region
 

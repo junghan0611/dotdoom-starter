@@ -420,10 +420,10 @@ All necessary settings are therefore set by hand as part of this configuration f
 
 ;;;; for ccmenu
 (package! transpose-frame)
-(package! google-this)
 (package! webpaste)
 (package! google-translate)
 ;; (package! password-store-menu)
+;; (package! google-this)
 
 ;;;; denote
 
@@ -465,6 +465,7 @@ All necessary settings are therefore set by hand as part of this configuration f
 
 ;;;; transient
 
+(package! ccmenu :recipe (:host github :repo "junghan0611/ccmenu"))
 (package! casual-suite)
 (package! nov)
 
@@ -584,13 +585,14 @@ CLOSED: [2024-10-21 Mon 20:36]
 ;; sync' after modifying this file!
 (load! "+user-info")
 #+end_src
-** load-path ccmenu
+** DONT load-path ccmenu
+CLOSED: [2025-01-07 Tue 05:23]
 
 #+begin_src emacs-lisp :tangle config.el
-;;;; CCMemnu
+;;;; CCMemu
 
-(when (display-graphic-p) ; gui
-  (add-to-list 'load-path (concat doom-user-dir "ccmenu/")))
+;; (when (display-graphic-p) ; gui
+;;   (add-to-list 'load-path (concat doom-user-dir "ccmenu/")))
 #+end_src
 ** load per-machine
 
@@ -1583,11 +1585,17 @@ Font test: " & ' ∀ ∃ ∅ ∈ ∉ ∏ ∑ √ ∞ ∧ ∨ ∩ ∪ ∫ ² ³ �
 (progn
   (require 'org-journal)
   (setq org-journal-dir (concat user-org-directory "journal"))
-  (setq org-journal-date-format "%Y-%m-%d")
-  (setq org-journal-file-format "%Y%m%dT000000--%Y-%m-%d__journal.org")
-  ;; (setq org-journal-time-prefix "** ") ; default **
+  (setq org-journal-file-format "%Y%m%dT000000--%Y-%m-%d__journal_week%W.org")
+  (setq org-journal-date-format "%Y-%m-%d %A") ; Week%W:
+
   ;; (setq org-journal-time-format "%R ")
   (setq org-journal-carryover-items  "TODO=\"TODO\"|TODO=\"NEXT\"")
+
+  (setq org-journal-enable-agenda-integration t) ; default nil
+  (setq org-journal-file-type 'weekly)
+
+  (setq org-journal-tag-alist '(("meet" . ?m) ("dev" . ?d) ("idea" . ?i) ("emacs" . ?e) ("discuss" . ?c) ("1on1" . ?o))) ; default nil
+
   )
 #+end_src
 **** org-modern
@@ -2312,7 +2320,7 @@ and if it is set to nil, then it would forcefully create the ID."
     (term-keys-mode t)))
 #+end_src
 
-** Enable context-menu
+** ccmenu: context-menu with casual
 
 #+begin_src emacs-lisp :tangle config.el
 
@@ -2322,9 +2330,9 @@ and if it is set to nil, then it would forcefully create the ID."
 (when (display-graphic-p) ;; gui
   (require 'ccmenu))
 
-(use-package! google-this
-  :init
-  (setq google-this-location-suffix "co.kr"))
+;; (use-package! google-this
+;;   :init
+;;   (setq google-this-location-suffix "co.kr"))
 
 (use-package! webpaste
   :bind (("C-c C-p C-b" . webpaste-paste-buffer)
@@ -2478,6 +2486,12 @@ and if it is set to nil, then it would forcefully create the ID."
       ;; :desc "consult-buffer" "`" #'consult-buffer
       ;; :desc "Eval expression" "M-;" #'pp-eval-expression
       )
+
+;;;; Replace Doom `/' highlight with buffer-search
+
+(map! :after evil
+      :map evil-normal-state-map
+      "." #'+default/search-buffer) ;; / -> .
 
 ;;;; 'v' er/expand-region
 
