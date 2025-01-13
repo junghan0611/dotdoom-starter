@@ -39,6 +39,7 @@
 ;; This determines the style of line numbers in effect. If set to `nil', line
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
 ;; (setq display-line-numbers-type t)
+(remove-hook! (text-mode conf-mode) #'display-line-numbers-mode)
 
 ;; Here are some additional functions/macros that could help you configure Doom:
 ;;
@@ -542,7 +543,7 @@
         (file-name-concat org-directory (concat "." system-name "-orgids"))) ; ".org-id-locations"))
 
   ;; overide here! important
-  (setq org-insert-heading-respect-content nil) ; doom t
+  ;; (setq org-insert-heading-respect-content nil) ; doom t
   ;; org-indent-mode 사용하면 org-hide-leading-stars 자동 on
   ;; (setq org-hide-leading-stars nil) ; doom t
   )
@@ -1218,23 +1219,16 @@
   (setq gptel-default-mode 'org-mode)
   (setq gptel-temperature 0.3) ; gptel 1.0, Perplexity 0.2
   (set-popup-rule! "^\\*ChatGPT\\*$" :side 'right :size 84 :vslot 100 :quit t) ; size 0.4
-  (set-popup-rule! "^\\*xAI\\*$" :side 'right :size 84 :vslot 100 :quit t) ; size 0.4
   (setq gptel-api-key user-openai-api-key)
-  (gptel-make-openai "xAI"
-    :host "api.x.ai"
-    :key user-xai-api-key
-    :endpoint "/v1/chat/completions"
-    :stream t
-    :models '(;; xAI now only offers `grok-beta` as of the time of this writing
-              grok-beta))
   (gptel-make-openai "Perplexity"
     :host "api.perplexity.ai"
     :key user-perplexity-api-key
     :endpoint "/chat/completions"
     :stream t
     :models '(;; has many more, check perplexity.ai
-              "llama-3.1-sonar-large-128k-chat"
-              "llama-3.1-sonar-small-128k-chat"))
+              "llama-3.1-sonar-large-128k-online"
+              "llama-3.1-sonar-huge-128k-online"
+              "llama-3.1-sonar-small-128k-online"))
 
   (with-eval-after-load 'gptel-org
     (defun gptel-org-toggle-branching-context ()
@@ -1284,7 +1278,7 @@
   ;; :if window-system
   :hook (server-after-make-frame . spacious-padding-mode)
   :init
-  (setq spacious-padding-subtle-mode-line t)
+  ;; (setq spacious-padding-subtle-mode-line t)
   (setq spacious-padding-widths
         '(:internal-border-width 15 ; 15
           :header-line-width 4
@@ -1388,8 +1382,9 @@
   ;; (add-hook 'org-mode-hook 'outli-mode)
   )
 
-;;;; modus-themes
+;;;; themes
 
+;; use modus-themes built-in
 (setq modus-themes-bold-constructs t
       modus-themes-subtle-line-numbers t
       modus-themes-mode-line '(borderless)
@@ -1398,14 +1393,10 @@
       modus-themes-region '(bg-only no-extend)
       modus-themes-org-blocks 'gray-background)
 
-;;;; standard-themes
-
-(use-package! standard-themes)
-
-;;;; doom-themes
-
+;; doom-themes
 (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
       doom-themes-enable-italic nil) ; if nil, italics is universally disabled
+
 (setq doom-themes-to-toggle
       (let ((hr (nth 2 (decode-time))))
         (if (or (< hr 6) (< 19 hr)) ; between 8 PM and 7 AM

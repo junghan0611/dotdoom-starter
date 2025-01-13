@@ -55,6 +55,7 @@
 
        :ui
        doom              ; what makes DOOM look the way it does
+       ;; doom-dashboard
        hl-todo           ; highlight TODO/FIXME/NOTE/DEPRECATED/HACK/REVIEW/XXX/BUG
        ;; indent-guides     ; highlighted indent columns
        modeline          ; snazzy, Atom-inspired modeline, plus API
