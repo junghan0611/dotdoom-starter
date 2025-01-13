@@ -107,6 +107,7 @@
 (package! outli :recipe (:host github :repo "jdtsmith/outli" :files ("*.el")))
 
 ;;;; for ccmenu
+
 (package! transpose-frame)
 (package! webpaste)
 (package! google-translate)
@@ -123,6 +124,7 @@
 
 (package! tempel)
 (package! tempel-collection)
+(package! imenu-list)
 (package! laas)
 
 ;;;; llmclient

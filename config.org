@@ -420,6 +420,7 @@ All necessary settings are therefore set by hand as part of this configuration f
 (package! outli :recipe (:host github :repo "jdtsmith/outli" :files ("*.el")))
 
 ;;;; for ccmenu
+
 (package! transpose-frame)
 (package! webpaste)
 (package! google-translate)
@@ -436,6 +437,7 @@ All necessary settings are therefore set by hand as part of this configuration f
 
 (package! tempel)
 (package! tempel-collection)
+(package! imenu-list)
 (package! laas)
 
 ;;;; llmclient
@@ -1090,6 +1092,42 @@ Font test: " & ' ∀ ∃ ∅ ∈ ∉ ∏ ∑ √ ∞ ∧ ∨ ∩ ∪ ∫ ² ³ �
   (use-package! tempel-collection))
 
 #+end_src
+
+
+*** imenu-list
+
+#+begin_src emacs-lisp :tangle config.el
+
+;;;; imenu-list
+
+;; Show an outline summary of the current buffer.
+(use-package! imenu-list
+  :init
+  (add-hook 'imenu-list-major-mode-hook #'toggle-truncate-lines)
+  (setq imenu-list-focus-after-activation nil)
+  (setq imenu-list-auto-resize nil)
+  (setq imenu-list-position 'left)
+  (setq imenu-list-idle-update-delay 1.0) ; default 1.0
+  (setq imenu-list-size 45) ; default 0.3
+  :config
+  ;;;###autoload
+  (defun spacemacs/imenu-list-smart-focus ()
+    "Focus the `imenu-list' buffer, creating as necessary.
+If the imenu-list buffer is displayed in any window, focus it, otherwise create and focus.
+Note that all the windows in every frame searched, even invisible ones, not
+only those in the selected frame."
+    (interactive)
+    (if (get-buffer-window imenu-list-buffer-name t)
+        (imenu-list-show)
+      (imenu-list-smart-toggle)))
+  (after! winum
+    (define-key
+     winum-keymap
+     [remap winum-select-window-8]
+     #'spacemacs/imenu-list-smart-focus)))
+
+#+end_src
+
 *** latex - laas
 #+begin_src emacs-lisp :tangle config.el
 
@@ -2059,19 +2097,19 @@ rm -Rf eln-cache
 
 #+end_src
 
-*** themes
+*** doom-themes
 
 #+begin_src emacs-lisp :tangle config.el
 ;;;; themes
 
 ;; use modus-themes built-in
-(setq modus-themes-bold-constructs t
-      modus-themes-subtle-line-numbers t
-      modus-themes-mode-line '(borderless)
-      modus-themes-syntax '(green-strings yellow-comments)
-      modus-themes-paren-match '(bold intense) ; underline
-      modus-themes-region '(bg-only no-extend)
-      modus-themes-org-blocks 'gray-background)
+;; (setq modus-themes-bold-constructs t
+;;       modus-themes-subtle-line-numbers t
+;;       modus-themes-mode-line '(borderless)
+;;       modus-themes-syntax '(green-strings yellow-comments)
+;;       modus-themes-paren-match '(bold intense) ; underline
+;;       modus-themes-region '(bg-only no-extend)
+;;       modus-themes-org-blocks 'gray-background)
 
 ;; doom-themes
 (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
@@ -2080,8 +2118,8 @@ rm -Rf eln-cache
 (setq doom-themes-to-toggle
       (let ((hr (nth 2 (decode-time))))
         (if (or (< hr 6) (< 19 hr)) ; between 8 PM and 7 AM
-            '(doom-one doom-homage-white) ; load dark theme first
-          '(doom-homage-white doom-one))))
+            '(doom-zenburn doom-flatwhite) ; load dark theme first
+          '(doom-homage-white doom-zenburn))))
 (setq doom-theme (car doom-themes-to-toggle))
 (doom-themes-visual-bell-config)
 
@@ -2374,6 +2412,12 @@ and if it is set to nil, then it would forcefully create the ID."
 ;; (setq! persp-keymap-prefix (kbd "C-c w"))
 ;; (after! projectile
 ;;   (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map))
+
+;;;; Extra Fn-key
+
+(when (locate-library "imenu-list")
+  (global-set-key (kbd "<f8>") 'imenu-list-smart-toggle)
+  (global-set-key (kbd "M-<f8>") 'spacemacs/imenu-list-smart-focus))
 
 #+end_src
 *** denote-map

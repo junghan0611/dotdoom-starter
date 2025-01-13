@@ -507,6 +507,34 @@
 
   (use-package! tempel-collection))
 
+;;;; imenu-list
+
+;; Show an outline summary of the current buffer.
+(use-package! imenu-list
+  :init
+  (add-hook 'imenu-list-major-mode-hook #'toggle-truncate-lines)
+  (setq imenu-list-focus-after-activation nil)
+  (setq imenu-list-auto-resize nil)
+  (setq imenu-list-position 'left)
+  (setq imenu-list-idle-update-delay 1.0) ; default 1.0
+  (setq imenu-list-size 45) ; default 0.3
+  :config
+  ;;;###autoload
+  (defun spacemacs/imenu-list-smart-focus ()
+    "Focus the `imenu-list' buffer, creating as necessary.
+If the imenu-list buffer is displayed in any window, focus it, otherwise create and focus.
+Note that all the windows in every frame searched, even invisible ones, not
+only those in the selected frame."
+    (interactive)
+    (if (get-buffer-window imenu-list-buffer-name t)
+        (imenu-list-show)
+      (imenu-list-smart-toggle)))
+  (after! winum
+    (define-key
+     winum-keymap
+     [remap winum-select-window-8]
+     #'spacemacs/imenu-list-smart-focus)))
+
 ;;;; laas
 ;; https://github.com/tecosaur/LaTeX-auto-activating-snippets
 (use-package! laas
@@ -1385,13 +1413,13 @@
 ;;;; themes
 
 ;; use modus-themes built-in
-(setq modus-themes-bold-constructs t
-      modus-themes-subtle-line-numbers t
-      modus-themes-mode-line '(borderless)
-      modus-themes-syntax '(green-strings yellow-comments)
-      modus-themes-paren-match '(bold intense) ; underline
-      modus-themes-region '(bg-only no-extend)
-      modus-themes-org-blocks 'gray-background)
+;; (setq modus-themes-bold-constructs t
+;;       modus-themes-subtle-line-numbers t
+;;       modus-themes-mode-line '(borderless)
+;;       modus-themes-syntax '(green-strings yellow-comments)
+;;       modus-themes-paren-match '(bold intense) ; underline
+;;       modus-themes-region '(bg-only no-extend)
+;;       modus-themes-org-blocks 'gray-background)
 
 ;; doom-themes
 (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
@@ -1400,8 +1428,8 @@
 (setq doom-themes-to-toggle
       (let ((hr (nth 2 (decode-time))))
         (if (or (< hr 6) (< 19 hr)) ; between 8 PM and 7 AM
-            '(doom-one doom-homage-white) ; load dark theme first
-          '(doom-homage-white doom-one))))
+            '(doom-zenburn doom-flatwhite) ; load dark theme first
+          '(doom-homage-white doom-zenburn))))
 (setq doom-theme (car doom-themes-to-toggle))
 (doom-themes-visual-bell-config)
 
@@ -1649,6 +1677,12 @@ and if it is set to nil, then it would forcefully create the ID."
 ;; (setq! persp-keymap-prefix (kbd "C-c w"))
 ;; (after! projectile
 ;;   (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map))
+
+;;;; Extra Fn-key
+
+(when (locate-library "imenu-list")
+  (global-set-key (kbd "<f8>") 'imenu-list-smart-toggle)
+  (global-set-key (kbd "M-<f8>") 'spacemacs/imenu-list-smart-focus))
 
 (defvar-keymap ews-bibliography-map
   :doc "Bibliograpic functions keymap."
