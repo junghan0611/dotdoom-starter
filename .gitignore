@@ -6,5 +6,6 @@ custom.el
 flycheck_config.el
 local/*
 per-machine.el
+user-keys.el
 ccmenu
 tempel-templates.eld

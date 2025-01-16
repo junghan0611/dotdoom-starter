@@ -79,6 +79,12 @@
   (when (file-exists-p per-machine-filename)
     (load-file per-machine-filename)))
 
+;;; Load 'user-keys'
+
+(let ((user-keys-filename (concat doom-user-dir "user-keys.el")))
+  (when (file-exists-p user-keys-filename)
+    (load-file user-keys-filename)))
+
 ;;; GENERAL SETTINGS
 
 ;; This determines the style of line numbers in effect. If set to `nil', line
@@ -1413,13 +1419,21 @@ only those in the selected frame."
 ;;;; themes
 
 ;; use modus-themes built-in
-;; (setq modus-themes-bold-constructs t
-;;       modus-themes-subtle-line-numbers t
-;;       modus-themes-mode-line '(borderless)
-;;       modus-themes-syntax '(green-strings yellow-comments)
-;;       modus-themes-paren-match '(bold intense) ; underline
-;;       modus-themes-region '(bg-only no-extend)
-;;       modus-themes-org-blocks 'gray-background)
+(progn
+  (setq modus-themes-bold-constructs t
+        modus-themes-subtle-line-numbers t
+        modus-themes-mode-line '(borderless)
+        modus-themes-syntax '(green-strings yellow-comments)
+        modus-themes-paren-match '(bold intense) ; underline
+        modus-themes-region '(bg-only no-extend)
+        modus-themes-org-blocks 'gray-background)
+
+  (setq modus-themes-headings
+        (quote ((1 . (background overline variable-pitch 1.3))
+                (2 . (overline rainbow 1.2))
+                (3 . (overline 1.1))
+                (t . (monochrome)))))
+  )
 
 ;; doom-themes
 (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
@@ -1523,6 +1537,45 @@ only those in the selected frame."
 (after! elfeed-tube
   (require 'elfeed-tube)
   (setq elfeed-tube-captions-languages '("en" "ko" "englsh (auto generated)")))
+
+(use-package! nov
+  :mode ("\\.epub\\'" . nov-mode)
+  :commands (nov-org-link-follow nov-org-link-store)
+  :init
+  (with-eval-after-load 'org
+    (org-link-set-parameters "nov"
+                             :follow 'nov-org-link-follow
+                             :store 'nov-org-link-store))
+  :config
+  (map! :map nov-mode-map
+        :n "RET" #'nov-scroll-up
+        :n "d" 'nov-scroll-up
+        :n "u" 'nov-scroll-down
+        :n "J" 'nov-scroll-up
+        :n "K" 'nov-scroll-down)
+
+  (defun +nov-mode-setup ()
+    "Tweak nov-mode to our liking."
+    (face-remap-add-relative 'variable-pitch
+                             :family "Pretendard Variable"
+                             :height 1.2
+                             :width 'semi-expanded)
+    (face-remap-add-relative 'default :height 1.0)
+    (variable-pitch-mode 1)
+    (setq-local line-spacing 0.2
+                next-screen-context-lines 4
+                shr-use-colors nil)
+    (when (featurep 'hl-line-mode)
+      (hl-line-mode -1))
+    (when (featurep 'font-lock-mode)
+      (font-lock-mode -1))
+    ;; Re-render with new display settings
+    (nov-render-document)
+    ;; Look up words with the dictionary.
+    (add-to-list '+lookup-definition-functions #'+lookup/dictionary-definition))
+  (add-hook 'nov-mode-hook #'+nov-mode-setup 80)
+  (setq font-lock-global-modes '(not nov-mode))
+  )
 
 ;;;; scheme with geiser-mit
 

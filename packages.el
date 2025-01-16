@@ -153,6 +153,7 @@
 (package! dired-preview)
 (package! jinx) ; spell checker
 (package! term-keys :recipe (:host github :repo "junghan0611/term-keys"))
+(package! nov)
 
 ;;;; transient
 

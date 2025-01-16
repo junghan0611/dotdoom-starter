@@ -7,7 +7,7 @@
 
 (setq doom-font (font-spec :family "Monoplex KR Nerd" :size 14.0)
       doom-big-font (font-spec :family "Monoplex KR Nerd" :size 24.0)
-      doom-variable-pitch-font (font-spec :family "Pretendard Variable" :size 16.0)
+      doom-variable-pitch-font (font-spec :family "Pretendard Variable" :size 14.0)
       doom-unicode-font (font-spec :family "Symbola" :size 14.0))
 
 ;; If you or Emacs can't find your font, use 'M-x describe-font' to look them
