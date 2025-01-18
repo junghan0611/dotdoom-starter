@@ -351,6 +351,32 @@
   (define-key corfu-map (kbd "M-.") '+corfu-move-to-minibuffer)
   )
 
+;;;; vertico-map
+
+(after! consult
+  ;; (setq consult--customize-alist nil)
+
+  (consult-customize
+   +default/search-project +default/search-other-project
+   +default/search-project-for-symbol-at-point
+   +default/search-cwd +default/search-other-cwd
+   +default/search-notes-for-symbol-at-point
+   +default/search-emacsd
+   :preview-key '("C-SPC" :debounce 0.3 "<up>" "<down>" "M-j" "M-k"))
+
+  (consult-customize
+   consult-ripgrep consult-git-grep consult-grep
+   consult-bookmark consult-recent-file
+   consult--source-recent-file consult--source-project-recent-file consult--source-bookmark
+   :preview-key '("C-SPC"
+                  :debounce 0.3 "<up>" "<down>" "M-j" "M-k"))
+  )
+
+(after! vertico
+  (map! :map vertico-map
+        "M-j" #'vertico-next
+        "M-k" #'vertico-previous))
+
 ;;; evil
 
 (after! evil
@@ -1312,24 +1338,24 @@ only those in the selected frame."
   ;; :if window-system
   :hook (server-after-make-frame . spacious-padding-mode)
   :init
-  ;; (setq spacious-padding-subtle-mode-line t)
+  (setq spacious-padding-subtle-mode-line t)
   (setq spacious-padding-widths
-        '(:internal-border-width 15 ; 15
+        '(:internal-border-width 15
           :header-line-width 4
-          :mode-line-width 4 ; 6
-          :tab-width 4
-          :right-divider-width 15 ; 30
+          :mode-line-width 6
+          :tab-width 6 ; sync mode-line-width for keycast-tab-bar
+          :right-divider-width 20 ; 30
           :scroll-bar-width 8
-          :fringe-width 10)) ; 8
+          :fringe-width 20 ;; 8
+          ))
   (add-hook 'doom-load-theme-hook #'spacious-padding-mode)
   :config
-  (remove-hook 'doom-init-ui-hook #'window-divider-mode)
+  ;; (remove-hook 'doom-init-ui-hook #'window-divider-mode)
   ;; (blink-cursor-mode t)
   ;; (when (fboundp 'tooltip-mode) (tooltip-mode 1))
   ;; (when (fboundp 'tool-bar-mode) (tool-bar-mode 1))
-  (when (display-graphic-p) ; gui
-    (menu-bar-mode +1))
-
+  ;; (when (display-graphic-p) ; gui
+  ;;   (menu-bar-mode +1))
   (spacious-padding-mode +1)
   )
 
@@ -1741,22 +1767,26 @@ and if it is set to nil, then it would forcefully create the ID."
   :doc "Bibliograpic functions keymap."
 
   "b" #'org-cite-insert
-  "c" #'citar-open
-  "d" #'citar-dwim
-  "e" #'citar-open-entry
 
-  "a" #'citar-denote-add-citekey
+  "c" #'citar-open
+
+  "d" #'citar-denote-dwim
+  ;; "e" #'citar-open-entry
+  "e" #'citar-denote-open-reference-entry
+
+  "a" #'citar-denote-add-reference
   "1" #'citar-denote-find-citation ;; grep [cite @xxx]
 
   "i" #'citar-insert-citation
   "n" #'citar-create-note
-  "o" #'citar-open-note
+  "o" #'citar-denote-open-note
   "O" #'citar-open-links
 
   "f" #'citar-denote-find-reference
   "l" #'citar-denote-link-reference
-  ;; "e" #'citar-denote-open-reference-entry
-  ;; "k" #'citar-denote-remove-citekey
+
+  "s" #'citar-denote-create-silo-note
+  "k" #'citar-denote-remove-reference
   )
 
 (defvar-keymap ews-denote-map
