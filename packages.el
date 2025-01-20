@@ -136,6 +136,8 @@
 ;;;; org extra
 
 (package! org-modern)
+(package! org-modern-indent :recipe (:host github :repo "jdtsmith/org-modern-indent"))
+
 (package! org-download)
 (package! org-rainbow-tags)
 (package! org-glossary :recipe (:host github :repo "tecosaur/org-glossary" :files ("*.el" "*.org" "*.texi")))

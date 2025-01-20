@@ -335,10 +335,14 @@
   (setq +corfu-want-tab-prefer-navigating-snippets t)
   ;; (setq +corfu-want-tab-prefer-navigating-org-tables t)
 
-  ;; from minemacs
   ;; HACK: Prevent the annoting completion error when no `ispell' dictionary is set, prefer `cape-dict'
   (when (eq emacs-major-version 30)
     (setq text-mode-ispell-word-completion nil))
+
+  ;; cape-dict-file
+  (add-hook! '(org-mode-hook markdown-mode-hook)
+    (defun +corfu-add-cape-dict-h ()
+      (add-hook 'completion-at-point-functions #'cape-dict 0 t)))
 
   ;; IMO, modern editors have trained a bad habit into us all: a burning need for
   ;; completion all the time -- as we type, as we breathe, as we pray to the
@@ -985,7 +989,7 @@ only those in the selected frame."
   (setq org-rainbow-tags-hash-start-index 0)
   (setq org-rainbow-tags-extra-face-attributes
         '(:inverse-video t :box nil :weight 'bold))
-  :hook (org-mode . org-rainbow-tags-mode)
+  ;; :hook (org-mode . org-rainbow-tags-mode)
   )
 
 ;;;; org-download
@@ -1038,26 +1042,57 @@ only those in the selected frame."
 
   )
 
+;; Choose some fonts
+;; (set-face-attribute 'default nil :family "Iosevka")
+;; (set-face-attribute 'variable-pitch nil :family "Iosevka Aile")
+
 (use-package! org-modern
-  ;; :init
-  ;; (after! org
-  ;;   (require 'org-modern)
-  ;;   (add-hook 'org-mode-hook #'org-modern-mode)
-  ;;   (add-hook 'org-agenda-finalize-hook #'org-modern-agenda))
-  :custom
-  (org-modern-table nil)
-  (org-modern-keyword nil)
-  (org-modern-timestamp nil)
-  (org-modern-priority nil)
-  (org-modern-checkbox nil)
-  (org-modern-tag nil)
-  (org-modern-block-name nil)
-  (org-modern-footnote nil)
-  (org-modern-internal-target nil)
-  (org-modern-radio-target nil)
-  (org-modern-statistics nil)
-  (org-modern-progress nil)
+  :after org
+  ;; :custom
+  ;; (org-modern-table nil)
+  ;; (org-modern-keyword nil)
+  ;; (org-modern-timestamp nil)
+  ;; (org-modern-priority nil)
+  ;; (org-modern-checkbox nil)
+  ;; (org-modern-tag nil)
+  ;; (org-modern-block-name nil)
+  ;; (org-modern-footnote nil)
+  ;; (org-modern-internal-target nil)
+  ;; (org-modern-radio-target nil)
+  ;; (org-modern-statistics nil)
+  ;; (org-modern-progress nil)
+
+  :config
+
+  (setq
+   ;; Edit settings
+   org-auto-align-tags nil ; t
+   org-tags-column 0
+   org-catch-invisible-edits 'show-and-error
+   org-special-ctrl-a/e t
+   org-insert-heading-respect-content t
+
+   ;; Org styling, hide markup etc.
+   org-hide-emphasis-markers t ; nil
+   org-pretty-entities t ; nil
+   org-agenda-tags-column 0)
+
+  ;; Ellipsis styling
+  ;; (setq org-ellipsis "…")
+  ;; (set-face-attribute 'org-ellipsis nil :inherit 'default :box nil)
+  ;; (set-face-attribute 'org-modern-symbol nil :family "Iosevka")
+
+  (add-hook 'org-mode-hook #'org-modern-mode)
+  (add-hook 'org-agenda-finalize-hook #'org-modern-agenda)
+
+  (require 'org-modern-indent)
+  (add-hook 'org-mode-hook #'org-modern-indent-mode 90)
   )
+
+;; (use-package! org-modern-indent
+;;   :after org-modern
+;;   :config ; add late to hook
+;;   (add-hook 'org-mode-hook #'org-modern-indent-mode 90))
 
 (use-package! org-fragtog
   :after org
@@ -1340,11 +1375,11 @@ only those in the selected frame."
   :init
   (setq spacious-padding-subtle-mode-line t)
   (setq spacious-padding-widths
-        '(:internal-border-width 15
+        '(:internal-border-width 40 ; 15
           :header-line-width 4
           :mode-line-width 6
           :tab-width 6 ; sync mode-line-width for keycast-tab-bar
-          :right-divider-width 20 ; 30
+          :right-divider-width 40 ; 20 ; 30
           :scroll-bar-width 8
           :fringe-width 20 ;; 8
           ))
@@ -1455,9 +1490,9 @@ only those in the selected frame."
         modus-themes-org-blocks 'gray-background)
 
   (setq modus-themes-headings
-        (quote ((1 . (background overline variable-pitch 1.3))
-                (2 . (overline rainbow 1.2))
-                (3 . (overline 1.1))
+        (quote ((1 . (background overline 1.2)) ; variable-pitch
+                (2 . (overline rainbow 1.1))
+                (3 . (overline 1.05))
                 (t . (monochrome)))))
   )
 
