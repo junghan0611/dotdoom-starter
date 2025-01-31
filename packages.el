@@ -99,6 +99,10 @@
 
 ;;; additional packages
 
+;;;; completion
+
+(package! consult :pin "93cf368a676da1072f141e298908be05e2968f60") ; 1.9 stable
+
 ;;;; ui
 
 (unpin! doom-themes)
@@ -118,6 +122,7 @@
 ;;;; denote
 
 (package! denote)
+(package! denote-explore)
 (package! consult-notes)
 (package! citar-denote)
 
@@ -130,13 +135,14 @@
 
 ;;;; llmclient
 
+(package! aider :recipe (:host github :repo "tninja/aider.el" :files ("aider.el" "aider-doom.el")))
 (package! gptel)
 (package! gptel-quick :recipe (:host github :repo "karthink/gptel-quick"))
 
 ;;;; org extra
 
-(package! org-modern)
-(package! org-modern-indent :recipe (:host github :repo "jdtsmith/org-modern-indent"))
+;; (package! org-modern)
+;; (package! org-modern-indent :recipe (:host github :repo "jdtsmith/org-modern-indent"))
 
 (package! org-download)
 (package! org-rainbow-tags)
@@ -144,10 +150,11 @@
 (package! ten :recipe (:host sourcehut :repo "nobiot/ten")) ;; https://git.sr.ht/~nobiot/ten
 (package! org-fragtog)          ;; interactive toggling of inline latex formulas
 (package! org-transclusion)
+(package! org-sliced-images)
 
 ;;;; code
 
-;; (package! aggressive-indent)
+(package! aggressive-indent)
 ;; (package! geiser-mit :recipe (:host github :repo "emacsmirror/geiser-mit"))
 
 ;;;; tools
@@ -156,6 +163,10 @@
 (package! jinx) ; spell checker
 (package! term-keys :recipe (:host github :repo "junghan0611/term-keys"))
 (package! nov)
+
+;;;; workspaces
+
+(package! tabgo)
 
 ;;;; transient
 

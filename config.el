@@ -1046,48 +1046,48 @@ only those in the selected frame."
 ;; (set-face-attribute 'default nil :family "Iosevka")
 ;; (set-face-attribute 'variable-pitch nil :family "Iosevka Aile")
 
-(use-package! org-modern
-  :after org
-  ;; :custom
-  ;; (org-modern-table nil)
-  ;; (org-modern-keyword nil)
-  ;; (org-modern-timestamp nil)
-  ;; (org-modern-priority nil)
-  ;; (org-modern-checkbox nil)
-  ;; (org-modern-tag nil)
-  ;; (org-modern-block-name nil)
-  ;; (org-modern-footnote nil)
-  ;; (org-modern-internal-target nil)
-  ;; (org-modern-radio-target nil)
-  ;; (org-modern-statistics nil)
-  ;; (org-modern-progress nil)
+;; (use-package! org-modern
+;;   :after org
+;;   ;; :custom
+;;   ;; (org-modern-table nil)
+;;   ;; (org-modern-keyword nil)
+;;   ;; (org-modern-timestamp nil)
+;;   ;; (org-modern-priority nil)
+;;   ;; (org-modern-checkbox nil)
+;;   ;; (org-modern-tag nil)
+;;   ;; (org-modern-block-name nil)
+;;   ;; (org-modern-footnote nil)
+;;   ;; (org-modern-internal-target nil)
+;;   ;; (org-modern-radio-target nil)
+;;   ;; (org-modern-statistics nil)
+;;   ;; (org-modern-progress nil)
 
-  :config
+;;   :config
 
-  (setq
-   ;; Edit settings
-   org-auto-align-tags nil ; t
-   org-tags-column 0
-   org-catch-invisible-edits 'show-and-error
-   org-special-ctrl-a/e t
-   org-insert-heading-respect-content t
+;;   (setq
+;;    ;; Edit settings
+;;    org-auto-align-tags nil ; t
+;;    org-tags-column 0
+;;    org-catch-invisible-edits 'show-and-error
+;;    org-special-ctrl-a/e t
+;;    org-insert-heading-respect-content t
 
-   ;; Org styling, hide markup etc.
-   org-hide-emphasis-markers t ; nil
-   org-pretty-entities t ; nil
-   org-agenda-tags-column 0)
+;;    ;; Org styling, hide markup etc.
+;;    org-hide-emphasis-markers t ; nil
+;;    org-pretty-entities t ; nil
+;;    org-agenda-tags-column 0)
 
-  ;; Ellipsis styling
-  ;; (setq org-ellipsis "…")
-  ;; (set-face-attribute 'org-ellipsis nil :inherit 'default :box nil)
-  ;; (set-face-attribute 'org-modern-symbol nil :family "Iosevka")
+;;   ;; Ellipsis styling
+;;   ;; (setq org-ellipsis "…")
+;;   ;; (set-face-attribute 'org-ellipsis nil :inherit 'default :box nil)
+;;   ;; (set-face-attribute 'org-modern-symbol nil :family "Iosevka")
 
-  (add-hook 'org-mode-hook #'org-modern-mode)
-  (add-hook 'org-agenda-finalize-hook #'org-modern-agenda)
+;;   (add-hook 'org-mode-hook #'org-modern-mode)
+;;   (add-hook 'org-agenda-finalize-hook #'org-modern-agenda)
 
-  (require 'org-modern-indent)
-  (add-hook 'org-mode-hook #'org-modern-indent-mode 90)
-  )
+;;   (require 'org-modern-indent)
+;;   (add-hook 'org-mode-hook #'org-modern-indent-mode 90)
+;;   )
 
 ;; (use-package! org-modern-indent
 ;;   :after org-modern
@@ -1098,7 +1098,7 @@ only those in the selected frame."
   :after org
   :hook (org-mode . org-fragtog-mode)
   :init
-  (setq org-startup-with-latex-preview t) ; doom nil
+  ;; (setq org-startup-with-latex-preview t) ; doom nil
   (setq org-highlight-latex-and-related '(native script entities)) ; doom org +pretty
   ;; (setq org-highlight-latex-and-related '(native)) ; doom nil
   )
@@ -1114,6 +1114,11 @@ only those in the selected frame."
 (after! org-transclusion
   (add-to-list 'org-transclusion-extensions 'org-transclusion-indent-mode)
   (require 'org-transclusion-indent-mode))
+
+;; for smooth scroll of images in or mode
+(use-package! org-sliced-images
+  :after org
+  :config (org-sliced-images-mode))
 
 ;; (use-package! org-latex-preview
 ;;   :config
@@ -1268,6 +1273,10 @@ only those in the selected frame."
     (citar-denote-mode))
   )
 
+;;;; denote-explore
+
+(use-package! denote-explore)
+
 ;;; Ten with etags
 
 ;; (defun my/goto-etags ()
@@ -1341,6 +1350,19 @@ only those in the selected frame."
     (setq-default gptel-org-branching-context t))
   )
 
+;;;; aider.el
+
+(use-package! aider
+  :config
+  (setq aider-args '("--model" "deepseek/deepseek-chat"))
+  (setenv "ANTHROPIC_API_KEY" user-claude-api-key)
+  (setenv "OPENAI_API_KEY" user-openai-api-key)
+  (setenv "GEMINI_API_KEY" user-gemini-api-key)
+  (setenv "PERPLEXITYAI_API_KEY" user-perplexity-api-key)
+  (setenv "XAI_API_KEY" user-xai-api-key)
+  (setenv "DEEPSEEK_API_KEY" user-deepseek-api-key)
+  )
+
 ;;;; doom-modeline
 
 (setq doom-modeline-time nil)
@@ -1375,13 +1397,13 @@ only those in the selected frame."
   :init
   (setq spacious-padding-subtle-mode-line t)
   (setq spacious-padding-widths
-        '(:internal-border-width 40 ; 15
+        '(:internal-border-width 15 ; 15
           :header-line-width 4
-          :mode-line-width 6
-          :tab-width 6 ; sync mode-line-width for keycast-tab-bar
-          :right-divider-width 40 ; 20 ; 30
+          :mode-line-width 4
+          :tab-width 4 ; sync mode-line-width for keycast-tab-bar
+          :right-divider-width 30
           :scroll-bar-width 8
-          :fringe-width 20 ;; 8
+          :fringe-width 8
           ))
   (add-hook 'doom-load-theme-hook #'spacious-padding-mode)
   :config
@@ -1920,7 +1942,7 @@ and if it is set to nil, then it would forcefully create the ID."
 
 (map! :leader
       (:prefix "i"
-       :desc "time-stamp" "0" #'time-stamp
+       :desc "time-stamp" "1" #'time-stamp
        ))
 
 ;;;; mode-map

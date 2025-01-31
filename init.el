@@ -129,14 +129,14 @@
        markdown          ; writing docs for people to ignore
        (org                         ; organize your plain life in plain text
         +hugo                     ; use Emacs for hugo blogging
-        ;; +noter                      ; enhanced PDF notetaking
-        ;; +jupyter                    ; ipython/jupyter support for babel
+        +jupyter                    ; ipython/jupyter support for babel
         +pandoc                     ; export-with-pandoc support
-        ;; +gnuplot                    ; who doesn't like pretty pictures
-        ;; +pomodoro                 ; be fruitful with the tomato technique
-        ;; +present                    ; using org-mode for presentations
-        ;; +contacts
+        +gnuplot                    ; who doesn't like pretty pictures
+        +present                    ; using org-mode for presentations
+        +contacts
         +journal
+        ;; +noter                      ; enhanced PDF notetaking
+        ;; +pomodoro                 ; be fruitful with the tomato technique
         )                     ; wander around notes
        ;; sh                ; she sells {ba,z,fi}sh shells on the C xor
        (python +lsp) ; +conda beautiful is better than ugly

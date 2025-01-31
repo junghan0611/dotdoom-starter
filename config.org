@@ -322,14 +322,14 @@ All necessary settings are therefore set by hand as part of this configuration f
        markdown          ; writing docs for people to ignore
        (org                         ; organize your plain life in plain text
         +hugo                     ; use Emacs for hugo blogging
-        ;; +noter                      ; enhanced PDF notetaking
-        ;; +jupyter                    ; ipython/jupyter support for babel
+        +jupyter                    ; ipython/jupyter support for babel
         +pandoc                     ; export-with-pandoc support
-        ;; +gnuplot                    ; who doesn't like pretty pictures
-        ;; +pomodoro                 ; be fruitful with the tomato technique
-        ;; +present                    ; using org-mode for presentations
-        ;; +contacts
+        +gnuplot                    ; who doesn't like pretty pictures
+        +present                    ; using org-mode for presentations
+        +contacts
         +journal
+        ;; +noter                      ; enhanced PDF notetaking
+        ;; +pomodoro                 ; be fruitful with the tomato technique
         )                     ; wander around notes
        ;; sh                ; she sells {ba,z,fi}sh shells on the C xor
        (python +lsp) ; +conda beautiful is better than ugly
@@ -412,6 +412,10 @@ All necessary settings are therefore set by hand as part of this configuration f
 
 ;;; additional packages
 
+;;;; completion
+
+(package! consult :pin "93cf368a676da1072f141e298908be05e2968f60") ; 1.9 stable
+
 ;;;; ui
 
 (unpin! doom-themes)
@@ -431,6 +435,7 @@ All necessary settings are therefore set by hand as part of this configuration f
 ;;;; denote
 
 (package! denote)
+(package! denote-explore)
 (package! consult-notes)
 (package! citar-denote)
 
@@ -443,13 +448,14 @@ All necessary settings are therefore set by hand as part of this configuration f
 
 ;;;; llmclient
 
+(package! aider :recipe (:host github :repo "tninja/aider.el" :files ("aider.el" "aider-doom.el")))
 (package! gptel)
 (package! gptel-quick :recipe (:host github :repo "karthink/gptel-quick"))
 
 ;;;; org extra
 
-(package! org-modern)
-(package! org-modern-indent :recipe (:host github :repo "jdtsmith/org-modern-indent"))
+;; (package! org-modern)
+;; (package! org-modern-indent :recipe (:host github :repo "jdtsmith/org-modern-indent"))
 
 (package! org-download)
 (package! org-rainbow-tags)
@@ -457,10 +463,11 @@ All necessary settings are therefore set by hand as part of this configuration f
 (package! ten :recipe (:host sourcehut :repo "nobiot/ten")) ;; https://git.sr.ht/~nobiot/ten
 (package! org-fragtog)          ;; interactive toggling of inline latex formulas
 (package! org-transclusion)
+(package! org-sliced-images)
 
 ;;;; code
 
-;; (package! aggressive-indent)
+(package! aggressive-indent)
 ;; (package! geiser-mit :recipe (:host github :repo "emacsmirror/geiser-mit"))
 
 ;;;; tools
@@ -469,6 +476,10 @@ All necessary settings are therefore set by hand as part of this configuration f
 (package! jinx) ; spell checker
 (package! term-keys :recipe (:host github :repo "junghan0611/term-keys"))
 (package! nov)
+
+;;;; workspaces
+
+(package! tabgo)
 
 ;;;; transient
 
@@ -1686,7 +1697,8 @@ only those in the selected frame."
 
   )
 #+end_src
-**** org-modern
+**** DONT org-modern
+CLOSED: [2025-01-31 Fri 22:39]
 
 #+begin_src emacs-lisp :tangle config.el
 
@@ -1694,48 +1706,48 @@ only those in the selected frame."
 ;; (set-face-attribute 'default nil :family "Iosevka")
 ;; (set-face-attribute 'variable-pitch nil :family "Iosevka Aile")
 
-(use-package! org-modern
-  :after org
-  ;; :custom
-  ;; (org-modern-table nil)
-  ;; (org-modern-keyword nil)
-  ;; (org-modern-timestamp nil)
-  ;; (org-modern-priority nil)
-  ;; (org-modern-checkbox nil)
-  ;; (org-modern-tag nil)
-  ;; (org-modern-block-name nil)
-  ;; (org-modern-footnote nil)
-  ;; (org-modern-internal-target nil)
-  ;; (org-modern-radio-target nil)
-  ;; (org-modern-statistics nil)
-  ;; (org-modern-progress nil)
+;; (use-package! org-modern
+;;   :after org
+;;   ;; :custom
+;;   ;; (org-modern-table nil)
+;;   ;; (org-modern-keyword nil)
+;;   ;; (org-modern-timestamp nil)
+;;   ;; (org-modern-priority nil)
+;;   ;; (org-modern-checkbox nil)
+;;   ;; (org-modern-tag nil)
+;;   ;; (org-modern-block-name nil)
+;;   ;; (org-modern-footnote nil)
+;;   ;; (org-modern-internal-target nil)
+;;   ;; (org-modern-radio-target nil)
+;;   ;; (org-modern-statistics nil)
+;;   ;; (org-modern-progress nil)
 
-  :config
+;;   :config
 
-  (setq
-   ;; Edit settings
-   org-auto-align-tags nil ; t
-   org-tags-column 0
-   org-catch-invisible-edits 'show-and-error
-   org-special-ctrl-a/e t
-   org-insert-heading-respect-content t
+;;   (setq
+;;    ;; Edit settings
+;;    org-auto-align-tags nil ; t
+;;    org-tags-column 0
+;;    org-catch-invisible-edits 'show-and-error
+;;    org-special-ctrl-a/e t
+;;    org-insert-heading-respect-content t
 
-   ;; Org styling, hide markup etc.
-   org-hide-emphasis-markers t ; nil
-   org-pretty-entities t ; nil
-   org-agenda-tags-column 0)
+;;    ;; Org styling, hide markup etc.
+;;    org-hide-emphasis-markers t ; nil
+;;    org-pretty-entities t ; nil
+;;    org-agenda-tags-column 0)
 
-  ;; Ellipsis styling
-  ;; (setq org-ellipsis "…")
-  ;; (set-face-attribute 'org-ellipsis nil :inherit 'default :box nil)
-  ;; (set-face-attribute 'org-modern-symbol nil :family "Iosevka")
+;;   ;; Ellipsis styling
+;;   ;; (setq org-ellipsis "…")
+;;   ;; (set-face-attribute 'org-ellipsis nil :inherit 'default :box nil)
+;;   ;; (set-face-attribute 'org-modern-symbol nil :family "Iosevka")
 
-  (add-hook 'org-mode-hook #'org-modern-mode)
-  (add-hook 'org-agenda-finalize-hook #'org-modern-agenda)
+;;   (add-hook 'org-mode-hook #'org-modern-mode)
+;;   (add-hook 'org-agenda-finalize-hook #'org-modern-agenda)
 
-  (require 'org-modern-indent)
-  (add-hook 'org-mode-hook #'org-modern-indent-mode 90)
-  )
+;;   (require 'org-modern-indent)
+;;   (add-hook 'org-mode-hook #'org-modern-indent-mode 90)
+;;   )
 
 ;; (use-package! org-modern-indent
 ;;   :after org-modern
@@ -1751,7 +1763,7 @@ only those in the selected frame."
   :after org
   :hook (org-mode . org-fragtog-mode)
   :init
-  (setq org-startup-with-latex-preview t) ; doom nil
+  ;; (setq org-startup-with-latex-preview t) ; doom nil
   (setq org-highlight-latex-and-related '(native script entities)) ; doom org +pretty
   ;; (setq org-highlight-latex-and-related '(native)) ; doom nil
   )
@@ -1770,6 +1782,15 @@ only those in the selected frame."
 (after! org-transclusion
   (add-to-list 'org-transclusion-extensions 'org-transclusion-indent-mode)
   (require 'org-transclusion-indent-mode))
+#+end_src
+**** org-sliced-images
+
+#+begin_src emacs-lisp :tangle config.el
+
+;; for smooth scroll of images in or mode
+(use-package! org-sliced-images
+  :after org
+  :config (org-sliced-images-mode))
 #+end_src
 *** DONT org-latex-preview :noexport:
 CLOSED: [2024-10-21 Mon 20:38]
@@ -1885,16 +1906,16 @@ rm -Rf eln-cache
 
   (setq denote-org-front-matter
         "#+title:      %1$s
-#+hugo_lastmod: Time-stamp: <>
-#+filetags:   %3$s
-#+date:       %2$s
-#+identifier: %4$s
-#+export_file_name: %4$s.md
-#+description:
-#+HUGO_CATEGORIES: Noname
-#+filetags:   :fleeting:
+,#+hugo_lastmod: Time-stamp: <>
+,#+filetags:   %3$s
+,#+date:       %2$s
+,#+identifier: %4$s
+,#+export_file_name: %4$s.md
+,#+description:
+,#+HUGO_CATEGORIES: Noname
+,#+filetags:   :fleeting:
 
-#+print_bibliography:
+,#+print_bibliography:
 
 \n")
 
@@ -1945,6 +1966,11 @@ rm -Rf eln-cache
     :config
     (citar-denote-mode))
   )
+
+;;;; denote-explore
+
+(use-package! denote-explore)
+
 #+end_src
 *** ten
 #+begin_src emacs-lisp :tangle config.el
@@ -2025,6 +2051,22 @@ rm -Rf eln-cache
     (setq-default gptel-org-branching-context t))
   )
 #+end_src
+*** aider.el
+#+begin_src emacs-lisp :tangle config.el
+;;;; aider.el
+
+(use-package! aider
+  :config
+  (setq aider-args '("--model" "deepseek/deepseek-chat"))
+  (setenv "ANTHROPIC_API_KEY" user-claude-api-key)
+  (setenv "OPENAI_API_KEY" user-openai-api-key)
+  (setenv "GEMINI_API_KEY" user-gemini-api-key)
+  (setenv "PERPLEXITYAI_API_KEY" user-perplexity-api-key)
+  (setenv "XAI_API_KEY" user-xai-api-key)
+  (setenv "DEEPSEEK_API_KEY" user-deepseek-api-key)
+  )
+
+#+end_src
 ** ui
 
 *** doom-modeline
@@ -2068,13 +2110,13 @@ rm -Rf eln-cache
   :init
   (setq spacious-padding-subtle-mode-line t)
   (setq spacious-padding-widths
-        '(:internal-border-width 40 ; 15
+        '(:internal-border-width 15 ; 15
           :header-line-width 4
-          :mode-line-width 6
-          :tab-width 6 ; sync mode-line-width for keycast-tab-bar
-          :right-divider-width 40 ; 20 ; 30
+          :mode-line-width 4
+          :tab-width 4 ; sync mode-line-width for keycast-tab-bar
+          :right-divider-width 30
           :scroll-bar-width 8
-          :fringe-width 20 ;; 8
+          :fringe-width 8
           ))
   (add-hook 'doom-load-theme-hook #'spacious-padding-mode)
   :config
@@ -2325,6 +2367,8 @@ rm -Rf eln-cache
   (setq elfeed-tube-captions-languages '("en" "ko" "englsh (auto generated)")))
 #+end_src
 *** nov
+
+완벽한 노브 설정 법이다.
 
 #+begin_src emacs-lisp :tangle config.el
 
@@ -2681,7 +2725,7 @@ and if it is set to nil, then it would forcefully create the ID."
 
 (map! :leader
       (:prefix "i"
-       :desc "time-stamp" "0" #'time-stamp
+       :desc "time-stamp" "1" #'time-stamp
        ))
 
 ;;;; mode-map
