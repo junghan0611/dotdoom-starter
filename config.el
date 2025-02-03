@@ -234,7 +234,8 @@
 
 (progn
   (require 'dabbrev)
-  (setq dabbrev-abbrev-char-regexp "[A-Za-z-_]") ; tshu
+  (setq dabbrev-abbrev-char-regexp "[가-힣A-Za-z-_]")
+  (setq dabbrev-upcase-means-case-search nil) ; default t
   (setq dabbrev-ignored-buffer-regexps
         '("\\` "
           "\\.\\(?:pdf\\|jpe?g\\|png\\)\\'"
@@ -295,11 +296,16 @@
     )
   )
 
+;;;; visual-line-mode
+
+(add-hook 'backtrace-mode-hook 'display-line-numbers-mode)
+(add-hook 'backtrace-mode-hook 'visual-line-mode)
+
 ;;;; which-key
 
 (after! which-key
   (setq
-   which-key-max-description-length 36 ; doom 27, spacemacs 36
+   which-key-max-description-length 29 ; doom 27, spacemacs 36
    which-key-idle-delay 0.4
    which-key-idle-secondary-delay 0.01
   ;;  which-key-ellipsis ".."
@@ -333,16 +339,11 @@
 
   (setq +corfu-want-tab-prefer-expand-snippets t) ; 2024-11-06
   (setq +corfu-want-tab-prefer-navigating-snippets t)
-  ;; (setq +corfu-want-tab-prefer-navigating-org-tables t)
+  (setq +corfu-want-tab-prefer-navigating-org-tables t)
 
   ;; HACK: Prevent the annoting completion error when no `ispell' dictionary is set, prefer `cape-dict'
   (when (eq emacs-major-version 30)
     (setq text-mode-ispell-word-completion nil))
-
-  ;; cape-dict-file
-  (add-hook! '(org-mode-hook markdown-mode-hook)
-    (defun +corfu-add-cape-dict-h ()
-      (add-hook 'completion-at-point-functions #'cape-dict 0 t)))
 
   ;; IMO, modern editors have trained a bad habit into us all: a burning need for
   ;; completion all the time -- as we type, as we breathe, as we pray to the
@@ -421,8 +422,6 @@
   (with-eval-after-load 'evil-maps
     (define-key evil-motion-state-map "L" nil)
     (define-key evil-motion-state-map "M" nil)
-
-    (evil-global-set-key 'normal (kbd "DEL") 'evil-switch-to-windows-last-buffer) ; Backspace
 
     ;; Replace Emacs Tabs key bindings with Workspace key bindings
     ;; replace "." search with consul-line in Evil normal state
@@ -1205,10 +1204,12 @@ only those in the selected frame."
   (require 'denote-org-extras)
   (setq denote-file-type 'org)
   (setq denote-sort-components '(signature title keywords identifier))
-  (setq denote-backlinks-show-context t)
+  (setq denote-backlinks-show-context nil)
   (setq denote-sort-keywords t)
   (setq denote-infer-keywords t)
   (setq denote-excluded-directories-regexp "screenshot")
+
+
 
   (setq denote-org-front-matter
         "#+title:      %1$s
@@ -1234,7 +1235,7 @@ only those in the selected frame."
         denote-rename-confirmations nil ; default '(rewrite-front-matter modify-file-name)
         denote-save-buffers t) ; default nil
   (add-hook 'org-mode-hook (lambda ()
-                             ;; (setq denote-rename-buffer-backlinks-indicator " @")
+                             (setq denote-rename-buffer-backlinks-indicator "¶")
                              (setq denote-rename-buffer-format "%t%b")
                              (denote-rename-buffer-mode +1)))
 
@@ -1286,33 +1287,12 @@ only those in the selected frame."
 
 (use-package! ten
   :defer 2
-  ;; :bind (("M-c t" . complete-tag)
-  ;;        ("C-c M-." . my/goto-etags))
-  ;; :hook ((org-mode Info-mode) . ten-font-lock-mode) ;; text-mode
+  :hook ((org-mode Info-mode) . ten-font-lock-mode) ;; text-mode
   :init
-  ;; (add-hook 'doom-after-init-hook #'ten-mode)
-  ;; Enabling `ten' in text-mode and other major modes that inherit it,
-  ;; such as `org-mode' and `markdown-mode'. If you wish to be more
-  ;; specific, remove `text-mode' and add other more specific modes to
-  ;; the list.
-  ;; (setq ten-file-extensions '("org" "txt"))
   (setq ten-exclude-regexps '("/\\."))
-  ;; I am listing two specific dictionary files in the `test/`
-  ;; subdirectory as an example below. You can list the
-  ;; `~/src/ten/test/' directory to let Ten to search files recursively
-  ;; in the directory and subdirectories in it. There are about 5,000
-  ;; terms in total and I don't experience any perfomance issue on my
-  ;; old Lenovo Thinkpad laptop. Ten looks for files with an extension
-  ;; listed in `ten-file-extensions' and excludes files and those in
-  ;; directories that match the list of regexps `ten-exclude-regexps'.
-  ;; (setq ten-files-and-directories
-  ;;       '( "~/sync/emacs/git/default/ten/test/Glossary-philosophy.txt"
-  ;;          "~/sync/emacs/git/default/ten/test/Glossary-of-graph-theory.txt"))
-  ;; The dictionary file (only one at a time can be active through
-  ;; `etags', but you can switch between more than one of them if you
-  ;; need to. The switching experience is not intuitive and it's a TODO
-  ;; to improve it.)
-  ;; (setq ten-tags-file-default "~/sync/emacs/git/default/ten/ten-TAGS")
+  :config
+  (require 'consult-ten)
+  (add-to-list 'consult-buffer-sources 'consult-ten-glossary 'append) ; g
   )
 
 ;;; llmclient
@@ -1962,6 +1942,10 @@ and if it is set to nil, then it would forcefully create the ID."
        :n "C-n" #'org-next-visible-heading
        :n "C-p" #'org-previous-visible-heading
        :n "zu" #'outline-up-heading
+       "C-c d"  #'cape-dict
+       :i "<tab>"  #'completion-at-point ; 2025-02-03
+       :i "TAB"  #'completion-at-point
+       "M--" #'denote-find-backlink
        ))
 
 (map! (:map org-journal-mode-map
@@ -2012,5 +1996,36 @@ and if it is set to nil, then it would forcefully create the ID."
   ;; "C-c [" #'sp-wrap-square ; conflict org-mode-map
   ;; "C-c {" #'sp-wrap-curly
   ))
+
+;;; Custom EVIL Keys
+
+(map! :i "M-l" #'sp-forward-slurp-sexp ; downcase-word
+      :i "M-h" #'sp-forward-barf-sexp  ; mark-paragraph
+      ;; :v "s" #'evil-surround-region
+      ;; "s-b" #'consult-buffer
+      ;; "s-=" #'text-scale-increase
+      ;; "s--" #'text-scale-decrease
+      :n "] p" (cmd! () (evil-forward-paragraph) (recenter)) ; nop
+      :n "[ p" (cmd! () (evil-backward-paragraph) (recenter)) ; nop
+      ;; :n "DEL" #'previous-buffer
+      :n "DEL" #'evil-switch-to-windows-last-buffer ; BACKSPACE
+      ;; :n "s-e" #'+scroll-line-down-other-window
+      ;; :n "s-y" #'+scroll-line-up-other-window
+      :i "M-/" #'hippie-expand
+      :n "g SPC" #'evil-jump-to-tag
+      :i "C-v" #'evil-paste-after ; evil-quoted-insert : 'C-q'
+      :n "[ g" #'+vc-gutter/previous-hunk ; remap diff-hl-previous-hunk
+      :n "] g" #'+vc-gutter/next-hunk ; remap diff-hl-next-hunk
+
+      :m "8" #'evil-ex-search-word-forward ; default *
+      :m "3" #'evil-ex-search-word-backward ; default #
+      :m "4" #'evil-end-of-line ; default $
+      :m "0" #'evil-beginning-of-line
+
+      ;; :m "C-i" #'evil-jump-forward ;; evil-want-C-i-jump - evil-maps.el
+      :n "g ]" #'evil-jump-forward
+      :n "g [" #'evil-jump-backward
+      :n "g RET" #'tabgo
+      )
 
 ;;; user-keybindings
