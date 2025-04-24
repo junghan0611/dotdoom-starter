@@ -50,20 +50,21 @@
 
 (doom! :input
        :completion
-       (corfu +orderless +dabbrev) ; +icons
+       (corfu +orderless) ; +icons
        vertico
 
        :ui
        doom              ; what makes DOOM look the way it does
-       ;; doom-dashboard
+       doom-dashboard    ; a nifty splash screen for Emacs
        hl-todo           ; highlight TODO/FIXME/NOTE/DEPRECATED/HACK/REVIEW/XXX/BUG
        ;; indent-guides     ; highlighted indent columns
        modeline          ; snazzy, Atom-inspired modeline, plus API
        ophints           ; highlight the region an operation acts on
        (popup +defaults) ; tame sudden yet inevitable temporary windows
+       (smooth-scroll +interpolate) ; So smooth you won't believe it's not butter
+
        treemacs          ; a project drawer, like neotree but cooler
        vc-gutter         ; vcs diff in the fringe
-       ;; vi-tilde-fringe   ; fringe tildes to mark beyond EOB
        (window-select +numbers) ; visually switch windows
        workspaces        ; tab emulation, persistence & separate workspaces
        zen               ; distraction-free coding or writing
@@ -80,7 +81,7 @@
        (evil +everywhere); come to the dark side, we have cookies
 
        :emacs
-       dired             ; making dired pretty [functional]
+       (dired +icons)  ; making dired pretty [functional]
        electric          ; smarter, keyword-based electric-indent
        eww               ; the internet is gross
        ibuffer           ; +icons - interactive buffer management
@@ -92,17 +93,17 @@
        (:if (not (memq system-type '(cygwin windows-nt ms-dos))) vterm) ; the best terminal emulation in Emacs
 
        :checkers
-       (syntax +flymake)
+        (syntax +flymake) ; tasing you for every semicolon you forget
        ;; spell +flyspell ; +hunspell - tasing you for misspelling mispelling
        ;; grammar           ; tasing grammar mistake every you make
        :tools
        biblio
-       ;; (:unless IS-TERMUX (debugger)) ; FIXME stepping through code, to help you add bugs
+       debugger ; FIXME stepping through code, to help you add bugs
        ;; (:unless IS-TERMUX (direnv))
 
        (eval +overlay)     ; run code, run (also, repls)
        lookup
-       (lsp +eglot) ; +peek
+       (lsp +eglot)
 
        magit  ; +forge a git porcelain for Emacs
 
@@ -135,13 +136,14 @@
         +present                    ; using org-mode for presentations
         +contacts
         +journal
+        +pretty
         ;; +noter                      ; enhanced PDF notetaking
         ;; +pomodoro                 ; be fruitful with the tomato technique
         )                     ; wander around notes
        ;; sh                ; she sells {ba,z,fi}sh shells on the C xor
-       (python +lsp) ; +conda beautiful is better than ugly
-       racket ; a DSL for DSLs
-       (scheme +mit) ;; +racket ; a fully conniving family of lisps
+       (python +lsp +pyright) ; +conda - beautiful is better than ugly
+       ;; racket ; a DSL for DSLs
+       ;; (scheme +mit) ;; +racket ; a fully conniving family of lisps
        web ; the tubes
        yaml ; JSON, but readable
 

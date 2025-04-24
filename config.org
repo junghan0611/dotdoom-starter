@@ -16,6 +16,7 @@ possiblly minimum but useful
 - 2024-10-03 org-latex-preview-auto-mode for test
 - 2024-11-16 version 0.1 - eglot
 - 2025-01-06 create ews-starter, fork ccmenu
+- 2025-02-15 back to lsp-mode
 
 * Installation
 
@@ -243,20 +244,21 @@ All necessary settings are therefore set by hand as part of this configuration f
 
 (doom! :input
        :completion
-       (corfu +orderless +dabbrev) ; +icons
+       (corfu +orderless) ; +icons
        vertico
 
        :ui
        doom              ; what makes DOOM look the way it does
-       ;; doom-dashboard
+       doom-dashboard    ; a nifty splash screen for Emacs
        hl-todo           ; highlight TODO/FIXME/NOTE/DEPRECATED/HACK/REVIEW/XXX/BUG
        ;; indent-guides     ; highlighted indent columns
        modeline          ; snazzy, Atom-inspired modeline, plus API
        ophints           ; highlight the region an operation acts on
        (popup +defaults) ; tame sudden yet inevitable temporary windows
+       (smooth-scroll +interpolate) ; So smooth you won't believe it's not butter
+
        treemacs          ; a project drawer, like neotree but cooler
        vc-gutter         ; vcs diff in the fringe
-       ;; vi-tilde-fringe   ; fringe tildes to mark beyond EOB
        (window-select +numbers) ; visually switch windows
        workspaces        ; tab emulation, persistence & separate workspaces
        zen               ; distraction-free coding or writing
@@ -273,7 +275,7 @@ All necessary settings are therefore set by hand as part of this configuration f
        (evil +everywhere); come to the dark side, we have cookies
 
        :emacs
-       dired             ; making dired pretty [functional]
+       (dired +icons)  ; making dired pretty [functional]
        electric          ; smarter, keyword-based electric-indent
        eww               ; the internet is gross
        ibuffer           ; +icons - interactive buffer management
@@ -285,17 +287,17 @@ All necessary settings are therefore set by hand as part of this configuration f
        (:if (not (memq system-type '(cygwin windows-nt ms-dos))) vterm) ; the best terminal emulation in Emacs
 
        :checkers
-       (syntax +flymake)
+        (syntax +flymake) ; tasing you for every semicolon you forget
        ;; spell +flyspell ; +hunspell - tasing you for misspelling mispelling
        ;; grammar           ; tasing grammar mistake every you make
        :tools
        biblio
-       ;; (:unless IS-TERMUX (debugger)) ; FIXME stepping through code, to help you add bugs
+       debugger ; FIXME stepping through code, to help you add bugs
        ;; (:unless IS-TERMUX (direnv))
 
        (eval +overlay)     ; run code, run (also, repls)
        lookup
-       (lsp +eglot) ; +peek
+       (lsp +eglot)
 
        magit  ; +forge a git porcelain for Emacs
 
@@ -328,13 +330,14 @@ All necessary settings are therefore set by hand as part of this configuration f
         +present                    ; using org-mode for presentations
         +contacts
         +journal
+        +pretty
         ;; +noter                      ; enhanced PDF notetaking
         ;; +pomodoro                 ; be fruitful with the tomato technique
         )                     ; wander around notes
        ;; sh                ; she sells {ba,z,fi}sh shells on the C xor
-       (python +lsp) ; +conda beautiful is better than ugly
-       racket ; a DSL for DSLs
-       (scheme +mit) ;; +racket ; a fully conniving family of lisps
+       (python +lsp +pyright) ; +conda - beautiful is better than ugly
+       ;; racket ; a DSL for DSLs
+       ;; (scheme +mit) ;; +racket ; a fully conniving family of lisps
        web ; the tubes
        yaml ; JSON, but readable
 
@@ -365,16 +368,14 @@ All necessary settings are therefore set by hand as part of this configuration f
 
 (package! diredfl :disable t) ; conflict @denote
 (package! dirvish :disable t)
-(package! paredit :disable t) ; clojure module
 (package! code-review :disable t) ; not working
 
 ;; checkers
 (package! flyspell-lazy :disable t)
 (package! flymake-popon :disable t)
-(package! flycheck :disable t)
 (package! flycheck-popup-tip :disable t) ; conflict
 (package! flycheck-plantuml :disable t)
-(package! flycheck :disable t)
+;; (package! flycheck :disable t)
 (package! lsp-mode :disable t) ; use eglot
 
 (package! nose :disable t) ; python module
@@ -385,10 +386,6 @@ All necessary settings are therefore set by hand as part of this configuration f
 
 ;; app rss
 (package! elfeed-goodies :disable t)
-
-;; org
-(package! org-superstar :disable t)
-(package! org-fancy-priorities :disable t)
 
 (package! solaire-mode :disable t)
 ;; (package! ace-window :disable t)
@@ -414,8 +411,6 @@ All necessary settings are therefore set by hand as part of this configuration f
 
 ;;;; completion
 
-(package! consult :pin "93cf368a676da1072f141e298908be05e2968f60") ; 1.9 stable
-
 ;;;; ui
 
 (unpin! doom-themes)
@@ -435,7 +430,14 @@ All necessary settings are therefore set by hand as part of this configuration f
 ;;;; denote
 
 (package! denote)
+(package! denote-org)
+(package! denote-silo)
+(package! denote-sequence)
+(package! denote-markdown)
+(package! denote-journal)
+
 (package! denote-explore)
+(package! denote-search)
 (package! consult-notes)
 (package! citar-denote)
 
@@ -443,19 +445,15 @@ All necessary settings are therefore set by hand as part of this configuration f
 
 (package! tempel)
 (package! tempel-collection)
-(package! imenu-list)
+(package! imenu-list :recipe (:host github :repo "junghan0611/imenu-list" :branch "master"))
 (package! laas)
 
 ;;;; llmclient
 
-(package! aider :recipe (:host github :repo "tninja/aider.el" :files ("aider.el" "aider-doom.el")))
 (package! gptel)
 (package! gptel-quick :recipe (:host github :repo "karthink/gptel-quick"))
 
 ;;;; org extra
-
-;; (package! org-modern)
-;; (package! org-modern-indent :recipe (:host github :repo "jdtsmith/org-modern-indent"))
 
 (package! org-download)
 (package! org-rainbow-tags)
@@ -463,7 +461,6 @@ All necessary settings are therefore set by hand as part of this configuration f
 (package! ten :recipe (:host sourcehut :repo "nobiot/ten")) ;; https://git.sr.ht/~nobiot/ten
 (package! org-fragtog)          ;; interactive toggling of inline latex formulas
 (package! org-transclusion)
-(package! org-sliced-images)
 
 ;;;; code
 
@@ -534,8 +531,8 @@ CLOSED: [2024-10-21 Mon 20:36]
 (setq user-full-name "junghanacs"
       user-mail-address "junghanacs@gmail.com")
 
-(setq doom-font (font-spec :family "Monoplex KR Nerd" :size 14.0)
-      doom-big-font (font-spec :family "Monoplex KR Nerd" :size 24.0)
+(setq doom-font (font-spec :family "Monoplex Nerd" :size 14.0)
+      doom-big-font (font-spec :family "Monoplex Nerd" :size 24.0)
       doom-variable-pitch-font (font-spec :family "Pretendard Variable" :size 14.0)
       doom-unicode-font (font-spec :family "Symbola" :size 14.0))
 
@@ -732,7 +729,7 @@ Font test: " & ' ∀ ∃ ∅ ∈ ∉ ∏ ∑ √ ∞ ∧ ∨ ∩ ∪ ∫ ² ³ �
   ;; Treat clipboard input as UTF-8 string first; compound text next, etc.
   (setq x-select-request-type '(UTF8_STRING COMPOUND_TEXT TEXT STRING))
 
-  (setq-default line-spacing 3) ; use fontaine
+  (setq-default line-spacing 3)
 
   ;; (setenv "LANG" "en_US.UTF-8")
   ;; (setenv "LC_ALL" "en_US.UTF-8")
@@ -775,6 +772,9 @@ Font test: " & ' ∀ ∃ ∅ ∈ ∉ ∏ ∑ √ ∞ ∧ ∨ ∩ ∪ ∫ ² ³ �
 *** better default
 #+begin_src emacs-lisp :tangle config.el
 ;;; better default
+
+;; 'tags-completion-at-point-function' break ten-glossary
+(setq-default completion-at-point-functions nil) ; important
 
 ;; (setq-default display-line-numbers-width-start t) ; doom's default t
 (setq inhibit-compacting-font-caches t)
@@ -820,7 +820,7 @@ Font test: " & ' ∀ ∃ ∅ ∈ ∉ ∏ ∑ √ ∞ ∧ ∨ ∩ ∪ ∫ ² ³ �
           "\\(?:\\(?:[EG]?\\|GR\\)TAGS\\|e?tags\\|GPATH\\)\\(<[0-9]+>\\)?"))
   (setq dabbrev-abbrev-skip-leading-regexp "[$*/=~']"))
 #+end_src
-*** dired
+*** DONT dired
 #+begin_src emacs-lisp :tangle config.el
 ;;;; dired
 
@@ -909,6 +909,27 @@ Font test: " & ' ∀ ∃ ∅ ∈ ∉ ∏ ∑ √ ∞ ∧ ∨ ∩ ∪ ∫ ² ³ �
    (display-buffer-no-window)
    (allow-no-window . t)))
 #+end_src
+*** dabbrev
+#+begin_src emacs-lisp :tangle config.el
+;;;; dabbrev
+
+(progn
+  (require 'dabbrev)
+  (setq dabbrev-abbrev-char-regexp "[가-힣A-Za-z-_]")
+  (setq dabbrev-ignored-buffer-regexps
+        '("\\` "
+          "\\.\\(?:pdf\\|jpe?g\\|png\\)\\'"
+          "\\(?:\\(?:[EG]?\\|GR\\)TAGS\\|e?tags\\|GPATH\\)\\(<[0-9]+>\\)?"))
+  (setq dabbrev-abbrev-skip-leading-regexp "[$*/=~']")
+  (setq dabbrev-upcase-means-case-search nil) ; default t
+
+  (add-to-list 'dabbrev-ignored-buffer-modes 'pdf-view-mode)
+  (add-to-list 'dabbrev-ignored-buffer-modes 'doc-view-mode)
+  (add-to-list 'dabbrev-ignored-buffer-modes 'tags-table-mode)
+  ;; (setq dabbrev-check-all-buffers t) ;; default t
+  ;; (setq cape-dabbrev-check-other-buffers t) ; enable when dabbrev on init.el
+  )
+#+end_src
 ** completion
 
 *** corfu
@@ -924,15 +945,14 @@ Font test: " & ' ∀ ∃ ∅ ∈ ∉ ∏ ∑ √ ∞ ∧ ∨ ∩ ∪ ∫ ² ³ �
 
 (after! corfu
   ;; (setq corfu-auto-delay 0.5) ; doom 0.24
-  (setq corfu-auto-prefix 3) ; doom 2
-  (setq corfu-preselect 'valid) ; doom 'prompt
-  (setq completion-cycle-threshold 3) ; doom nil
-  (setq tab-always-indent t) ; for jump-out-of-pair - doom 'complete
+  (setq corfu-auto-prefix 4) ; doom 2, default 3
+  ;; (setq corfu-preselect 'valid) ; doom 'prompt
+  ;; (setq tab-always-indent t) ; for jump-out-of-pair - doom 'complete
   (setq +corfu-want-minibuffer-completion nil) ; doom t
 
-  (setq +corfu-want-tab-prefer-expand-snippets t) ; 2024-11-06
-  (setq +corfu-want-tab-prefer-navigating-snippets t)
-  (setq +corfu-want-tab-prefer-navigating-org-tables t)
+  (setq +corfu-want-tab-prefer-expand-snippets nil)
+  (setq +corfu-want-tab-prefer-navigating-snippets nil)
+  (setq +corfu-want-tab-prefer-navigating-org-tables nil)
 
   ;; HACK: Prevent the annoting completion error when no `ispell' dictionary is set, prefer `cape-dict'
   (when (eq emacs-major-version 30)
@@ -1704,6 +1724,9 @@ CLOSED: [2025-01-31 Fri 22:39]
 
 #+begin_src emacs-lisp :tangle config.el
 
+(setq org-modern-star nil)
+
+
 ;; Choose some fonts
 ;; (set-face-attribute 'default nil :family "Iosevka")
 ;; (set-face-attribute 'variable-pitch nil :family "Iosevka Aile")
@@ -1785,14 +1808,15 @@ CLOSED: [2025-01-31 Fri 22:39]
   (add-to-list 'org-transclusion-extensions 'org-transclusion-indent-mode)
   (require 'org-transclusion-indent-mode))
 #+end_src
-**** org-sliced-images
+**** DONT org-sliced-images
+CLOSED: [2025-04-08 Tue 08:13]
 
 #+begin_src emacs-lisp :tangle config.el
 
 ;; for smooth scroll of images in or mode
-(use-package! org-sliced-images
-  :after org
-  :config (org-sliced-images-mode))
+;; (use-package! org-sliced-images
+;;   :after org
+;;   :config (org-sliced-images-mode))
 #+end_src
 *** DONT org-latex-preview :noexport:
 CLOSED: [2024-10-21 Mon 20:38]
@@ -1868,7 +1892,7 @@ rm -Rf eln-cache
   (setq
    citar-templates
    '((main . ;; [${urldate:10}]
-      "[${dateadded:10}] \{${datemodified:10}\} ${author editor:20} ${translator:8} (${date year issued:4}) @${=key= id:12} ${title:68} ")  ; 2024-09-12 김정한
+      "[${dateadded:10}] \{${datemodified:10}\} ${author editor:20} ${translator:8} (${date year issued:4}) @${=key= id:16} ${title:68} ")  ; 2024-09-12 김정한
      (suffix
       . "${shorttitle:25} ${=type=:10} ${namea:16} ${url:20} ${tags keywords:*}") ; 2024-11-17 add url
      (preview
@@ -1893,35 +1917,32 @@ rm -Rf eln-cache
   :demand t
   :commands
   (denote denote-create-note denote-insert-link denote-show-backlinks-buffer denote-link-ol-store)
-  :hook (dired-mode . denote-dired-mode)
   :init
   (setq denote-directory org-directory)
-  (require 'denote-silo-extras)
-  ;; (require 'denote-journal-extras)
-  (require 'denote-org-extras)
+  (require 'denote-org)
+  (require 'denote-silo)
+  (require 'denote-sequence)
+  ;; (require 'denote-journal)
+  (require 'denote-org)
+  ;; (require 'denote-markdown)
+
   (setq denote-file-type 'org)
   (setq denote-sort-components '(signature title keywords identifier))
   (setq denote-backlinks-show-context nil)
   (setq denote-sort-keywords t)
   (setq denote-infer-keywords t)
   (setq denote-excluded-directories-regexp "screenshot")
-
-
-
   (setq denote-org-front-matter
         "#+title:      %1$s
-,#+hugo_lastmod: Time-stamp: <>
 ,#+filetags:   %3$s
+,#+hugo_lastmod: %2$s
 ,#+date:       %2$s
 ,#+identifier: %4$s
 ,#+export_file_name: %4$s.md
 ,#+description:
-,#+HUGO_CATEGORIES: Noname
-,#+filetags:   :fleeting:
-
-,#+print_bibliography:
-
-\n")
+,#+hugo_tags: temp
+,#+hugo_categories: Noname
+,#+print_bibliography:\n* History\n- %2$s\n* Related-Notes\n\n")
 
   ;; Automatically rename Denote buffers using the `denote-rename-buffer-format'.
   (setq denote-prompts '(subdirectory title keywords)) ; These are the minimum viable prompts for notes
@@ -1975,6 +1996,10 @@ rm -Rf eln-cache
 
 (use-package! denote-explore)
 
+;;;; denote-search
+
+(use-package! denote-search)
+
 #+end_src
 *** ten
 #+begin_src emacs-lisp :tangle config.el
@@ -1988,7 +2013,7 @@ rm -Rf eln-cache
 
 (use-package! ten
   :defer 2
-  :hook ((org-mode Info-mode) . ten-font-lock-mode) ;; text-mode
+  ;; :hook ((org-mode Info-mode) . ten-font-lock-mode) ;; text-mode
   :init
   (setq ten-exclude-regexps '("/\\."))
   :config
@@ -2008,15 +2033,6 @@ rm -Rf eln-cache
   (setq gptel-temperature 0.3) ; gptel 1.0, Perplexity 0.2
   (set-popup-rule! "^\\*ChatGPT\\*$" :side 'right :size 84 :vslot 100 :quit t) ; size 0.4
   (setq gptel-api-key user-openai-api-key)
-  (gptel-make-openai "Perplexity"
-    :host "api.perplexity.ai"
-    :key user-perplexity-api-key
-    :endpoint "/chat/completions"
-    :stream t
-    :models '(;; has many more, check perplexity.ai
-              "llama-3.1-sonar-large-128k-online"
-              "llama-3.1-sonar-huge-128k-online"
-              "llama-3.1-sonar-small-128k-online"))
 
   (with-eval-after-load 'gptel-org
     (defun gptel-org-toggle-branching-context ()
@@ -2033,22 +2049,6 @@ rm -Rf eln-cache
           (alist-get 'markdown-mode gptel-prompt-prefix-alist) "#### ")
     (setq-default gptel-org-branching-context t))
   )
-#+end_src
-*** aider.el
-#+begin_src emacs-lisp :tangle config.el
-;;;; aider.el
-
-(use-package! aider
-  :config
-  (setq aider-args '("--model" "deepseek/deepseek-chat"))
-  (setenv "ANTHROPIC_API_KEY" user-claude-api-key)
-  (setenv "OPENAI_API_KEY" user-openai-api-key)
-  (setenv "GEMINI_API_KEY" user-gemini-api-key)
-  (setenv "PERPLEXITYAI_API_KEY" user-perplexity-api-key)
-  (setenv "XAI_API_KEY" user-xai-api-key)
-  (setenv "DEEPSEEK_API_KEY" user-deepseek-api-key)
-  )
-
 #+end_src
 ** ui
 
@@ -2074,6 +2074,7 @@ rm -Rf eln-cache
   (setq doom-modeline-bar-width 4)
 
   (setq doom-modeline-persp-name t) ; doom nil
+  (setq doom-modeline-buffer-file-name-style 'truncate-upto-project) ; default 'auto
 
   (setq doom-modeline-repl t)
   (setq doom-modeline-github t)
@@ -2218,7 +2219,8 @@ rm -Rf eln-cache
         modus-themes-org-blocks 'gray-background)
 
   (setq modus-themes-headings
-        (quote ((1 . (background overline 1.2)) ; variable-pitch
+        (quote ((0 . (background overline 1.2)) ; variable-pitch
+                (1 . (background overline 1.2)) ; variable-pitch
                 (2 . (overline rainbow 1.1))
                 (3 . (overline 1.05))
                 (t . (monochrome)))))
@@ -2331,7 +2333,7 @@ rm -Rf eln-cache
 (setq magit-save-repository-buffers nil
       ;; Don't restore the wconf after quitting magit, it's jarring
       magit-inhibit-save-previous-winconf t
-      evil-collection-magit-want-horizontal-movement t)
+      evil-collection-magit-want-horizontal-movement nil)
 
 #+end_src
 ** app
@@ -2398,18 +2400,67 @@ rm -Rf eln-cache
 ** coding
 
 #+begin_src emacs-lisp :tangle config.el
+
+;;;; eglot configuration
+
+(progn
+  (map! (:map eglot-mode-map
+         :after eglot
+         "C-c r" 'eglot-rename
+         "C-c d" 'eldoc
+         "C-c f" 'flymake-show-buffer-diagnostics
+         "C-c 0" 'eglot-inlay-hints-mode
+         "M-RET" 'eglot-code-actions)
+
+        ;; FIXME need new keybindings
+        ;; (:map 'flymake-mode-map
+        ;;       "C-n" #'flymake-goto-next-error
+        ;;       "C-p" #'flymake-goto-prev-error)
+        )
+
+  ;; (setq eglot-send-changes-idle-time 0.5)
+  (setq flymake-no-changes-timeout nil)
+
+  (add-hook! 'eglot-managed-mode-hook
+    (eglot-inlay-hints-mode -1))
+  )
+
+;;;; DONT lsp
+
+;; (progn
+;;   (after! lsp-mode
+;;     (setq
+;;      lsp-headerline-breadcrumb-enable t ; doom nil
+;;      lsp-headerline-breadcrumb-icons-enable nil))
+
+;;   (after! lsp-ui
+;;     (setq
+;;      lsp-ui-sideline-enable nil ; doom t - disable sideline for less distraction
+;;      ;; lsp-ui-doc-enable nil ;; doom t - disable all doc popups
+;;      treemacs-space-between-root-nodes nil  ;; doom nil
+;;      ;; lsp-ui-peek-enable t ; doom t
+;;      ))
+
+;;   (after! lsp-treemacs
+;;     (setq lsp-treemacs-error-list-current-project-only t))
+;;   )
+
+;;;; python
+
+(add-hook 'python-mode-hook #'rainbow-delimiters-mode)
+
 ;;;; scheme with geiser-mit
 
-(use-package! geiser-mit
-  :config
-  (setenv "MITSCHEME_HEAP_SIZE" "100000") ; 16384
-  (setenv "MITSCHEME_LIBRARY_PATH" "/usr/lib/x86_64-linux-gnu/mit-scheme")
-  (setenv "MITSCHEME_BAND" "mechanics.com")
+;; (use-package! geiser-mit
+;;   :config
+;;   (setenv "MITSCHEME_HEAP_SIZE" "100000") ; 16384
+;;   (setenv "MITSCHEME_LIBRARY_PATH" "/usr/lib/x86_64-linux-gnu/mit-scheme")
+;;   (setenv "MITSCHEME_BAND" "mechanics.com")
 
-  ;; (setenv "DISPLAY" ":0")
-  (setq geiser-active-implementations '(mit))
-  (setq geiser-mit-binary "/usr/bin/mit-scheme")
-  )
+;;   ;; (setenv "DISPLAY" ":0")
+;;   (setq geiser-active-implementations '(mit))
+;;   (setq geiser-mit-binary "/usr/bin/mit-scheme")
+;;   )
 #+end_src
 
 ** user-functions
@@ -2571,6 +2622,9 @@ and if it is set to nil, then it would forcefully create the ID."
 ;; (after! projectile
 ;;   (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map))
 
+(global-set-key (kbd "M-u") 'evil-scroll-up)
+(global-set-key (kbd "M-v") 'evil-scroll-down)
+
 ;;;; Extra Fn-key
 
 (when (locate-library "imenu-list")
@@ -2611,14 +2665,14 @@ and if it is set to nil, then it would forcefully create the ID."
 (defvar-keymap ews-denote-map
   :doc "Denote keybindings."
   "b" ews-bibliography-map
-  "B" #'denote-org-extras-backlinks-for-heading
+  "B" #'denote-org-backlinks-for-heading
   "d" #'denote-create-note
 
   "f" #'+default/find-in-notes ; find-files
   ;;   "F" #'+default/browse-notes
 
-  "i" #'denote-org-extras-dblock-insert-links
-  "I" #'denote-org-extras-dblock-insert-backlinks
+  "i" #'denote-org-dblock-insert-links
+  "I" #'denote-org-dblock-insert-backlinks
 
   "l" #'denote-link-or-create
   "L" #'denote-link-after-creating-with-command
@@ -2627,8 +2681,8 @@ and if it is set to nil, then it would forcefully create the ID."
 
   "G" #'consult-notes-search-in-all-notes
 
-  "s" #'denote-silo-extras-open-or-create
-  "S" #'denote-silo-extras-select-silo-then-command
+  "s" #'denote-silo-open-or-create
+  "S" #'denote-silo-select-silo-then-command
 
   "t" #'denote-type
 
@@ -2710,6 +2764,13 @@ and if it is set to nil, then it would forcefully create the ID."
       (:prefix "i"
        :desc "time-stamp" "1" #'time-stamp
        ))
+
+;;;; vterm-mode-map
+
+(after! vterm
+  ;; Compile Vterm without asking.
+  (setq vterm-always-compile-module t)
+  (map! :map vterm-mode-map "M-y" #'vterm-yank-pop))
 
 ;;;; mode-map
 
@@ -2813,6 +2874,7 @@ and if it is set to nil, then it would forcefully create the ID."
       :n "g [" #'evil-jump-backward
       :n "g RET" #'tabgo
       )
+
 #+end_src
 *** TODO user-key
 

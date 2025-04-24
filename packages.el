@@ -57,16 +57,14 @@
 
 (package! diredfl :disable t) ; conflict @denote
 (package! dirvish :disable t)
-(package! paredit :disable t) ; clojure module
 (package! code-review :disable t) ; not working
 
 ;; checkers
 (package! flyspell-lazy :disable t)
 (package! flymake-popon :disable t)
-(package! flycheck :disable t)
 (package! flycheck-popup-tip :disable t) ; conflict
 (package! flycheck-plantuml :disable t)
-(package! flycheck :disable t)
+;; (package! flycheck :disable t)
 (package! lsp-mode :disable t) ; use eglot
 
 (package! nose :disable t) ; python module
@@ -77,10 +75,6 @@
 
 ;; app rss
 (package! elfeed-goodies :disable t)
-
-;; org
-(package! org-superstar :disable t)
-(package! org-fancy-priorities :disable t)
 
 (package! solaire-mode :disable t)
 ;; (package! ace-window :disable t)
@@ -101,8 +95,6 @@
 
 ;;;; completion
 
-(package! consult :pin "93cf368a676da1072f141e298908be05e2968f60") ; 1.9 stable
-
 ;;;; ui
 
 (unpin! doom-themes)
@@ -122,7 +114,14 @@
 ;;;; denote
 
 (package! denote)
+(package! denote-org)
+(package! denote-silo)
+(package! denote-sequence)
+(package! denote-markdown)
+(package! denote-journal)
+
 (package! denote-explore)
+(package! denote-search)
 (package! consult-notes)
 (package! citar-denote)
 
@@ -130,19 +129,15 @@
 
 (package! tempel)
 (package! tempel-collection)
-(package! imenu-list)
+(package! imenu-list :recipe (:host github :repo "junghan0611/imenu-list" :branch "master"))
 (package! laas)
 
 ;;;; llmclient
 
-(package! aider :recipe (:host github :repo "tninja/aider.el" :files ("aider.el" "aider-doom.el")))
 (package! gptel)
 (package! gptel-quick :recipe (:host github :repo "karthink/gptel-quick"))
 
 ;;;; org extra
-
-;; (package! org-modern)
-;; (package! org-modern-indent :recipe (:host github :repo "jdtsmith/org-modern-indent"))
 
 (package! org-download)
 (package! org-rainbow-tags)
@@ -150,7 +145,6 @@
 (package! ten :recipe (:host sourcehut :repo "nobiot/ten")) ;; https://git.sr.ht/~nobiot/ten
 (package! org-fragtog)          ;; interactive toggling of inline latex formulas
 (package! org-transclusion)
-(package! org-sliced-images)
 
 ;;;; code
 

@@ -163,7 +163,7 @@
   ;; Treat clipboard input as UTF-8 string first; compound text next, etc.
   (setq x-select-request-type '(UTF8_STRING COMPOUND_TEXT TEXT STRING))
 
-  (setq-default line-spacing 3) ; use fontaine
+  (setq-default line-spacing 3)
 
   ;; (setenv "LANG" "en_US.UTF-8")
   ;; (setenv "LC_ALL" "en_US.UTF-8")
@@ -204,6 +204,9 @@
   (add-hook 'after-setting-font-hook #'my/set-emoji-symbol-font))
 
 ;;; better default
+
+;; 'tags-completion-at-point-function' break ten-glossary
+(setq-default completion-at-point-functions nil) ; important
 
 ;; (setq-default display-line-numbers-width-start t) ; doom's default t
 (setq inhibit-compacting-font-caches t)
@@ -322,6 +325,25 @@
    (display-buffer-no-window)
    (allow-no-window . t)))
 
+;;;; dabbrev
+
+(progn
+  (require 'dabbrev)
+  (setq dabbrev-abbrev-char-regexp "[가-힣A-Za-z-_]")
+  (setq dabbrev-ignored-buffer-regexps
+        '("\\` "
+          "\\.\\(?:pdf\\|jpe?g\\|png\\)\\'"
+          "\\(?:\\(?:[EG]?\\|GR\\)TAGS\\|e?tags\\|GPATH\\)\\(<[0-9]+>\\)?"))
+  (setq dabbrev-abbrev-skip-leading-regexp "[$*/=~']")
+  (setq dabbrev-upcase-means-case-search nil) ; default t
+
+  (add-to-list 'dabbrev-ignored-buffer-modes 'pdf-view-mode)
+  (add-to-list 'dabbrev-ignored-buffer-modes 'doc-view-mode)
+  (add-to-list 'dabbrev-ignored-buffer-modes 'tags-table-mode)
+  ;; (setq dabbrev-check-all-buffers t) ;; default t
+  ;; (setq cape-dabbrev-check-other-buffers t) ; enable when dabbrev on init.el
+  )
+
 ;;; completion
 
 ;;;; corfu
@@ -331,15 +353,14 @@
 
 (after! corfu
   ;; (setq corfu-auto-delay 0.5) ; doom 0.24
-  (setq corfu-auto-prefix 3) ; doom 2
-  (setq corfu-preselect 'valid) ; doom 'prompt
-  (setq completion-cycle-threshold 3) ; doom nil
-  (setq tab-always-indent t) ; for jump-out-of-pair - doom 'complete
+  (setq corfu-auto-prefix 4) ; doom 2, default 3
+  ;; (setq corfu-preselect 'valid) ; doom 'prompt
+  ;; (setq tab-always-indent t) ; for jump-out-of-pair - doom 'complete
   (setq +corfu-want-minibuffer-completion nil) ; doom t
 
-  (setq +corfu-want-tab-prefer-expand-snippets t) ; 2024-11-06
-  (setq +corfu-want-tab-prefer-navigating-snippets t)
-  (setq +corfu-want-tab-prefer-navigating-org-tables t)
+  (setq +corfu-want-tab-prefer-expand-snippets nil)
+  (setq +corfu-want-tab-prefer-navigating-snippets nil)
+  (setq +corfu-want-tab-prefer-navigating-org-tables nil)
 
   ;; HACK: Prevent the annoting completion error when no `ispell' dictionary is set, prefer `cape-dict'
   (when (eq emacs-major-version 30)
@@ -1041,6 +1062,9 @@ only those in the selected frame."
 
   )
 
+(setq org-modern-star nil)
+
+
 ;; Choose some fonts
 ;; (set-face-attribute 'default nil :family "Iosevka")
 ;; (set-face-attribute 'variable-pitch nil :family "Iosevka Aile")
@@ -1115,9 +1139,9 @@ only those in the selected frame."
   (require 'org-transclusion-indent-mode))
 
 ;; for smooth scroll of images in or mode
-(use-package! org-sliced-images
-  :after org
-  :config (org-sliced-images-mode))
+;; (use-package! org-sliced-images
+;;   :after org
+;;   :config (org-sliced-images-mode))
 
 ;; (use-package! org-latex-preview
 ;;   :config
@@ -1173,7 +1197,7 @@ only those in the selected frame."
   (setq
    citar-templates
    '((main . ;; [${urldate:10}]
-      "[${dateadded:10}] \{${datemodified:10}\} ${author editor:20} ${translator:8} (${date year issued:4}) @${=key= id:12} ${title:68} ")  ; 2024-09-12 김정한
+      "[${dateadded:10}] \{${datemodified:10}\} ${author editor:20} ${translator:8} (${date year issued:4}) @${=key= id:16} ${title:68} ")  ; 2024-09-12 김정한
      (suffix
       . "${shorttitle:25} ${=type=:10} ${namea:16} ${url:20} ${tags keywords:*}") ; 2024-11-17 add url
      (preview
@@ -1196,35 +1220,32 @@ only those in the selected frame."
   :demand t
   :commands
   (denote denote-create-note denote-insert-link denote-show-backlinks-buffer denote-link-ol-store)
-  :hook (dired-mode . denote-dired-mode)
   :init
   (setq denote-directory org-directory)
-  (require 'denote-silo-extras)
-  ;; (require 'denote-journal-extras)
-  (require 'denote-org-extras)
+  (require 'denote-org)
+  (require 'denote-silo)
+  (require 'denote-sequence)
+  ;; (require 'denote-journal)
+  (require 'denote-org)
+  ;; (require 'denote-markdown)
+
   (setq denote-file-type 'org)
   (setq denote-sort-components '(signature title keywords identifier))
   (setq denote-backlinks-show-context nil)
   (setq denote-sort-keywords t)
   (setq denote-infer-keywords t)
   (setq denote-excluded-directories-regexp "screenshot")
-
-
-
   (setq denote-org-front-matter
         "#+title:      %1$s
-#+hugo_lastmod: Time-stamp: <>
 #+filetags:   %3$s
+#+hugo_lastmod: %2$s
 #+date:       %2$s
 #+identifier: %4$s
 #+export_file_name: %4$s.md
 #+description:
-#+HUGO_CATEGORIES: Noname
-#+filetags:   :fleeting:
-
-#+print_bibliography:
-
-\n")
+#+hugo_tags: temp
+#+hugo_categories: Noname
+#+print_bibliography:\n* History\n- %2$s\n* Related-Notes\n\n")
 
   ;; Automatically rename Denote buffers using the `denote-rename-buffer-format'.
   (setq denote-prompts '(subdirectory title keywords)) ; These are the minimum viable prompts for notes
@@ -1278,6 +1299,10 @@ only those in the selected frame."
 
 (use-package! denote-explore)
 
+;;;; denote-search
+
+(use-package! denote-search)
+
 ;;; Ten with etags
 
 ;; (defun my/goto-etags ()
@@ -1287,7 +1312,7 @@ only those in the selected frame."
 
 (use-package! ten
   :defer 2
-  :hook ((org-mode Info-mode) . ten-font-lock-mode) ;; text-mode
+  ;; :hook ((org-mode Info-mode) . ten-font-lock-mode) ;; text-mode
   :init
   (setq ten-exclude-regexps '("/\\."))
   :config
@@ -1304,15 +1329,6 @@ only those in the selected frame."
   (setq gptel-temperature 0.3) ; gptel 1.0, Perplexity 0.2
   (set-popup-rule! "^\\*ChatGPT\\*$" :side 'right :size 84 :vslot 100 :quit t) ; size 0.4
   (setq gptel-api-key user-openai-api-key)
-  (gptel-make-openai "Perplexity"
-    :host "api.perplexity.ai"
-    :key user-perplexity-api-key
-    :endpoint "/chat/completions"
-    :stream t
-    :models '(;; has many more, check perplexity.ai
-              "llama-3.1-sonar-large-128k-online"
-              "llama-3.1-sonar-huge-128k-online"
-              "llama-3.1-sonar-small-128k-online"))
 
   (with-eval-after-load 'gptel-org
     (defun gptel-org-toggle-branching-context ()
@@ -1328,19 +1344,6 @@ only those in the selected frame."
           (alist-get 'org-mode gptel-response-prefix-alist) "@assistant:\n"
           (alist-get 'markdown-mode gptel-prompt-prefix-alist) "#### ")
     (setq-default gptel-org-branching-context t))
-  )
-
-;;;; aider.el
-
-(use-package! aider
-  :config
-  (setq aider-args '("--model" "deepseek/deepseek-chat"))
-  (setenv "ANTHROPIC_API_KEY" user-claude-api-key)
-  (setenv "OPENAI_API_KEY" user-openai-api-key)
-  (setenv "GEMINI_API_KEY" user-gemini-api-key)
-  (setenv "PERPLEXITYAI_API_KEY" user-perplexity-api-key)
-  (setenv "XAI_API_KEY" user-xai-api-key)
-  (setenv "DEEPSEEK_API_KEY" user-deepseek-api-key)
   )
 
 ;;;; doom-modeline
@@ -1362,6 +1365,7 @@ only those in the selected frame."
   (setq doom-modeline-bar-width 4)
 
   (setq doom-modeline-persp-name t) ; doom nil
+  (setq doom-modeline-buffer-file-name-style 'truncate-upto-project) ; default 'auto
 
   (setq doom-modeline-repl t)
   (setq doom-modeline-github t)
@@ -1492,7 +1496,8 @@ only those in the selected frame."
         modus-themes-org-blocks 'gray-background)
 
   (setq modus-themes-headings
-        (quote ((1 . (background overline 1.2)) ; variable-pitch
+        (quote ((0 . (background overline 1.2)) ; variable-pitch
+                (1 . (background overline 1.2)) ; variable-pitch
                 (2 . (overline rainbow 1.1))
                 (3 . (overline 1.05))
                 (t . (monochrome)))))
@@ -1588,7 +1593,7 @@ only those in the selected frame."
 (setq magit-save-repository-buffers nil
       ;; Don't restore the wconf after quitting magit, it's jarring
       magit-inhibit-save-previous-winconf t
-      evil-collection-magit-want-horizontal-movement t)
+      evil-collection-magit-want-horizontal-movement nil)
 
 ;; (setq rmh-elfeed-org-files '("path/to/your/elfeed/file.org")) ; default ~/org/elfeed.org
 ;; gc copy-link
@@ -1640,18 +1645,66 @@ only those in the selected frame."
   (setq font-lock-global-modes '(not nov-mode))
   )
 
+;;;; eglot configuration
+
+(progn
+  (map! (:map eglot-mode-map
+         :after eglot
+         "C-c r" 'eglot-rename
+         "C-c d" 'eldoc
+         "C-c f" 'flymake-show-buffer-diagnostics
+         "C-c 0" 'eglot-inlay-hints-mode
+         "M-RET" 'eglot-code-actions)
+
+        ;; FIXME need new keybindings
+        ;; (:map 'flymake-mode-map
+        ;;       "C-n" #'flymake-goto-next-error
+        ;;       "C-p" #'flymake-goto-prev-error)
+        )
+
+  ;; (setq eglot-send-changes-idle-time 0.5)
+  (setq flymake-no-changes-timeout nil)
+
+  (add-hook! 'eglot-managed-mode-hook
+    (eglot-inlay-hints-mode -1))
+  )
+
+;;;; DONT lsp
+
+;; (progn
+;;   (after! lsp-mode
+;;     (setq
+;;      lsp-headerline-breadcrumb-enable t ; doom nil
+;;      lsp-headerline-breadcrumb-icons-enable nil))
+
+;;   (after! lsp-ui
+;;     (setq
+;;      lsp-ui-sideline-enable nil ; doom t - disable sideline for less distraction
+;;      ;; lsp-ui-doc-enable nil ;; doom t - disable all doc popups
+;;      treemacs-space-between-root-nodes nil  ;; doom nil
+;;      ;; lsp-ui-peek-enable t ; doom t
+;;      ))
+
+;;   (after! lsp-treemacs
+;;     (setq lsp-treemacs-error-list-current-project-only t))
+;;   )
+
+;;;; python
+
+(add-hook 'python-mode-hook #'rainbow-delimiters-mode)
+
 ;;;; scheme with geiser-mit
 
-(use-package! geiser-mit
-  :config
-  (setenv "MITSCHEME_HEAP_SIZE" "100000") ; 16384
-  (setenv "MITSCHEME_LIBRARY_PATH" "/usr/lib/x86_64-linux-gnu/mit-scheme")
-  (setenv "MITSCHEME_BAND" "mechanics.com")
+;; (use-package! geiser-mit
+;;   :config
+;;   (setenv "MITSCHEME_HEAP_SIZE" "100000") ; 16384
+;;   (setenv "MITSCHEME_LIBRARY_PATH" "/usr/lib/x86_64-linux-gnu/mit-scheme")
+;;   (setenv "MITSCHEME_BAND" "mechanics.com")
 
-  ;; (setenv "DISPLAY" ":0")
-  (setq geiser-active-implementations '(mit))
-  (setq geiser-mit-binary "/usr/bin/mit-scheme")
-  )
+;;   ;; (setenv "DISPLAY" ":0")
+;;   (setq geiser-active-implementations '(mit))
+;;   (setq geiser-mit-binary "/usr/bin/mit-scheme")
+;;   )
 
 ;;;; core fuctions
 
@@ -1794,6 +1847,9 @@ and if it is set to nil, then it would forcefully create the ID."
 ;; (after! projectile
 ;;   (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map))
 
+(global-set-key (kbd "M-u") 'evil-scroll-up)
+(global-set-key (kbd "M-v") 'evil-scroll-down)
+
 ;;;; Extra Fn-key
 
 (when (locate-library "imenu-list")
@@ -1829,14 +1885,14 @@ and if it is set to nil, then it would forcefully create the ID."
 (defvar-keymap ews-denote-map
   :doc "Denote keybindings."
   "b" ews-bibliography-map
-  "B" #'denote-org-extras-backlinks-for-heading
+  "B" #'denote-org-backlinks-for-heading
   "d" #'denote-create-note
 
   "f" #'+default/find-in-notes ; find-files
   ;;   "F" #'+default/browse-notes
 
-  "i" #'denote-org-extras-dblock-insert-links
-  "I" #'denote-org-extras-dblock-insert-backlinks
+  "i" #'denote-org-dblock-insert-links
+  "I" #'denote-org-dblock-insert-backlinks
 
   "l" #'denote-link-or-create
   "L" #'denote-link-after-creating-with-command
@@ -1845,8 +1901,8 @@ and if it is set to nil, then it would forcefully create the ID."
 
   "G" #'consult-notes-search-in-all-notes
 
-  "s" #'denote-silo-extras-open-or-create
-  "S" #'denote-silo-extras-select-silo-then-command
+  "s" #'denote-silo-open-or-create
+  "S" #'denote-silo-select-silo-then-command
 
   "t" #'denote-type
 
@@ -1924,6 +1980,13 @@ and if it is set to nil, then it would forcefully create the ID."
       (:prefix "i"
        :desc "time-stamp" "1" #'time-stamp
        ))
+
+;;;; vterm-mode-map
+
+(after! vterm
+  ;; Compile Vterm without asking.
+  (setq vterm-always-compile-module t)
+  (map! :map vterm-mode-map "M-y" #'vterm-yank-pop))
 
 ;;;; mode-map
 
