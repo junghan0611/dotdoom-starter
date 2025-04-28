@@ -1089,82 +1089,6 @@ only those in the selected frame."
 
   )
 
-(setq org-modern-star nil)
-
-
-;; Choose some fonts
-;; (set-face-attribute 'default nil :family "Iosevka")
-;; (set-face-attribute 'variable-pitch nil :family "Iosevka Aile")
-
-;; (use-package! org-modern
-;;   :after org
-;;   ;; :custom
-;;   ;; (org-modern-table nil)
-;;   ;; (org-modern-keyword nil)
-;;   ;; (org-modern-timestamp nil)
-;;   ;; (org-modern-priority nil)
-;;   ;; (org-modern-checkbox nil)
-;;   ;; (org-modern-tag nil)
-;;   ;; (org-modern-block-name nil)
-;;   ;; (org-modern-footnote nil)
-;;   ;; (org-modern-internal-target nil)
-;;   ;; (org-modern-radio-target nil)
-;;   ;; (org-modern-statistics nil)
-;;   ;; (org-modern-progress nil)
-
-;;   :config
-
-;;   (setq
-;;    ;; Edit settings
-;;    org-auto-align-tags nil ; t
-;;    org-tags-column 0
-;;    org-catch-invisible-edits 'show-and-error
-;;    org-special-ctrl-a/e t
-;;    org-insert-heading-respect-content t
-
-;;    ;; Org styling, hide markup etc.
-;;    org-hide-emphasis-markers t ; nil
-;;    org-pretty-entities t ; nil
-;;    org-agenda-tags-column 0)
-
-;;   ;; Ellipsis styling
-;;   ;; (setq org-ellipsis "…")
-;;   ;; (set-face-attribute 'org-ellipsis nil :inherit 'default :box nil)
-;;   ;; (set-face-attribute 'org-modern-symbol nil :family "Iosevka")
-
-;;   (add-hook 'org-mode-hook #'org-modern-mode)
-;;   (add-hook 'org-agenda-finalize-hook #'org-modern-agenda)
-
-;;   (require 'org-modern-indent)
-;;   (add-hook 'org-mode-hook #'org-modern-indent-mode 90)
-;;   )
-
-;; (use-package! org-modern-indent
-;;   :after org-modern
-;;   :config ; add late to hook
-;;   (add-hook 'org-mode-hook #'org-modern-indent-mode 90))
-
-(use-package! org-fragtog
-  :after org
-  :hook (org-mode . org-fragtog-mode)
-  :init
-  ;; (setq org-startup-with-latex-preview t) ; doom nil
-  (setq org-highlight-latex-and-related '(native script entities)) ; doom org +pretty
-  ;; (setq org-highlight-latex-and-related '(native)) ; doom nil
-  )
-
-(use-package! org-transclusion
-  :after org
-  :defer 2
-  :commands org-transclusion-mode
-  :config
-  (set-face-attribute 'org-transclusion-fringe nil :foreground "light green" :background "lime green")
-  )
-
-(after! org-transclusion
-  (add-to-list 'org-transclusion-extensions 'org-transclusion-indent-mode)
-  (require 'org-transclusion-indent-mode))
-
 ;; for smooth scroll of images in or mode
 ;; (use-package! org-sliced-images
 ;;   :after org
@@ -1427,62 +1351,6 @@ only those in the selected frame."
   (spacious-padding-mode +1)
   )
 
-;;;; keycast on mode-line
-
-(progn
-  (after! keycast
-    (define-minor-mode keycast-mode
-      "Show current command and its key binding in the mode line."
-      :global t
-      (if keycast-mode
-          (add-hook 'pre-command-hook 'keycast--update t)
-        (remove-hook 'pre-command-hook 'keycast--update))))
-  (add-to-list 'global-mode-string '(" " keycast-mode-line " "))
-
-  (require 'keycast)
-  ;; (setq keycast-mode-line-format "%10s%k%c%r")
-  (dolist (input '(self-insert-command
-                   org-self-insert-command
-                   ))
-    (add-to-list 'keycast-substitute-alist `(,input "." "Typing…")))
-
-  (dolist (event '(mouse-event-p
-                   mouse-movement-p
-                   mwheel-scroll
-                   handle-select-window
-                   mouse-set-point mouse-drag-region
-                   dired-next-line ; j
-                   dired-previous-line ; k
-                   next-line
-                   previous-line
-                   evil-next-line ; j
-                   evil-previous-line ; k
-                   evil-forward-char ; l
-                   evil-backward-char ; h
-                   pixel-scroll-interpolate-up ; <prior> page-up
-                   pixel-scroll-interpolate-down ; <next> page-down
-
-                   toggle-input-method
-                   block-toggle-input-method
-                   evil-formal-state
-                   evil-force-normal-state
-
-                   ;; 2023-10-02 Added for clojure-dev
-                   lsp-ui-doc--handle-mouse-movement
-                   ignore-preserving-kill-region
-                   ;; pdf-view-text-region
-                   ;; pdf-view-mouse-set-region
-                   ;; mouse-set-region
-                   ))
-    (add-to-list 'keycast-substitute-alist `(,event nil)))
-
-  (add-hook 'doom-first-input-hook (lambda ()
-                                     ;; (display-time-mode +1)
-                                     (doom-modeline-mode +1)
-                                     (keycast-mode +1)
-                                     ))
-  )
-
 ;;;; outli
 
 (use-package! outli
@@ -1580,53 +1448,11 @@ only those in the selected frame."
     (global-set-key [remap ispell-word] #'jinx-correct))
   )
 
-;;;; projectile
-
-(after! projectile
-  ;; Disable projectile cache - saves requirement to invalidate cache when moving files
-  (setq projectile-enable-caching nil)
-
-  ;; create missing test files
-  (setq projectile-create-missing-test-files t)
-
-  ;; add clojure specific folders to be ignored by projectile
-  (setq projectile-globally-ignored-directories
-        (append projectile-globally-ignored-directories
-                '(".clj-kondo"
-                  ".cpcache"
-                  "tmp" "del"
-                  ".local")))
-
-  ;; Search https://discourse.doomemacs.org/ for example configuration
-  (setq projectile-ignored-projects
-        (list "~/" "/tmp" (expand-file-name "straight/repos" doom-local-dir)))
-
-  (defun projectile-ignored-project-function (filepath)
-    "Return t if FILEPATH is within any of `projectile-ignored-projects'"
-    (or (mapcar
-         (lambda (p) (s-starts-with-p p filepath)) projectile-ignored-projects)))
-
-  ;; Define a project path to discover projects using SPC Tab D
-  ;; https://docs.projectile.mx/projectile/usage.html
-  ;; (setq projectile-project-search-path '("~/projects/" "~/work/" ("~/github" . 1)))
-  ;; (setq projectile-project-search-path '(("~/code" . 2) ("~/git" . 1)))
-
-  ;; direct projectile to look for code in a specific folder.
-  (setq projectile-project-search-path '("~/git"))
-  )
-
-;;;; magit
-
-(setq magit-save-repository-buffers nil
-      ;; Don't restore the wconf after quitting magit, it's jarring
-      magit-inhibit-save-previous-winconf t
-      evil-collection-magit-want-horizontal-movement nil)
-
 ;; (setq rmh-elfeed-org-files '("path/to/your/elfeed/file.org")) ; default ~/org/elfeed.org
 ;; gc copy-link
 (after! elfeed
   ;; +rss-enable-sliced-images ;  default t
-  (setq elfeed-search-filter "") ; "@6-months-ago") ;;  "@1-month-ago +unread"
+  (setq elfeed-search-filter "@6-months-ago") ;;  "", "@1-month-ago +unread"
   )
 
 (after! elfeed-tube
@@ -1718,7 +1544,7 @@ only those in the selected frame."
 
 ;;;; python
 
-(add-hook 'python-mode-hook #'rainbow-delimiters-mode)
+;; (add-hook 'python-mode-hook #'rainbow-delimiters-mode)
 
 ;;;; scheme with geiser-mit
 
@@ -1773,43 +1599,43 @@ and if it is set to nil, then it would forcefully create the ID."
 ;;;; fortune
 
 ;; not work on termux
-(unless IS-TERMUX
-  (require 'fortune)
-  (setq fortune-always-compile nil)
-  (setq fortune-dir (concat root-path "usr/share/games/fortunes/advice"))
-  (setq fortune-file (concat root-path "usr/share/games/fortunes/advice")))
+;; (unless IS-TERMUX
+;;   (require 'fortune)
+;;   (setq fortune-always-compile nil)
+;;   (setq fortune-dir (concat root-path "usr/share/games/fortunes/advice"))
+;;   (setq fortune-file (concat root-path "usr/share/games/fortunes/advice")))
 
 ;;;; xclip
 
-(use-package! xclip
-  :unless window-system
-  :config
-  (unless (display-graphic-p) ; terminal
-    (cond
-     ((executable-find "termux-setup-storage")
-      (setq xclip-method 'termux-clipboard-get)))
-    (xclip-mode 1)))
+;; (use-package! xclip
+;;   :unless window-system
+;;   :config
+;;   (unless (display-graphic-p) ; terminal
+;;     (cond
+;;      ((executable-find "termux-setup-storage")
+;;       (setq xclip-method 'termux-clipboard-get)))
+;;     (xclip-mode 1)))
 
-;;;; vterm for TERMUX
+;;;; DONT vterm for TERMUX
 
-(when IS-TERMUX
-  (after! vterm
-    (setq vterm-shell (concat root-path "usr/bin/zsh")))
+;; (when IS-TERMUX
+;;   (after! vterm
+;;     (setq vterm-shell (concat root-path "usr/bin/zsh")))
 
-  (global-set-key (kbd "<M-SPC>") 'toggle-input-method)
-  (global-set-key
-   (kbd "M-<backtab>")
-   (lambda ()
-     (interactive)
-     (other-window -1))))
+;;   (global-set-key (kbd "<M-SPC>") 'toggle-input-method)
+;;   (global-set-key
+;;    (kbd "M-<backtab>")
+;;    (lambda ()
+;;      (interactive)
+;;      (other-window -1))))
 
 ;;;; term-keys
 
-(use-package! term-keys
-  :unless window-system
-  :config
-  (unless (display-graphic-p) ; terminal
-    (term-keys-mode t)))
+;; (use-package! term-keys
+;;   :unless window-system
+;;   :config
+;;   (unless (display-graphic-p) ; terminal
+;;     (term-keys-mode t)))
 
 ;;;; android native
 

@@ -77,7 +77,7 @@
        modeline          ; snazzy, Atom-inspired modeline, plus API
        ophints           ; highlight the region an operation acts on
        (popup +defaults) ; tame sudden yet inevitable temporary windows
-       (smooth-scroll +interpolate) ; So smooth you won't believe it's not butter
+       ;; (smooth-scroll +interpolate) ; So smooth you won't believe it's not butter
 
        ;; treemacs          ; a project drawer, like neotree but cooler
        vc-gutter         ; vcs diff in the fringe
@@ -121,7 +121,7 @@
        ;; lookup
        ;; (lsp +eglot)
 
-       magit  ; +forge a git porcelain for Emacs
+       ;; magit ; +forge a git porcelain for Emacs
 
        ;; make              ; run make tasks from Emacs
        ;;pass              ; password manager for nerds
@@ -152,7 +152,7 @@
         +present                    ; using org-mode for presentations
         +contacts
         +journal
-        +pretty
+        ;; +pretty
         ;; +noter                      ; enhanced PDF notetaking
         ;; +pomodoro                 ; be fruitful with the tomato technique
         )                     ; wander around notes

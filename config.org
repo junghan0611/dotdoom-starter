@@ -271,7 +271,7 @@ All necessary settings are therefore set by hand as part of this configuration f
        modeline          ; snazzy, Atom-inspired modeline, plus API
        ophints           ; highlight the region an operation acts on
        (popup +defaults) ; tame sudden yet inevitable temporary windows
-       (smooth-scroll +interpolate) ; So smooth you won't believe it's not butter
+       ;; (smooth-scroll +interpolate) ; So smooth you won't believe it's not butter
 
        ;; treemacs          ; a project drawer, like neotree but cooler
        vc-gutter         ; vcs diff in the fringe
@@ -315,7 +315,7 @@ All necessary settings are therefore set by hand as part of this configuration f
        ;; lookup
        ;; (lsp +eglot)
 
-       magit  ; +forge a git porcelain for Emacs
+       ;; magit ; +forge a git porcelain for Emacs
 
        ;; make              ; run make tasks from Emacs
        ;;pass              ; password manager for nerds
@@ -346,7 +346,7 @@ All necessary settings are therefore set by hand as part of this configuration f
         +present                    ; using org-mode for presentations
         +contacts
         +journal
-        +pretty
+        ;; +pretty
         ;; +noter                      ; enhanced PDF notetaking
         ;; +pomodoro                 ; be fruitful with the tomato technique
         )                     ; wander around notes
@@ -475,8 +475,8 @@ All necessary settings are therefore set by hand as part of this configuration f
 (package! org-rainbow-tags)
 (package! org-glossary :recipe (:host github :repo "tecosaur/org-glossary" :files ("*.el" "*.org" "*.texi")))
 (package! ten :recipe (:host sourcehut :repo "nobiot/ten")) ;; https://git.sr.ht/~nobiot/ten
-(package! org-fragtog)          ;; interactive toggling of inline latex formulas
-(package! org-transclusion)
+;; (package! org-fragtog)          ;; interactive toggling of inline latex formulas
+;; (package! org-transclusion)
 
 ;;;; code
 
@@ -1770,7 +1770,7 @@ only those in the selected frame."
 **** DONT org-modern
 CLOSED: [2025-01-31 Fri 22:39]
 
-#+begin_src emacs-lisp :tangle config.el
+#+begin_src emacs-lisp :tangle no
 
 (setq org-modern-star nil)
 
@@ -1829,21 +1829,22 @@ CLOSED: [2025-01-31 Fri 22:39]
 
 #+end_src
 
-**** org-fragtog
+**** DONT org-fragtog
 
-#+begin_src emacs-lisp :tangle config.el
+#+begin_src emacs-lisp :tangle no
 (use-package! org-fragtog
   :after org
   :hook (org-mode . org-fragtog-mode)
   :init
-  ;; (setq org-startup-with-latex-preview t) ; doom nil
-  (setq org-highlight-latex-and-related '(native script entities)) ; doom org +pretty
+  (setq org-startup-with-latex-preview t) ; doom nil
+  ;; (setq org-highlight-latex-and-related '(native script entities)) ; doom org +pretty
   ;; (setq org-highlight-latex-and-related '(native)) ; doom nil
   )
   #+end_src
-**** org-transclusion
+**** DONT org-transclusion
 
-#+begin_src emacs-lisp :tangle config.el
+#+begin_src emacs-lisp :tangle no
+;; config.el
 (use-package! org-transclusion
   :after org
   :defer 2
@@ -2161,8 +2162,8 @@ rm -Rf eln-cache
   (spacious-padding-mode +1)
   )
 #+end_src
-*** keycast
-#+begin_src emacs-lisp :tangle config.el
+*** DONT keycast
+#+begin_src emacs-lisp :tangle no
 
 ;;;; keycast on mode-line
 
@@ -2213,11 +2214,12 @@ rm -Rf eln-cache
                    ))
     (add-to-list 'keycast-substitute-alist `(,event nil)))
 
-  (add-hook 'doom-first-input-hook (lambda ()
-                                     ;; (display-time-mode +1)
-                                     (doom-modeline-mode +1)
-                                     (keycast-mode +1)
-                                     ))
+  (unless (string-equal system-type "android")
+    (add-hook 'doom-first-input-hook (lambda ()
+                                       ;; (display-time-mode +1)
+                                       (doom-modeline-mode +1)
+                                       (keycast-mode +1)
+                                       )))
   )
 #+end_src
 *** outli
@@ -2331,9 +2333,11 @@ rm -Rf eln-cache
     (global-set-key [remap ispell-word] #'jinx-correct))
   )
 #+end_src
-** project and workspace
-*** projectile
-#+begin_src emacs-lisp :tangle config.el
+** DONT project and workspace
+CLOSED: [2025-04-28 Mon 13:35]
+*** DONT projectile
+#+begin_src emacs-lisp :tangle no
+;; config.el
 
 ;;;; projectile
 
@@ -2371,18 +2375,17 @@ rm -Rf eln-cache
   )
 
 #+end_src
-*** magit
+*** DONT magit
 [2024-12-13 Fri 05:25]
 
-#+begin_src emacs-lisp :tangle config.el
+#+begin_src emacs-lisp :tangle no
 
 ;;;; magit
 
-(setq magit-save-repository-buffers nil
-      ;; Don't restore the wconf after quitting magit, it's jarring
-      magit-inhibit-save-previous-winconf t
-      evil-collection-magit-want-horizontal-movement nil)
-
+;; (setq magit-save-repository-buffers nil
+;;       ;; Don't restore the wconf after quitting magit, it's jarring
+;;       magit-inhibit-save-previous-winconf t
+;;       evil-collection-magit-want-horizontal-movement nil)
 #+end_src
 ** app
 *** elfeed
@@ -2392,7 +2395,7 @@ rm -Rf eln-cache
 ;; gc copy-link
 (after! elfeed
   ;; +rss-enable-sliced-images ;  default t
-  (setq elfeed-search-filter "") ; "@6-months-ago") ;;  "@1-month-ago +unread"
+  (setq elfeed-search-filter "@6-months-ago") ;;  "", "@1-month-ago +unread"
   )
 
 (after! elfeed-tube
@@ -2495,7 +2498,7 @@ rm -Rf eln-cache
 
 ;;;; python
 
-(add-hook 'python-mode-hook #'rainbow-delimiters-mode)
+;; (add-hook 'python-mode-hook #'rainbow-delimiters-mode)
 
 ;;;; scheme with geiser-mit
 
@@ -2559,43 +2562,43 @@ and if it is set to nil, then it would forcefully create the ID."
 ;;;; fortune
 
 ;; not work on termux
-(unless IS-TERMUX
-  (require 'fortune)
-  (setq fortune-always-compile nil)
-  (setq fortune-dir (concat root-path "usr/share/games/fortunes/advice"))
-  (setq fortune-file (concat root-path "usr/share/games/fortunes/advice")))
+;; (unless IS-TERMUX
+;;   (require 'fortune)
+;;   (setq fortune-always-compile nil)
+;;   (setq fortune-dir (concat root-path "usr/share/games/fortunes/advice"))
+;;   (setq fortune-file (concat root-path "usr/share/games/fortunes/advice")))
 
 ;;;; xclip
 
-(use-package! xclip
-  :unless window-system
-  :config
-  (unless (display-graphic-p) ; terminal
-    (cond
-     ((executable-find "termux-setup-storage")
-      (setq xclip-method 'termux-clipboard-get)))
-    (xclip-mode 1)))
+;; (use-package! xclip
+;;   :unless window-system
+;;   :config
+;;   (unless (display-graphic-p) ; terminal
+;;     (cond
+;;      ((executable-find "termux-setup-storage")
+;;       (setq xclip-method 'termux-clipboard-get)))
+;;     (xclip-mode 1)))
 
-;;;; vterm for TERMUX
+;;;; DONT vterm for TERMUX
 
-(when IS-TERMUX
-  (after! vterm
-    (setq vterm-shell (concat root-path "usr/bin/zsh")))
+;; (when IS-TERMUX
+;;   (after! vterm
+;;     (setq vterm-shell (concat root-path "usr/bin/zsh")))
 
-  (global-set-key (kbd "<M-SPC>") 'toggle-input-method)
-  (global-set-key
-   (kbd "M-<backtab>")
-   (lambda ()
-     (interactive)
-     (other-window -1))))
+;;   (global-set-key (kbd "<M-SPC>") 'toggle-input-method)
+;;   (global-set-key
+;;    (kbd "M-<backtab>")
+;;    (lambda ()
+;;      (interactive)
+;;      (other-window -1))))
 
 ;;;; term-keys
 
-(use-package! term-keys
-  :unless window-system
-  :config
-  (unless (display-graphic-p) ; terminal
-    (term-keys-mode t)))
+;; (use-package! term-keys
+;;   :unless window-system
+;;   :config
+;;   (unless (display-graphic-p) ; terminal
+;;     (term-keys-mode t)))
 #+end_src
 
 ** android native

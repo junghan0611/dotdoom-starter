@@ -143,8 +143,8 @@
 (package! org-rainbow-tags)
 (package! org-glossary :recipe (:host github :repo "tecosaur/org-glossary" :files ("*.el" "*.org" "*.texi")))
 (package! ten :recipe (:host sourcehut :repo "nobiot/ten")) ;; https://git.sr.ht/~nobiot/ten
-(package! org-fragtog)          ;; interactive toggling of inline latex formulas
-(package! org-transclusion)
+;; (package! org-fragtog)          ;; interactive toggling of inline latex formulas
+;; (package! org-transclusion)
 
 ;;;; code
 
