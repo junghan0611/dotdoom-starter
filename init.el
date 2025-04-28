@@ -46,6 +46,22 @@
 (when IS-TERMUX
   (setq root-path "/data/data/com.termux/files/"))
 
+;;;; android gui emacs
+
+;; 2025-04-28
+(when (string-equal system-type "android")
+  (when (display-graphic-p) ; gui
+    ;; Add Termux binaries to PATH environment
+    ;; It is important that termuxpath is prepended, not appended.
+    ;; Otherwise we will get Androids incompatible diff executable, instead of the one in Termux.
+    (let ((termuxpath "/data/data/com.termux/files/usr/bin"))
+      (setenv "PATH" (format "%s:%s" termuxpath
+                             (getenv "PATH")))
+      (push termuxpath exec-path)
+      (push "~/.config/emacs/bin" exec-path))
+    )
+  )
+
 ;;;; Modules
 
 (doom! :input
@@ -93,7 +109,7 @@
        (:if (not (memq system-type '(cygwin windows-nt ms-dos))) vterm) ; the best terminal emulation in Emacs
 
        :checkers
-        (syntax +flymake) ; tasing you for every semicolon you forget
+       (syntax +flymake) ; tasing you for every semicolon you forget
        ;; spell +flyspell ; +hunspell - tasing you for misspelling mispelling
        ;; grammar           ; tasing grammar mistake every you make
        :tools
@@ -121,11 +137,11 @@
        tty                 ; improve the terminal Emacs experience
 
        :lang
-       (clojure +lsp) ; java with a lisp
+       ;; (clojure +lsp) ; java with a lisp
        data              ; config/data formats
        emacs-lisp        ; drown in parentheses
        json  ; At least it ain't XML
-       (javascript +lsp) ;; all(hope(abandon(ye(who(enter(here))))))
+       ;; (javascript +lsp) ;; all(hope(abandon(ye(who(enter(here))))))
        (latex +cdlatex +latexmk)    ; writing papers in Emacs has never been so fun
        markdown          ; writing docs for people to ignore
        (org                         ; organize your plain life in plain text
@@ -141,7 +157,7 @@
         ;; +pomodoro                 ; be fruitful with the tomato technique
         )                     ; wander around notes
        ;; sh                ; she sells {ba,z,fi}sh shells on the C xor
-       (python +lsp +pyright) ; +conda - beautiful is better than ugly
+       python  ; +lsp +pyright +conda - beautiful is better than ugly
        ;; racket ; a DSL for DSLs
        ;; (scheme +mit) ;; +racket ; a fully conniving family of lisps
        web ; the tubes

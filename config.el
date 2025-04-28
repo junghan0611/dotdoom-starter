@@ -180,28 +180,30 @@
   (global-set-key (kbd "<Hangul>") 'toggle-input-method)
   ;; (global-unset-key (kbd "S-SPC"))
 
+  (unless (string-equal system-type "android")
 ;;;###autoload
-  (defun my/set-emoji-symbol-font ()
-    (interactive)
+    (defun my/set-emoji-symbol-font ()
+      (interactive)
 
-    (set-fontset-font "fontset-default" 'hangul (font-spec :family (face-attribute 'default :family)))
+      (set-fontset-font "fontset-default" 'hangul (font-spec :family (face-attribute 'default :family)))
 
-    (when (display-graphic-p) ; gui
-      (set-fontset-font t 'unicode (font-spec :family "Symbola") nil 'prepend) ;; 2024-09-16 테스트 -- 𝑀＜1
-      (set-fontset-font t 'mathematical (font-spec :family "Symbola") nil 'prepend) ; best
+      (when (display-graphic-p) ; gui
+        (set-fontset-font t 'unicode (font-spec :family "Symbola") nil 'prepend) ;; 2024-09-16 테스트 -- 𝑀＜1
+        (set-fontset-font t 'mathematical (font-spec :family "Symbola") nil 'prepend) ; best
 
-      ;; (set-fontset-font t 'emoji (font-spec :family "Apple Color Emoji") nil 'prepend)
-      (set-fontset-font t 'emoji (font-spec :family "Noto Color Emoji") nil)
-      (set-fontset-font t 'emoji (font-spec :family "Noto Emoji") nil 'prepend) ; Top
-      )
-    (unless (display-graphic-p) ; terminal
-      (set-fontset-font "fontset-default" 'emoji (font-spec :family "Noto Emoji") nil 'prepend))
+        ;; (set-fontset-font t 'emoji (font-spec :family "Apple Color Emoji") nil 'prepend)
+        (set-fontset-font t 'emoji (font-spec :family "Noto Color Emoji") nil)
+        (set-fontset-font t 'emoji (font-spec :family "Noto Emoji") nil 'prepend) ; Top
+        )
+      (unless (display-graphic-p) ; terminal
+        (set-fontset-font "fontset-default" 'emoji (font-spec :family "Noto Emoji") nil 'prepend))
 
-    (set-fontset-font t 'symbol (font-spec :family "Symbola") nil 'prepend)
-    (set-fontset-font t 'symbol (font-spec :family "Noto Sans Symbols 2") nil 'prepend)
-    (set-fontset-font t 'symbol (font-spec :family "Noto Sans Symbols") nil 'prepend))
+      (set-fontset-font t 'symbol (font-spec :family "Symbola") nil 'prepend)
+      (set-fontset-font t 'symbol (font-spec :family "Noto Sans Symbols 2") nil 'prepend)
+      (set-fontset-font t 'symbol (font-spec :family "Noto Sans Symbols") nil 'prepend))
 
-  (add-hook 'after-setting-font-hook #'my/set-emoji-symbol-font))
+    (add-hook 'after-setting-font-hook #'my/set-emoji-symbol-font))
+  )
 
 ;;; better default
 
@@ -746,14 +748,15 @@ only those in the selected frame."
   (setq org-agenda-sort-noeffort-is-high t) ; Org 9.4
 
   ;; Time Clocking
-  (setq org-clock-idle-time 30) ; 10
-  (setq org-clock-reminder-timer (run-with-timer
-                                  t (* org-clock-idle-time 20) ; 60
-                                  (lambda ()
-                                    (unless (org-clocking-p)
-                                      (when (fboundp 'alert)
-                                        (alert "Do you forget to clock-in?"
-                                               :title "Org Clock"))))))
+  ;; (require 'org-clock)
+  ;; (setq org-clock-idle-time 30) ; 10
+  ;; (setq org-clock-reminder-timer (run-with-timer
+  ;;                                 t (* org-clock-idle-time 20) ; 60
+  ;;                                 (lambda ()
+  ;;                                   (unless (org-clocking-p)
+  ;;                                     (when (fboundp 'alert)
+  ;;                                       (alert "Do you forget to clock-in?"
+  ;;                                              :title "Org Clock"))))))
   ;; (org-clock-auto-clockout-insinuate) ; auto-clockout
   ;; modeline 에 보이는 org clock 정보가 너무 길어서 줄임
   (setq org-clock-string-limit 30) ; default 0
@@ -1356,10 +1359,10 @@ only those in the selected frame."
 ;; (setq doom-modeline-continuous-word-count-modes '(markdown-mode gfm-mod)) ; org-mode
 
 (after! doom-modeline
-  (setq doom-modeline-icon (display-graphic-p))
-  (setq doom-modeline-modal-icon t)
-  (setq doom-modeline-major-mode-icon t)
-  (setq doom-modeline-buffer-modification-icon t)
+  (setq doom-modeline-icon nil)
+  (setq doom-modeline-modal-icon nil)
+  (setq doom-modeline-major-mode-icon nil)
+  (setq doom-modeline-buffer-modification-icon nil)
 
   (setq doom-modeline-height 35)
   (setq doom-modeline-bar-width 4)
@@ -1376,7 +1379,7 @@ only those in the selected frame."
 ;;;; spacious-padding
 
 (use-package! spacious-padding
-  ;; :if window-system
+  :if (unless (string-equal system-type "android"))
   :hook (server-after-make-frame . spacious-padding-mode)
   :init
   (setq spacious-padding-subtle-mode-line t)
@@ -1495,12 +1498,12 @@ only those in the selected frame."
         modus-themes-region '(bg-only no-extend)
         modus-themes-org-blocks 'gray-background)
 
-  (setq modus-themes-headings
-        (quote ((0 . (background overline 1.2)) ; variable-pitch
-                (1 . (background overline 1.2)) ; variable-pitch
-                (2 . (overline rainbow 1.1))
-                (3 . (overline 1.05))
-                (t . (monochrome)))))
+  ;; (setq modus-themes-headings
+  ;;       (quote ((0 . (background overline 1.2)) ; variable-pitch
+  ;;               (1 . (background overline 1.2)) ; variable-pitch
+  ;;               (2 . (overline rainbow 1.1))
+  ;;               (3 . (overline 1.05))
+  ;;               (t . (monochrome)))))
   )
 
 ;; doom-themes
@@ -1783,6 +1786,46 @@ and if it is set to nil, then it would forcefully create the ID."
   :config
   (unless (display-graphic-p) ; terminal
     (term-keys-mode t)))
+
+;;;; fortune
+
+;; 2025-04-28
+(when (string-equal system-type "android")
+  (when (display-graphic-p) ; gui
+    (defun my/regular-font ()
+      (interactive)
+      (setq doom-font (font-spec :family "Monoplex Nerd" :size 15.0 :weight 'regular)
+            ;; doom-variable-pitch-font (font-spec :family "Iosevka Comfy Motion Duo" :size 20)
+            ;; (set-fontset-font "fontset-default" 'hangul (font-spec :family (face-attribute 'default :family)))
+            )
+      (doom/reload-font)
+      ;;(when (fboundp 'tooltip-mode) (tooltip-mode 1))
+      (when (fboundp 'tool-bar-mode) (tool-bar-mode 1))
+      (when (display-graphic-p)  (menu-bar-mode +1))
+      )
+    (add-hook 'doom-after-init-hook #'my-regular-font)
+
+    ;; Suggestion: Move user-emacs-directory to /sdcard/emacs/cache/ To reduce
+    ;; the risk of loosing precious files such as recentf and bookmarks it might
+    ;; be a good idea to move directory $HOME/.config/emacs/.local/cache/ to,
+    ;; say, under /sdcard/emacs/:
+    ;; $ mkdir -p /sdcard/emacs
+    ;; $ cp -r -p $HOME/.config/emacs/.local/cache/ /sdcard/emacs/
+
+    (customize-set-variable 'user-emacs-directory "/sdcard/emacs/cache/")
+    (setq doom-cache-dir user-emacs-directory)
+    (customize-set-variable 'bookmark-save-flag 1) ; Save bookmark list immediately when it has been updated.
+    (after! recentf
+      (progn
+        (setq recentf-max-saved-items 200) ; Set it to whatever you prefer, the default is too small
+        (add-hook 'find-file-hook 'recentf-save-list)))
+
+    ;; Path name in HOME dir, in config file
+    ;; To reliably use $HOME in a path name, in emacs config file:
+    ;; (expand-file-name "storage/shared/stardict" (getenv "HOME"))
+    ;; should expand to /data/data/org.gnu.emacs/files/storage/shared/stardict
+    )
+  )
 
 ;;; LAST Options
 ;;;; ccmenu: context-menu with casual
