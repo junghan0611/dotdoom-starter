@@ -273,7 +273,7 @@ All necessary settings are therefore set by hand as part of this configuration f
        (popup +defaults) ; tame sudden yet inevitable temporary windows
        (smooth-scroll +interpolate) ; So smooth you won't believe it's not butter
 
-       treemacs          ; a project drawer, like neotree but cooler
+       ;; treemacs          ; a project drawer, like neotree but cooler
        vc-gutter         ; vcs diff in the fringe
        (window-select +numbers) ; visually switch windows
        workspaces        ; tab emulation, persistence & separate workspaces
@@ -291,7 +291,7 @@ All necessary settings are therefore set by hand as part of this configuration f
        (evil +everywhere); come to the dark side, we have cookies
 
        :emacs
-       (dired +icons)  ; making dired pretty [functional]
+       dired             ; making dired pretty [functional]
        electric          ; smarter, keyword-based electric-indent
        eww               ; the internet is gross
        ibuffer           ; +icons - interactive buffer management
@@ -299,21 +299,21 @@ All necessary settings are therefore set by hand as part of this configuration f
        vc                ; version-control and Emacs, sitting in a tree
 
        :term
-       ;; (:unless IS-TERMUX (eshell)) ; the elisp shell that works everywhere
-       (:if (not (memq system-type '(cygwin windows-nt ms-dos))) vterm) ; the best terminal emulation in Emacs
+       eshell ; the elisp shell that works everywhere
+       (:if (not (memq system-type '(cygwin android windows-nt ms-dos))) vterm) ; the best terminal emulation in Emacs
 
        :checkers
-       (syntax +flymake) ; tasing you for every semicolon you forget
+       ;; (syntax +flymake) ; tasing you for every semicolon you forget
        ;; spell +flyspell ; +hunspell - tasing you for misspelling mispelling
        ;; grammar           ; tasing grammar mistake every you make
        :tools
        biblio
-       debugger ; FIXME stepping through code, to help you add bugs
+       ;; debugger ; FIXME stepping through code, to help you add bugs
        ;; (:unless IS-TERMUX (direnv))
 
        (eval +overlay)     ; run code, run (also, repls)
-       lookup
-       (lsp +eglot)
+       ;; lookup
+       ;; (lsp +eglot)
 
        magit  ; +forge a git porcelain for Emacs
 
@@ -351,11 +351,11 @@ All necessary settings are therefore set by hand as part of this configuration f
         ;; +pomodoro                 ; be fruitful with the tomato technique
         )                     ; wander around notes
        ;; sh                ; she sells {ba,z,fi}sh shells on the C xor
-       python  ; +lsp +pyright +conda - beautiful is better than ugly
+       ;; python  ; +lsp +pyright +conda - beautiful is better than ugly
        ;; racket ; a DSL for DSLs
        ;; (scheme +mit) ;; +racket ; a fully conniving family of lisps
-       web ; the tubes
-       yaml ; JSON, but readable
+       ;; web ; the tubes
+       ;; yaml ; JSON, but readable
 
        ;; :email
        ;;(mu4e +org +gmail)
@@ -492,7 +492,7 @@ All necessary settings are therefore set by hand as part of this configuration f
 
 ;;;; workspaces
 
-(package! tabgo)
+;; (package! tabgo)
 
 ;;;; transient
 
@@ -581,20 +581,19 @@ CLOSED: [2024-10-21 Mon 20:36]
 
 ;;;; fortune
 
-(setq user-initial-scratch-message
-      (format "%s"
-              (if (executable-find "fortune")
-                  (string-join
-                   (mapcar
-                    (lambda (l) (concat "\n " (string-fill l 72)))
-                    (if (string-suffix-p "Android" (string-trim (shell-command-to-string "uname -a")))
-                        (string-lines (shell-command-to-string "fortune"))
-                      (string-lines
-                       (shell-command-to-string
-                        "fortune -c 90% advice 10% .")))))
-                ("\nLearn how to take a 20-minute power nap without embarrassment.\n"))
-              "\n"))
-
+;; (setq user-initial-scratch-message
+;;       (format "%s"
+;;               (if (executable-find "fortune")
+;;                   (string-join
+;;                    (mapcar
+;;                     (lambda (l) (concat "\n " (string-fill l 72)))
+;;                     (if (string-suffix-p "Android" (string-trim (shell-command-to-string "uname -a")))
+;;                         (string-lines (shell-command-to-string "fortune"))
+;;                       (string-lines
+;;                        (shell-command-to-string
+;;                         "fortune -c 90% advice 10% .")))))
+;;                 ("\nLearn how to take a 20-minute power nap without embarrassment.\n"))
+;;               "\n"))
 
 ;;;; cc/url-bookmarks
 
@@ -663,21 +662,51 @@ CLOSED: [2025-01-07 Tue 05:23]
 (setq truncate-string-ellipsis "…") ; Unicode ellispis are nicer than "...", and also save /precious/ space
 
 #+end_src
-*** startup message
+*** DONT startup message
+CLOSED: [2025-04-28 Mon 13:03]
 #+begin_src emacs-lisp :tangle config.el
 ;;; startup and dashboard
 
-(setq initial-scratch-message user-initial-scratch-message)
+;; (setq initial-scratch-message user-initial-scratch-message)
 
-;; When I bring up Doom's scratch buffer with SPC x, it's often to play with
-;; elisp or note something down (that isn't worth an entry in my notes). I can
-;; do both in `lisp-interaction-mode'.
-(setq doom-scratch-initial-major-mode 'emacs-lisp-mode)
+;; ;; When I bring up Doom's scratch buffer with SPC x, it's often to play with
+;; ;; elisp or note something down (that isn't worth an entry in my notes). I can
+;; ;; do both in `lisp-interaction-mode'.
+;; (setq doom-scratch-initial-major-mode 'emacs-lisp-mode)
 
-;; Set initial buffer to org
-(setq initial-major-mode #'text-mode)
+;; ;; Set initial buffer to org
+;; (setq initial-major-mode #'text-mode)
 
 #+end_src
+*** dashboard
+CLOSED: [2025-04-28 Mon 13:03]
+
+#+begin_src emacs-lisp :tangle config.el
+
+  (defun emacs-dashboard-draw-ascii-banner-fn ()
+    (let* ((banner
+            '("Welcome to                                 "
+              "███████╗███╗   ███╗ █████╗  ██████╗███████╗"
+              "██╔════╝████╗ ████║██╔══██╗██╔════╝██╔════╝"
+              "█████╗  ██╔████╔██║███████║██║     ███████╗"
+              "██╔══╝  ██║╚██╔╝██║██╔══██║██║     ╚════██║"
+              "███████╗██║ ╚═╝ ██║██║  ██║╚██████╗███████║"
+              "╚══════╝╚═╝     ╚═╝╚═╝  ╚═╝ ╚═════╝╚══════╝"))
+           (longest-line (apply #'max (mapcar #'length banner))))
+      (put-text-property
+       (point)
+       (dolist (line banner (point))
+         (insert
+          (+doom-dashboard--center
+           +doom-dashboard--width
+           (concat line (make-string (max 0 (- longest-line (length line))) 32)))
+          "\n"))
+       'face 'bold)))
+
+  ;; doom-dashboard-banner
+  (when (display-graphic-p) ; gui
+    (setq +doom-dashboard-ascii-banner-fn 'emacs-dashboard-draw-ascii-banner-fn))
+#+END_SRC
 *** leader key
 #+begin_src emacs-lisp :tangle config.el
 ;;; Leader key
@@ -2569,17 +2598,17 @@ and if it is set to nil, then it would forcefully create the ID."
     (term-keys-mode t)))
 #+end_src
 
-** dd
+** android native
 
 #+begin_src emacs-lisp :tangle config.el
-;;;; fortune
+;;;; android native
 
 ;; 2025-04-28
 (when (string-equal system-type "android")
   (when (display-graphic-p) ; gui
     (defun my/regular-font ()
       (interactive)
-      (setq doom-font (font-spec :family "Monoplex Nerd" :size 15.0 :weight 'regular)
+      (setq doom-font (font-spec :family "Monoplex Nerd" :size 16.0 :weight 'regular)
             ;; doom-variable-pitch-font (font-spec :family "Iosevka Comfy Motion Duo" :size 20)
             ;; (set-fontset-font "fontset-default" 'hangul (font-spec :family (face-attribute 'default :family)))
             )
@@ -2938,7 +2967,7 @@ and if it is set to nil, then it would forcefully create the ID."
       ;; :m "C-i" #'evil-jump-forward ;; evil-want-C-i-jump - evil-maps.el
       :n "g ]" #'evil-jump-forward
       :n "g [" #'evil-jump-backward
-      :n "g RET" #'tabgo
+      ;; :n "g RET" #'tabgo
       )
 
 #+end_src
@@ -2951,3 +2980,9 @@ and if it is set to nil, then it would forcefully create the ID."
 
 
 #+end_src
+
+
+* Local Variables :ARCHIVE:
+# Local Variables:
+# eval: (add-hook 'after-save-hook (lambda ()(org-babel-tangle)) nil t)
+# End:

@@ -98,15 +98,39 @@
 
 ;;; startup and dashboard
 
-(setq initial-scratch-message user-initial-scratch-message)
+;; (setq initial-scratch-message user-initial-scratch-message)
 
-;; When I bring up Doom's scratch buffer with SPC x, it's often to play with
-;; elisp or note something down (that isn't worth an entry in my notes). I can
-;; do both in `lisp-interaction-mode'.
-(setq doom-scratch-initial-major-mode 'emacs-lisp-mode)
+;; ;; When I bring up Doom's scratch buffer with SPC x, it's often to play with
+;; ;; elisp or note something down (that isn't worth an entry in my notes). I can
+;; ;; do both in `lisp-interaction-mode'.
+;; (setq doom-scratch-initial-major-mode 'emacs-lisp-mode)
 
-;; Set initial buffer to org
-(setq initial-major-mode #'text-mode)
+;; ;; Set initial buffer to org
+;; (setq initial-major-mode #'text-mode)
+
+  (defun emacs-dashboard-draw-ascii-banner-fn ()
+    (let* ((banner
+            '("Welcome to                                 "
+              "███████╗███╗   ███╗ █████╗  ██████╗███████╗"
+              "██╔════╝████╗ ████║██╔══██╗██╔════╝██╔════╝"
+              "█████╗  ██╔████╔██║███████║██║     ███████╗"
+              "██╔══╝  ██║╚██╔╝██║██╔══██║██║     ╚════██║"
+              "███████╗██║ ╚═╝ ██║██║  ██║╚██████╗███████║"
+              "╚══════╝╚═╝     ╚═╝╚═╝  ╚═╝ ╚═════╝╚══════╝"))
+           (longest-line (apply #'max (mapcar #'length banner))))
+      (put-text-property
+       (point)
+       (dolist (line banner (point))
+         (insert
+          (+doom-dashboard--center
+           +doom-dashboard--width
+           (concat line (make-string (max 0 (- longest-line (length line))) 32)))
+          "\n"))
+       'face 'bold)))
+
+  ;; doom-dashboard-banner
+  (when (display-graphic-p) ; gui
+    (setq +doom-dashboard-ascii-banner-fn 'emacs-dashboard-draw-ascii-banner-fn))
 
 ;;; Leader key
 
@@ -1787,14 +1811,14 @@ and if it is set to nil, then it would forcefully create the ID."
   (unless (display-graphic-p) ; terminal
     (term-keys-mode t)))
 
-;;;; fortune
+;;;; android native
 
 ;; 2025-04-28
 (when (string-equal system-type "android")
   (when (display-graphic-p) ; gui
     (defun my/regular-font ()
       (interactive)
-      (setq doom-font (font-spec :family "Monoplex Nerd" :size 15.0 :weight 'regular)
+      (setq doom-font (font-spec :family "Monoplex Nerd" :size 16.0 :weight 'regular)
             ;; doom-variable-pitch-font (font-spec :family "Iosevka Comfy Motion Duo" :size 20)
             ;; (set-fontset-font "fontset-default" 'hangul (font-spec :family (face-attribute 'default :family)))
             )
@@ -2131,7 +2155,7 @@ and if it is set to nil, then it would forcefully create the ID."
       ;; :m "C-i" #'evil-jump-forward ;; evil-want-C-i-jump - evil-maps.el
       :n "g ]" #'evil-jump-forward
       :n "g [" #'evil-jump-backward
-      :n "g RET" #'tabgo
+      ;; :n "g RET" #'tabgo
       )
 
 ;;; user-keybindings

@@ -39,20 +39,19 @@
 
 ;;;; fortune
 
-(setq user-initial-scratch-message
-      (format "%s"
-              (if (executable-find "fortune")
-                  (string-join
-                   (mapcar
-                    (lambda (l) (concat "\n " (string-fill l 72)))
-                    (if (string-suffix-p "Android" (string-trim (shell-command-to-string "uname -a")))
-                        (string-lines (shell-command-to-string "fortune"))
-                      (string-lines
-                       (shell-command-to-string
-                        "fortune -c 90% advice 10% .")))))
-                ("\nLearn how to take a 20-minute power nap without embarrassment.\n"))
-              "\n"))
-
+;; (setq user-initial-scratch-message
+;;       (format "%s"
+;;               (if (executable-find "fortune")
+;;                   (string-join
+;;                    (mapcar
+;;                     (lambda (l) (concat "\n " (string-fill l 72)))
+;;                     (if (string-suffix-p "Android" (string-trim (shell-command-to-string "uname -a")))
+;;                         (string-lines (shell-command-to-string "fortune"))
+;;                       (string-lines
+;;                        (shell-command-to-string
+;;                         "fortune -c 90% advice 10% .")))))
+;;                 ("\nLearn how to take a 20-minute power nap without embarrassment.\n"))
+;;               "\n"))
 
 ;;;; cc/url-bookmarks
 

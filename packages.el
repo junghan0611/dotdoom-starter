@@ -160,7 +160,7 @@
 
 ;;;; workspaces
 
-(package! tabgo)
+;; (package! tabgo)
 
 ;;;; transient
 

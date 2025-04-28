@@ -79,7 +79,7 @@
        (popup +defaults) ; tame sudden yet inevitable temporary windows
        (smooth-scroll +interpolate) ; So smooth you won't believe it's not butter
 
-       treemacs          ; a project drawer, like neotree but cooler
+       ;; treemacs          ; a project drawer, like neotree but cooler
        vc-gutter         ; vcs diff in the fringe
        (window-select +numbers) ; visually switch windows
        workspaces        ; tab emulation, persistence & separate workspaces
@@ -97,7 +97,7 @@
        (evil +everywhere); come to the dark side, we have cookies
 
        :emacs
-       (dired +icons)  ; making dired pretty [functional]
+       dired             ; making dired pretty [functional]
        electric          ; smarter, keyword-based electric-indent
        eww               ; the internet is gross
        ibuffer           ; +icons - interactive buffer management
@@ -105,21 +105,21 @@
        vc                ; version-control and Emacs, sitting in a tree
 
        :term
-       ;; (:unless IS-TERMUX (eshell)) ; the elisp shell that works everywhere
-       (:if (not (memq system-type '(cygwin windows-nt ms-dos))) vterm) ; the best terminal emulation in Emacs
+       eshell ; the elisp shell that works everywhere
+       (:if (not (memq system-type '(cygwin android windows-nt ms-dos))) vterm) ; the best terminal emulation in Emacs
 
        :checkers
-       (syntax +flymake) ; tasing you for every semicolon you forget
+       ;; (syntax +flymake) ; tasing you for every semicolon you forget
        ;; spell +flyspell ; +hunspell - tasing you for misspelling mispelling
        ;; grammar           ; tasing grammar mistake every you make
        :tools
        biblio
-       debugger ; FIXME stepping through code, to help you add bugs
+       ;; debugger ; FIXME stepping through code, to help you add bugs
        ;; (:unless IS-TERMUX (direnv))
 
        (eval +overlay)     ; run code, run (also, repls)
-       lookup
-       (lsp +eglot)
+       ;; lookup
+       ;; (lsp +eglot)
 
        magit  ; +forge a git porcelain for Emacs
 
@@ -157,11 +157,11 @@
         ;; +pomodoro                 ; be fruitful with the tomato technique
         )                     ; wander around notes
        ;; sh                ; she sells {ba,z,fi}sh shells on the C xor
-       python  ; +lsp +pyright +conda - beautiful is better than ugly
+       ;; python  ; +lsp +pyright +conda - beautiful is better than ugly
        ;; racket ; a DSL for DSLs
        ;; (scheme +mit) ;; +racket ; a fully conniving family of lisps
-       web ; the tubes
-       yaml ; JSON, but readable
+       ;; web ; the tubes
+       ;; yaml ; JSON, but readable
 
        ;; :email
        ;;(mu4e +org +gmail)
