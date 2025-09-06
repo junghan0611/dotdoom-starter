@@ -14,7 +14,7 @@ echo "DOOMDIR: $DOOMDIR"
 # 2. Doom profiles sync (캐시 생성)
 echo ""
 echo "Generating profile cache..."
-doom profiles sync
+doom profiles sync  
 
 # 3. 프로파일별 동기화
 echo ""

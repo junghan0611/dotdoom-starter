@@ -75,17 +75,19 @@
        hl-todo           ; highlight TODO/FIXME/NOTE/DEPRECATED/HACK/REVIEW/XXX/BUG
        ;; indent-guides     ; highlighted indent columns
        modeline          ; snazzy, Atom-inspired modeline, plus API
+       neotree ; a project drawer, like NERDTree for vim
        ophints           ; highlight the region an operation acts on
        (popup +defaults) ; tame sudden yet inevitable temporary windows
        ;; (smooth-scroll +interpolate) ; So smooth you won't believe it's not butter
 
-       ;; treemacs          ; a project drawer, like neotree but cooler
+       treemacs          ; a project drawer, like neotree but cooler
        vc-gutter         ; vcs diff in the fringe
        (window-select +numbers) ; visually switch windows
        workspaces        ; tab emulation, persistence & separate workspaces
-       zen               ; distraction-free coding or writing
+       ;; zen               ; distraction-free coding or writing
 
        :editor
+       (evil +everywhere); come to the dark side, we have cookies
        file-templates    ; auto-snippets for empty files
        fold              ; (nigh) universal code folding
        format            ; automated prettiness
@@ -93,8 +95,6 @@
        rotate-text       ; cycle region at point between text candidates
        snippets          ; my elves. They type so I don't have to
        ;;word-wrap         ; soft wrapping with language-aware indent
-
-       (evil +everywhere); come to the dark side, we have cookies
 
        :emacs
        dired             ; making dired pretty [functional]
@@ -118,32 +118,32 @@
        ;; (:unless IS-TERMUX (direnv))
 
        (eval +overlay)     ; run code, run (also, repls)
-       ;; lookup
+       lookup
+       llm                 ; when I said you needed friends, I didn't mean...
        ;; (lsp +eglot)
 
-       ;; magit ; +forge a git porcelain for Emacs
+       magit ; +forge a git porcelain for Emacs
 
-       ;; make              ; run make tasks from Emacs
-       ;;pass              ; password manager for nerds
+       make              ; run make tasks from Emacs
+       pass              ; password manager for nerds
        ;; (:unless IS-TERMUX (pdf)) ; pdf enhancements
        ;; (:unless IS-TERMUX (prodigy)) ;; FIXME managing external services & code builders
        ;;terraform         ; infrastructure as code
        ;;tmux              ; an API for interacting with tmux
-       ;; tree-sitter ;; syntax and parsing, sitting in a tree...
-       ;; upload            ; map local to remote projects via ssh/ftp
+       tree-sitter ;; syntax and parsing, sitting in a tree...
+       upload            ; map local to remote projects via ssh/ftp
 
        :os
        (:if IS-MAC macos)  ; improve compatibility with macOS
        tty                 ; improve the terminal Emacs experience
 
        :lang
-       ;; (clojure +lsp) ; java with a lisp
        data              ; config/data formats
        emacs-lisp        ; drown in parentheses
-       json  ; At least it ain't XML
-       ;; (javascript +lsp) ;; all(hope(abandon(ye(who(enter(here))))))
+       ;; plantuml            ; diagrams for confusing people more
+       ;; graphviz
        (latex +cdlatex +latexmk)    ; writing papers in Emacs has never been so fun
-       markdown          ; writing docs for people to ignore
+       (markdown +tree-sitter)          ; writing docs for people to ignore
        (org                         ; organize your plain life in plain text
         +hugo                     ; use Emacs for hugo blogging
         +jupyter                    ; ipython/jupyter support for babel
@@ -156,19 +156,21 @@
         ;; +noter                      ; enhanced PDF notetaking
         ;; +pomodoro                 ; be fruitful with the tomato technique
         )                     ; wander around notes
-       ;; sh                ; she sells {ba,z,fi}sh shells on the C xor
-       ;; python  ; +lsp +pyright +conda - beautiful is better than ugly
-       ;; racket ; a DSL for DSLs
-       ;; (scheme +mit) ;; +racket ; a fully conniving family of lisps
-       ;; web ; the tubes
-       ;; yaml ; JSON, but readable
+       sh                ; she sells {ba,z,fi}sh shells on the C xor
+       (python +tree-sitter)
+       (nix +tree-sitter)               ; I hereby declare "nix geht mehr!"
+       (json +tree-sitter)  ; At least it ain't XML
+       (janet +tree-sitter)  ; Fun fact: Janet is me!
+       (javascript +tree-sitter) ; all(hope(abandon(ye(who(enter(here))))))
+       (web +tree-sitter) ; the tubes
+       (yaml +tree-sitter) ; JSON, but readable
 
        ;; :email
        ;;(mu4e +org +gmail)
        ;; (notmuch +org)
 
        :app
-       ;; calendar
+       calendar
        ;; emms
        (rss +org +youtube)        ; emacs as an RSS reader
 

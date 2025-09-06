@@ -64,11 +64,6 @@
 ;; sync' after modifying this file!
 (load! "+user-info")
 
-;;;; CCMemu
-
-;; (when (display-graphic-p) ; gui
-;;   (add-to-list 'load-path (concat doom-user-dir "ccmenu/")))
-
 ;;; Load 'Per-Machine' - User Configs
 
 ;; Most of my per-environment config done via =customize= and is in .custom.el.
@@ -1297,6 +1292,38 @@ only those in the selected frame."
     (setq-default gptel-org-branching-context t))
   )
 
+;;; llmclient
+;;;; claude-code
+
+(use-package! claude-code
+  :config
+  (setq claude-code-terminal-backend 'vterm)
+  (defun my-claude-notify-with-sound (title message)
+    "Display a Linux notification with sound."
+    (when (executable-find "notify-send")
+      (call-process "notify-send" nil nil nil title message))
+    ;; Play sound if paplay is available
+    (when (executable-find "paplay")
+      (call-process "paplay" nil nil nil "/usr/share/sounds/freedesktop/stereo/complete.oga")))
+  (setq claude-code-notification-function #'my-claude-notify-with-sound)
+
+  ;; optional IDE integration with Monet
+  ;; (require 'monet)
+  ;; (add-hook 'claude-code-process-environment-functions #'monet-start-server-function)
+  ;; (monet-mode 1)
+
+  (set-popup-rule! "^\\*claude" :vslot -15 :width 90 :side 'right :ttl t :select t :quit nil :modeline t)
+
+  (claude-code-mode)
+
+  (add-hook 'claude-code-start-hook
+            (lambda ()
+              ;; Only increase scrollback for vterm backend
+              (when (eq claude-code-terminal-backend 'vterm)
+                (setq-local x-gtk-use-native-input t)
+                (setq-local vterm-max-scrollback 100000))))
+  )
+
 ;;;; doom-modeline
 
 (setq doom-modeline-time nil)
@@ -1323,33 +1350,6 @@ only those in the selected frame."
   (setq doom-modeline-lsp t)
   (setq doom-modeline-indent-info t)
   (setq doom-modeline-hud nil))
-
-;;;; spacious-padding
-
-(use-package! spacious-padding
-  :if (unless (string-equal system-type "android"))
-  :hook (server-after-make-frame . spacious-padding-mode)
-  :init
-  (setq spacious-padding-subtle-mode-line t)
-  (setq spacious-padding-widths
-        '(:internal-border-width 15 ; 15
-          :header-line-width 4
-          :mode-line-width 4
-          :tab-width 4 ; sync mode-line-width for keycast-tab-bar
-          :right-divider-width 30
-          :scroll-bar-width 8
-          :fringe-width 8
-          ))
-  (add-hook 'doom-load-theme-hook #'spacious-padding-mode)
-  :config
-  ;; (remove-hook 'doom-init-ui-hook #'window-divider-mode)
-  ;; (blink-cursor-mode t)
-  ;; (when (fboundp 'tooltip-mode) (tooltip-mode 1))
-  ;; (when (fboundp 'tool-bar-mode) (tool-bar-mode 1))
-  ;; (when (display-graphic-p) ; gui
-  ;;   (menu-bar-mode +1))
-  (spacious-padding-mode +1)
-  )
 
 ;;;; outli
 
@@ -1456,45 +1456,6 @@ only those in the selected frame."
   (require 'elfeed-tube)
   (setq elfeed-tube-captions-languages '("en" "ko" "englsh (auto generated)")))
 
-(use-package! nov
-  :mode ("\\.epub\\'" . nov-mode)
-  :commands (nov-org-link-follow nov-org-link-store)
-  :init
-  (with-eval-after-load 'org
-    (org-link-set-parameters "nov"
-                             :follow 'nov-org-link-follow
-                             :store 'nov-org-link-store))
-  :config
-  (map! :map nov-mode-map
-        :n "RET" #'nov-scroll-up
-        :n "d" 'nov-scroll-up
-        :n "u" 'nov-scroll-down
-        :n "J" 'nov-scroll-up
-        :n "K" 'nov-scroll-down)
-
-  (defun +nov-mode-setup ()
-    "Tweak nov-mode to our liking."
-    (face-remap-add-relative 'variable-pitch
-                             :family "Pretendard Variable"
-                             :height 1.2
-                             :width 'semi-expanded)
-    (face-remap-add-relative 'default :height 1.0)
-    (variable-pitch-mode 1)
-    (setq-local line-spacing 0.2
-                next-screen-context-lines 4
-                shr-use-colors nil)
-    (when (featurep 'hl-line-mode)
-      (hl-line-mode -1))
-    (when (featurep 'font-lock-mode)
-      (font-lock-mode -1))
-    ;; Re-render with new display settings
-    (nov-render-document)
-    ;; Look up words with the dictionary.
-    (add-to-list '+lookup-definition-functions #'+lookup/dictionary-definition))
-  (add-hook 'nov-mode-hook #'+nov-mode-setup 80)
-  (setq font-lock-global-modes '(not nov-mode))
-  )
-
 ;;;; eglot configuration
 
 (progn
@@ -1518,43 +1479,6 @@ only those in the selected frame."
   (add-hook! 'eglot-managed-mode-hook
     (eglot-inlay-hints-mode -1))
   )
-
-;;;; DONT lsp
-
-;; (progn
-;;   (after! lsp-mode
-;;     (setq
-;;      lsp-headerline-breadcrumb-enable t ; doom nil
-;;      lsp-headerline-breadcrumb-icons-enable nil))
-
-;;   (after! lsp-ui
-;;     (setq
-;;      lsp-ui-sideline-enable nil ; doom t - disable sideline for less distraction
-;;      ;; lsp-ui-doc-enable nil ;; doom t - disable all doc popups
-;;      treemacs-space-between-root-nodes nil  ;; doom nil
-;;      ;; lsp-ui-peek-enable t ; doom t
-;;      ))
-
-;;   (after! lsp-treemacs
-;;     (setq lsp-treemacs-error-list-current-project-only t))
-;;   )
-
-;;;; python
-
-;; (add-hook 'python-mode-hook #'rainbow-delimiters-mode)
-
-;;;; scheme with geiser-mit
-
-;; (use-package! geiser-mit
-;;   :config
-;;   (setenv "MITSCHEME_HEAP_SIZE" "100000") ; 16384
-;;   (setenv "MITSCHEME_LIBRARY_PATH" "/usr/lib/x86_64-linux-gnu/mit-scheme")
-;;   (setenv "MITSCHEME_BAND" "mechanics.com")
-
-;;   ;; (setenv "DISPLAY" ":0")
-;;   (setq geiser-active-implementations '(mit))
-;;   (setq geiser-mit-binary "/usr/bin/mit-scheme")
-;;   )
 
 ;;;; core fuctions
 
@@ -1633,68 +1557,6 @@ and if it is set to nil, then it would forcefully create the ID."
 ;;   :config
 ;;   (unless (display-graphic-p) ; terminal
 ;;     (term-keys-mode t)))
-
-;;;; android native
-
-;; 2025-04-28
-(when (string-equal system-type "android")
-  (when (display-graphic-p) ; gui
-    (defun my/regular-font ()
-      (interactive)
-      (setq doom-font (font-spec :family "Monoplex Nerd" :size 16.0 :weight 'regular)
-            ;; doom-variable-pitch-font (font-spec :family "Iosevka Comfy Motion Duo" :size 20)
-            ;; (set-fontset-font "fontset-default" 'hangul (font-spec :family (face-attribute 'default :family)))
-            )
-      (doom/reload-font)
-      ;;(when (fboundp 'tooltip-mode) (tooltip-mode 1))
-      (when (fboundp 'tool-bar-mode) (tool-bar-mode 1))
-      (when (display-graphic-p)  (menu-bar-mode +1))
-      )
-    (add-hook 'doom-after-init-hook #'my-regular-font)
-
-    ;; Suggestion: Move user-emacs-directory to /sdcard/emacs/cache/ To reduce
-    ;; the risk of loosing precious files such as recentf and bookmarks it might
-    ;; be a good idea to move directory $HOME/.config/emacs/.local/cache/ to,
-    ;; say, under /sdcard/emacs/:
-    ;; $ mkdir -p /sdcard/emacs
-    ;; $ cp -r -p $HOME/.config/emacs/.local/cache/ /sdcard/emacs/
-
-    (customize-set-variable 'user-emacs-directory "/sdcard/emacs/cache/")
-    (setq doom-cache-dir user-emacs-directory)
-    (customize-set-variable 'bookmark-save-flag 1) ; Save bookmark list immediately when it has been updated.
-    (after! recentf
-      (progn
-        (setq recentf-max-saved-items 200) ; Set it to whatever you prefer, the default is too small
-        (add-hook 'find-file-hook 'recentf-save-list)))
-
-    ;; Path name in HOME dir, in config file
-    ;; To reliably use $HOME in a path name, in emacs config file:
-    ;; (expand-file-name "storage/shared/stardict" (getenv "HOME"))
-    ;; should expand to /data/data/org.gnu.emacs/files/storage/shared/stardict
-    )
-  )
-
-;;; LAST Options
-;;;; ccmenu: context-menu with casual
-
-; (when (display-graphic-p) ;; gui
-;   (require 'ccmenu))
-
-;; (use-package! google-this
-;;   :init
-;;   (setq google-this-location-suffix "co.kr"))
-
-(use-package! webpaste
-  :bind (("C-c C-p C-b" . webpaste-paste-buffer)
-         ("C-c C-p C-r" . webpaste-paste-region)
-         ("C-c C-p C-p" . webpaste-paste-buffer-or-region)))
-
-(use-package! google-translate
-  :config
-  (setq google-translate-translation-directions-alist
-      '(("ko" . "en") ("en" . "ko"))))
-
-;;;; Terminal Mode
 
 ;; README /doomemacs-junghan0611/lisp/doom-ui.el
 ;; Terminal Mode

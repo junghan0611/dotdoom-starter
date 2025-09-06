@@ -12,11 +12,13 @@
 possiblly minimum but useful
 
 * CHANGELOG
+- [2025-09-07 Sun 07:08] 수정 터미널 포커스
 - 2024-09-12 Denote 까지 지원. 핵심 전략 서술.
 - 2024-10-03 org-latex-preview-auto-mode for test
 - 2024-11-16 version 0.1 - eglot
 - 2025-01-06 create ews-starter, fork ccmenu
 - 2025-02-15 back to lsp-mode
+
 
 * Installation
 
@@ -269,17 +271,19 @@ All necessary settings are therefore set by hand as part of this configuration f
        hl-todo           ; highlight TODO/FIXME/NOTE/DEPRECATED/HACK/REVIEW/XXX/BUG
        ;; indent-guides     ; highlighted indent columns
        modeline          ; snazzy, Atom-inspired modeline, plus API
+       neotree ; a project drawer, like NERDTree for vim
        ophints           ; highlight the region an operation acts on
        (popup +defaults) ; tame sudden yet inevitable temporary windows
        ;; (smooth-scroll +interpolate) ; So smooth you won't believe it's not butter
 
-       ;; treemacs          ; a project drawer, like neotree but cooler
+       treemacs          ; a project drawer, like neotree but cooler
        vc-gutter         ; vcs diff in the fringe
        (window-select +numbers) ; visually switch windows
        workspaces        ; tab emulation, persistence & separate workspaces
-       zen               ; distraction-free coding or writing
+       ;; zen               ; distraction-free coding or writing
 
        :editor
+       (evil +everywhere); come to the dark side, we have cookies
        file-templates    ; auto-snippets for empty files
        fold              ; (nigh) universal code folding
        format            ; automated prettiness
@@ -287,8 +291,6 @@ All necessary settings are therefore set by hand as part of this configuration f
        rotate-text       ; cycle region at point between text candidates
        snippets          ; my elves. They type so I don't have to
        ;;word-wrap         ; soft wrapping with language-aware indent
-
-       (evil +everywhere); come to the dark side, we have cookies
 
        :emacs
        dired             ; making dired pretty [functional]
@@ -312,32 +314,32 @@ All necessary settings are therefore set by hand as part of this configuration f
        ;; (:unless IS-TERMUX (direnv))
 
        (eval +overlay)     ; run code, run (also, repls)
-       ;; lookup
+       lookup
+       llm                 ; when I said you needed friends, I didn't mean...
        ;; (lsp +eglot)
 
-       ;; magit ; +forge a git porcelain for Emacs
+       magit ; +forge a git porcelain for Emacs
 
-       ;; make              ; run make tasks from Emacs
-       ;;pass              ; password manager for nerds
+       make              ; run make tasks from Emacs
+       pass              ; password manager for nerds
        ;; (:unless IS-TERMUX (pdf)) ; pdf enhancements
        ;; (:unless IS-TERMUX (prodigy)) ;; FIXME managing external services & code builders
        ;;terraform         ; infrastructure as code
        ;;tmux              ; an API for interacting with tmux
-       ;; tree-sitter ;; syntax and parsing, sitting in a tree...
-       ;; upload            ; map local to remote projects via ssh/ftp
+       tree-sitter ;; syntax and parsing, sitting in a tree...
+       upload            ; map local to remote projects via ssh/ftp
 
        :os
        (:if IS-MAC macos)  ; improve compatibility with macOS
        tty                 ; improve the terminal Emacs experience
 
        :lang
-       ;; (clojure +lsp) ; java with a lisp
        data              ; config/data formats
        emacs-lisp        ; drown in parentheses
-       json  ; At least it ain't XML
-       ;; (javascript +lsp) ;; all(hope(abandon(ye(who(enter(here))))))
+       ;; plantuml            ; diagrams for confusing people more
+       ;; graphviz
        (latex +cdlatex +latexmk)    ; writing papers in Emacs has never been so fun
-       markdown          ; writing docs for people to ignore
+       (markdown +tree-sitter)          ; writing docs for people to ignore
        (org                         ; organize your plain life in plain text
         +hugo                     ; use Emacs for hugo blogging
         +jupyter                    ; ipython/jupyter support for babel
@@ -350,19 +352,21 @@ All necessary settings are therefore set by hand as part of this configuration f
         ;; +noter                      ; enhanced PDF notetaking
         ;; +pomodoro                 ; be fruitful with the tomato technique
         )                     ; wander around notes
-       ;; sh                ; she sells {ba,z,fi}sh shells on the C xor
-       ;; python  ; +lsp +pyright +conda - beautiful is better than ugly
-       ;; racket ; a DSL for DSLs
-       ;; (scheme +mit) ;; +racket ; a fully conniving family of lisps
-       ;; web ; the tubes
-       ;; yaml ; JSON, but readable
+       sh                ; she sells {ba,z,fi}sh shells on the C xor
+       (python +tree-sitter)
+       (nix +tree-sitter)               ; I hereby declare "nix geht mehr!"
+       (json +tree-sitter)  ; At least it ain't XML
+       (janet +tree-sitter)  ; Fun fact: Janet is me!
+       (javascript +tree-sitter) ; all(hope(abandon(ye(who(enter(here))))))
+       (web +tree-sitter) ; the tubes
+       (yaml +tree-sitter) ; JSON, but readable
 
        ;; :email
        ;;(mu4e +org +gmail)
        ;; (notmuch +org)
 
        :app
-       ;; calendar
+       calendar
        ;; emms
        (rss +org +youtube)        ; emacs as an RSS reader
 
@@ -431,15 +435,13 @@ All necessary settings are therefore set by hand as part of this configuration f
 
 (unpin! doom-themes)
 (package! doom-themes :recipe (:host github :repo "junghan0611/doom-themes" :branch "ko"))
-(package! spacious-padding)
-(package! keycast)
 (package! outli :recipe (:host github :repo "jdtsmith/outli" :files ("*.el")))
 
 ;;;; for ccmenu
 
-(package! transpose-frame)
-(package! webpaste)
-(package! google-translate)
+;; (package! transpose-frame)
+;; (package! webpaste)
+;; (package! google-translate)
 ;; (package! password-store-menu)
 ;; (package! google-this)
 
@@ -466,6 +468,8 @@ All necessary settings are therefore set by hand as part of this configuration f
 
 ;;;; llmclient
 
+(package! claude-code :recipe (:host github :repo "stevemolitor/claude-code.el" ))
+
 ;;;; org extra
 
 (package! org-download)
@@ -478,14 +482,12 @@ All necessary settings are therefore set by hand as part of this configuration f
 ;;;; code
 
 (package! aggressive-indent)
-;; (package! geiser-mit :recipe (:host github :repo "emacsmirror/geiser-mit"))
 
 ;;;; tools
 
 (package! dired-preview)
 (package! jinx) ; spell checker
 (package! term-keys :recipe (:host github :repo "junghan0611/term-keys"))
-(package! nov)
 
 ;;;; workspaces
 
@@ -495,42 +497,6 @@ All necessary settings are therefore set by hand as part of this configuration f
 
 ;; (package! ccmenu :recipe (:host github :repo "junghan0611/ccmenu"))
 ;; (package! casual-suite)
-(package! nov)
-
-#+end_src
-
-** DONT org-latex-preview-auto :noexport:
-CLOSED: [2024-10-21 Mon 20:36]
-
-#+begin_src emacs-lisp :tangle packages.el
-
-;;; org-mode for latex-preview-auto-mode
-
-;; (package! org :recipe
-;;   (:host nil :repo "https://git.tecosaur.net/mirrors/org-mode.git" :remote "mirror" :fork
-;;          (:host nil :repo "https://git.tecosaur.net/tec/org-mode.git" :branch "dev" :remote "tecosaur")
-;;          :files
-;;          (:defaults "etc")
-;;          :build t :pre-build
-;;          (with-temp-file "org-version.el"
-;;            (require 'lisp-mnt)
-;;            (let
-;;                ((version
-;;                  (with-temp-buffer
-;;                    (insert-file-contents "lisp/org.el")
-;;                    (lm-header "version")))
-;;                 (git-version
-;;                  (string-trim
-;;                   (with-temp-buffer
-;;                     (call-process "git" nil t nil "rev-parse" "--short" "HEAD")
-;;                     (buffer-string)))))
-;;              (insert
-;;               (format "(defun org-release () \"The release version of Org.\" %S)\n" version)
-;;               (format "(defun org-git-version () \"The truncate git commit hash of Org mode.\" %S)\n" git-version)
-;;               "(provide 'org-version)\n"))))
-;;   :pin nil)
-
-;; (unpin! org)
 
 #+end_src
 
@@ -549,16 +515,8 @@ CLOSED: [2024-10-21 Mon 20:36]
       doom-variable-pitch-font (font-spec :family "Pretendard Variable" :size 14.0)
       doom-unicode-font (font-spec :family "Symbola" :size 14.0))
 
-;; If you or Emacs can't find your font, use 'M-x describe-font' to look them
-;; up, `M-x eval-region' to execute elisp code, and 'M-x doom/reload-font' to
-;; refresh your font settings. If Emacs still can't find your font, it likely
-;; wasn't installed correctly. Font issues are rarely Doom issues!
-
-;; There are two ways to load a theme. Both assume the theme is installed and
-;; available. You can either set `doom-theme' or manually load a theme with the
-;; `load-theme' function. This is the default:
-
-;; (setq doom-theme 'doom-homage-white)
+(unless (display-graphic-p) ; terminal
+  (setq doom-font (font-spec :family "Sarasa Term K Nerd Font" :size 15.1)))
 
 ;;;; directory path
 
@@ -568,29 +526,13 @@ CLOSED: [2024-10-21 Mon 20:36]
 
 (defconst user-project-directory (if (getenv "PROJECT_DIRECTORY")
                                      (getenv "PROJECT_DIRECTORY")
-                                   "~/git/"))
+                                   "~/repos/"))
 
 ;;;; directories
 
 (if (boundp 'user-org-directory)
     (setq org-directory user-org-directory)
   (setq org-directory "~/org/"))
-
-;;;; fortune
-
-;; (setq user-initial-scratch-message
-;;       (format "%s"
-;;               (if (executable-find "fortune")
-;;                   (string-join
-;;                    (mapcar
-;;                     (lambda (l) (concat "\n " (string-fill l 72)))
-;;                     (if (string-suffix-p "Android" (string-trim (shell-command-to-string "uname -a")))
-;;                         (string-lines (shell-command-to-string "fortune"))
-;;                       (string-lines
-;;                        (shell-command-to-string
-;;                         "fortune -c 90% advice 10% .")))))
-;;                 ("\nLearn how to take a 20-minute power nap without embarrassment.\n"))
-;;               "\n"))
 
 ;;;; cc/url-bookmarks
 
@@ -611,15 +553,6 @@ CLOSED: [2024-10-21 Mon 20:36]
 ;; Place your private configuration here! Remember, you do not need to run 'doom
 ;; sync' after modifying this file!
 (load! "+user-info")
-#+end_src
-** DONT load-path ccmenu
-CLOSED: [2025-01-07 Tue 05:23]
-
-#+begin_src emacs-lisp :tangle config.el
-;;;; CCMemu
-
-;; (when (display-graphic-p) ; gui
-;;   (add-to-list 'load-path (concat doom-user-dir "ccmenu/")))
 #+end_src
 ** load per-machine.el and user-keys.el
 
@@ -2096,6 +2029,41 @@ rm -Rf eln-cache
     (setq-default gptel-org-branching-context t))
   )
 #+end_src
+*** claude-code
+
+#+begin_src emacs-lisp :tangle config.el
+;;; llmclient
+;;;; claude-code
+
+(use-package! claude-code
+  :config
+  (setq claude-code-terminal-backend 'vterm)
+  (defun my-claude-notify-with-sound (title message)
+    "Display a Linux notification with sound."
+    (when (executable-find "notify-send")
+      (call-process "notify-send" nil nil nil title message))
+    ;; Play sound if paplay is available
+    (when (executable-find "paplay")
+      (call-process "paplay" nil nil nil "/usr/share/sounds/freedesktop/stereo/complete.oga")))
+  (setq claude-code-notification-function #'my-claude-notify-with-sound)
+
+  ;; optional IDE integration with Monet
+  ;; (require 'monet)
+  ;; (add-hook 'claude-code-process-environment-functions #'monet-start-server-function)
+  ;; (monet-mode 1)
+
+  (set-popup-rule! "^\\*claude" :vslot -15 :width 90 :side 'right :ttl t :select t :quit nil :modeline t)
+
+  (claude-code-mode)
+
+  (add-hook 'claude-code-start-hook
+            (lambda ()
+              ;; Only increase scrollback for vterm backend
+              (when (eq claude-code-terminal-backend 'vterm)
+                (setq-local x-gtk-use-native-input t)
+                (setq-local vterm-max-scrollback 100000))))
+  )
+#+end_src
 ** ui
 
 *** doom-modeline
@@ -2129,96 +2097,6 @@ rm -Rf eln-cache
   (setq doom-modeline-hud nil))
 #+end_src
 
-*** spacious-padding
-#+begin_src emacs-lisp :tangle config.el
-
-;;;; spacious-padding
-
-(use-package! spacious-padding
-  :if (unless (string-equal system-type "android"))
-  :hook (server-after-make-frame . spacious-padding-mode)
-  :init
-  (setq spacious-padding-subtle-mode-line t)
-  (setq spacious-padding-widths
-        '(:internal-border-width 15 ; 15
-          :header-line-width 4
-          :mode-line-width 4
-          :tab-width 4 ; sync mode-line-width for keycast-tab-bar
-          :right-divider-width 30
-          :scroll-bar-width 8
-          :fringe-width 8
-          ))
-  (add-hook 'doom-load-theme-hook #'spacious-padding-mode)
-  :config
-  ;; (remove-hook 'doom-init-ui-hook #'window-divider-mode)
-  ;; (blink-cursor-mode t)
-  ;; (when (fboundp 'tooltip-mode) (tooltip-mode 1))
-  ;; (when (fboundp 'tool-bar-mode) (tool-bar-mode 1))
-  ;; (when (display-graphic-p) ; gui
-  ;;   (menu-bar-mode +1))
-  (spacious-padding-mode +1)
-  )
-#+end_src
-*** DONT keycast
-#+begin_src emacs-lisp :tangle no
-
-;;;; keycast on mode-line
-
-(progn
-  (after! keycast
-    (define-minor-mode keycast-mode
-      "Show current command and its key binding in the mode line."
-      :global t
-      (if keycast-mode
-          (add-hook 'pre-command-hook 'keycast--update t)
-        (remove-hook 'pre-command-hook 'keycast--update))))
-  (add-to-list 'global-mode-string '(" " keycast-mode-line " "))
-
-  (require 'keycast)
-  ;; (setq keycast-mode-line-format "%10s%k%c%r")
-  (dolist (input '(self-insert-command
-                   org-self-insert-command
-                   ))
-    (add-to-list 'keycast-substitute-alist `(,input "." "Typing…")))
-
-  (dolist (event '(mouse-event-p
-                   mouse-movement-p
-                   mwheel-scroll
-                   handle-select-window
-                   mouse-set-point mouse-drag-region
-                   dired-next-line ; j
-                   dired-previous-line ; k
-                   next-line
-                   previous-line
-                   evil-next-line ; j
-                   evil-previous-line ; k
-                   evil-forward-char ; l
-                   evil-backward-char ; h
-                   pixel-scroll-interpolate-up ; <prior> page-up
-                   pixel-scroll-interpolate-down ; <next> page-down
-
-                   toggle-input-method
-                   block-toggle-input-method
-                   evil-formal-state
-                   evil-force-normal-state
-
-                   ;; 2023-10-02 Added for clojure-dev
-                   lsp-ui-doc--handle-mouse-movement
-                   ignore-preserving-kill-region
-                   ;; pdf-view-text-region
-                   ;; pdf-view-mouse-set-region
-                   ;; mouse-set-region
-                   ))
-    (add-to-list 'keycast-substitute-alist `(,event nil)))
-
-  (unless (string-equal system-type "android")
-    (add-hook 'doom-first-input-hook (lambda ()
-                                       ;; (display-time-mode +1)
-                                       (doom-modeline-mode +1)
-                                       (keycast-mode +1)
-                                       )))
-  )
-#+end_src
 *** outli
 #+begin_src emacs-lisp :tangle config.el
 ;;;; outli
@@ -2342,14 +2220,6 @@ CLOSED: [2025-04-28 Mon 13:35]
   ;; create missing test files
   (setq projectile-create-missing-test-files t)
 
-  ;; add clojure specific folders to be ignored by projectile
-  (setq projectile-globally-ignored-directories
-        (append projectile-globally-ignored-directories
-                '(".clj-kondo"
-                  ".cpcache"
-                  "tmp" "del"
-                  ".local")))
-
   ;; Search https://discourse.doomemacs.org/ for example configuration
   (setq projectile-ignored-projects
         (list "~/" "/tmp" (expand-file-name "straight/repos" doom-local-dir)))
@@ -2363,11 +2233,8 @@ CLOSED: [2025-04-28 Mon 13:35]
   ;; https://docs.projectile.mx/projectile/usage.html
   ;; (setq projectile-project-search-path '("~/projects/" "~/work/" ("~/github" . 1)))
   ;; (setq projectile-project-search-path '(("~/code" . 2) ("~/git" . 1)))
-
-  ;; direct projectile to look for code in a specific folder.
-  (setq projectile-project-search-path '("~/git"))
+  (setq projectile-project-search-path '("~/repos"))
   )
-
 #+end_src
 *** DONT magit
 [2024-12-13 Fri 05:25]
@@ -2395,51 +2262,6 @@ CLOSED: [2025-04-28 Mon 13:35]
 (after! elfeed-tube
   (require 'elfeed-tube)
   (setq elfeed-tube-captions-languages '("en" "ko" "englsh (auto generated)")))
-#+end_src
-*** nov
-
-완벽한 노브 설정 법이다.
-
-#+begin_src emacs-lisp :tangle config.el
-
-(use-package! nov
-  :mode ("\\.epub\\'" . nov-mode)
-  :commands (nov-org-link-follow nov-org-link-store)
-  :init
-  (with-eval-after-load 'org
-    (org-link-set-parameters "nov"
-                             :follow 'nov-org-link-follow
-                             :store 'nov-org-link-store))
-  :config
-  (map! :map nov-mode-map
-        :n "RET" #'nov-scroll-up
-        :n "d" 'nov-scroll-up
-        :n "u" 'nov-scroll-down
-        :n "J" 'nov-scroll-up
-        :n "K" 'nov-scroll-down)
-
-  (defun +nov-mode-setup ()
-    "Tweak nov-mode to our liking."
-    (face-remap-add-relative 'variable-pitch
-                             :family "Pretendard Variable"
-                             :height 1.2
-                             :width 'semi-expanded)
-    (face-remap-add-relative 'default :height 1.0)
-    (variable-pitch-mode 1)
-    (setq-local line-spacing 0.2
-                next-screen-context-lines 4
-                shr-use-colors nil)
-    (when (featurep 'hl-line-mode)
-      (hl-line-mode -1))
-    (when (featurep 'font-lock-mode)
-      (font-lock-mode -1))
-    ;; Re-render with new display settings
-    (nov-render-document)
-    ;; Look up words with the dictionary.
-    (add-to-list '+lookup-definition-functions #'+lookup/dictionary-definition))
-  (add-hook 'nov-mode-hook #'+nov-mode-setup 80)
-  (setq font-lock-global-modes '(not nov-mode))
-  )
 #+end_src
 
 ** coding
@@ -2470,42 +2292,6 @@ CLOSED: [2025-04-28 Mon 13:35]
     (eglot-inlay-hints-mode -1))
   )
 
-;;;; DONT lsp
-
-;; (progn
-;;   (after! lsp-mode
-;;     (setq
-;;      lsp-headerline-breadcrumb-enable t ; doom nil
-;;      lsp-headerline-breadcrumb-icons-enable nil))
-
-;;   (after! lsp-ui
-;;     (setq
-;;      lsp-ui-sideline-enable nil ; doom t - disable sideline for less distraction
-;;      ;; lsp-ui-doc-enable nil ;; doom t - disable all doc popups
-;;      treemacs-space-between-root-nodes nil  ;; doom nil
-;;      ;; lsp-ui-peek-enable t ; doom t
-;;      ))
-
-;;   (after! lsp-treemacs
-;;     (setq lsp-treemacs-error-list-current-project-only t))
-;;   )
-
-;;;; python
-
-;; (add-hook 'python-mode-hook #'rainbow-delimiters-mode)
-
-;;;; scheme with geiser-mit
-
-;; (use-package! geiser-mit
-;;   :config
-;;   (setenv "MITSCHEME_HEAP_SIZE" "100000") ; 16384
-;;   (setenv "MITSCHEME_LIBRARY_PATH" "/usr/lib/x86_64-linux-gnu/mit-scheme")
-;;   (setenv "MITSCHEME_BAND" "mechanics.com")
-
-;;   ;; (setenv "DISPLAY" ":0")
-;;   (setq geiser-active-implementations '(mit))
-;;   (setq geiser-mit-binary "/usr/bin/mit-scheme")
-;;   )
 #+end_src
 
 ** user-functions
@@ -2550,7 +2336,7 @@ and if it is set to nil, then it would forcefully create the ID."
 
 #+end_src
 
-** terminal and termux
+** TODO terminal and termux
 
 #+begin_src emacs-lisp :tangle config.el
 ;;;; fortune
@@ -2593,80 +2379,6 @@ and if it is set to nil, then it would forcefully create the ID."
 ;;   :config
 ;;   (unless (display-graphic-p) ; terminal
 ;;     (term-keys-mode t)))
-#+end_src
-
-** android native
-
-#+begin_src emacs-lisp :tangle config.el
-;;;; android native
-
-;; 2025-04-28
-(when (string-equal system-type "android")
-  (when (display-graphic-p) ; gui
-    (defun my/regular-font ()
-      (interactive)
-      (setq doom-font (font-spec :family "Monoplex Nerd" :size 16.0 :weight 'regular)
-            ;; doom-variable-pitch-font (font-spec :family "Iosevka Comfy Motion Duo" :size 20)
-            ;; (set-fontset-font "fontset-default" 'hangul (font-spec :family (face-attribute 'default :family)))
-            )
-      (doom/reload-font)
-      ;;(when (fboundp 'tooltip-mode) (tooltip-mode 1))
-      (when (fboundp 'tool-bar-mode) (tool-bar-mode 1))
-      (when (display-graphic-p)  (menu-bar-mode +1))
-      )
-    (add-hook 'doom-after-init-hook #'my-regular-font)
-
-    ;; Suggestion: Move user-emacs-directory to /sdcard/emacs/cache/ To reduce
-    ;; the risk of loosing precious files such as recentf and bookmarks it might
-    ;; be a good idea to move directory $HOME/.config/emacs/.local/cache/ to,
-    ;; say, under /sdcard/emacs/:
-    ;; $ mkdir -p /sdcard/emacs
-    ;; $ cp -r -p $HOME/.config/emacs/.local/cache/ /sdcard/emacs/
-
-    (customize-set-variable 'user-emacs-directory "/sdcard/emacs/cache/")
-    (setq doom-cache-dir user-emacs-directory)
-    (customize-set-variable 'bookmark-save-flag 1) ; Save bookmark list immediately when it has been updated.
-    (after! recentf
-      (progn
-        (setq recentf-max-saved-items 200) ; Set it to whatever you prefer, the default is too small
-        (add-hook 'find-file-hook 'recentf-save-list)))
-
-    ;; Path name in HOME dir, in config file
-    ;; To reliably use $HOME in a path name, in emacs config file:
-    ;; (expand-file-name "storage/shared/stardict" (getenv "HOME"))
-    ;; should expand to /data/data/org.gnu.emacs/files/storage/shared/stardict
-    )
-  )
-
-#+end_src
-
-#+RESULTS:
-
-** ccmenu: context-menu with casual
-
-#+begin_src emacs-lisp :tangle config.el
-
-;;; LAST Options
-;;;; ccmenu: context-menu with casual
-
-; (when (display-graphic-p) ;; gui
-;   (require 'ccmenu))
-
-;; (use-package! google-this
-;;   :init
-;;   (setq google-this-location-suffix "co.kr"))
-
-(use-package! webpaste
-  :bind (("C-c C-p C-b" . webpaste-paste-buffer)
-         ("C-c C-p C-r" . webpaste-paste-region)
-         ("C-c C-p C-p" . webpaste-paste-buffer-or-region)))
-
-(use-package! google-translate
-  :config
-  (setq google-translate-translation-directions-alist
-      '(("ko" . "en") ("en" . "ko"))))
-
-;;;; Terminal Mode
 
 ;; README /doomemacs-junghan0611/lisp/doom-ui.el
 ;; Terminal Mode
