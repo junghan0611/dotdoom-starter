@@ -466,9 +466,6 @@ All necessary settings are therefore set by hand as part of this configuration f
 
 ;;;; llmclient
 
-(package! gptel)
-(package! gptel-quick :recipe (:host github :repo "karthink/gptel-quick"))
-
 ;;;; org extra
 
 (package! org-download)
@@ -496,8 +493,8 @@ All necessary settings are therefore set by hand as part of this configuration f
 
 ;;;; transient
 
-(package! ccmenu :recipe (:host github :repo "junghan0611/ccmenu"))
-(package! casual-suite)
+;; (package! ccmenu :recipe (:host github :repo "junghan0611/ccmenu"))
+;; (package! casual-suite)
 (package! nov)
 
 #+end_src
@@ -867,7 +864,7 @@ Font test: " & ' ∀ ∃ ∅ ∈ ∉ ∏ ∑ √ ∞ ∧ ∨ ∩ ∪ ∫ ² ³ �
           "\\(?:\\(?:[EG]?\\|GR\\)TAGS\\|e?tags\\|GPATH\\)\\(<[0-9]+>\\)?"))
   (setq dabbrev-abbrev-skip-leading-regexp "[$*/=~']"))
 #+end_src
-*** DONT dired
+*** dired
 #+begin_src emacs-lisp :tangle config.el
 ;;;; dired
 
@@ -2280,12 +2277,9 @@ rm -Rf eln-cache
 (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
       doom-themes-enable-italic nil) ; if nil, italics is universally disabled
 
-(setq doom-themes-to-toggle
-      (let ((hr (nth 2 (decode-time))))
-        (if (or (< hr 6) (< 19 hr)) ; between 8 PM and 7 AM
-            '(doom-zenburn doom-flatwhite) ; load dark theme first
-          '(doom-homage-white doom-zenburn))))
-(setq doom-theme (car doom-themes-to-toggle))
+;; Starter profile - 터미널 중심 설정
+;; doom-dracula는 터미널 환경에서 가독성이 좋음
+(setq doom-theme 'doom-dracula)
 (doom-themes-visual-bell-config)
 
 (defun my/doom-themes-toggle () (interactive) (load-theme doom-theme t))
@@ -2655,8 +2649,8 @@ and if it is set to nil, then it would forcefully create the ID."
 ;;; LAST Options
 ;;;; ccmenu: context-menu with casual
 
-(when (display-graphic-p) ;; gui
-  (require 'ccmenu))
+; (when (display-graphic-p) ;; gui
+;   (require 'ccmenu))
 
 ;; (use-package! google-this
 ;;   :init

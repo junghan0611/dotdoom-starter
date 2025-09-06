@@ -1,0 +1,365 @@
+# 둠이맥스 프로파일 전략 문서
+
+**작성일**: 2025-09-03  
+**작성자**: Junghan Kim (junghanacs)  
+**버전**: 1.0.0
+
+## 목차
+1. [개요](#개요)
+2. [현재 상황 분석](#현재-상황-분석)
+3. [프로파일 전략](#프로파일-전략)
+4. [구현 계획](#구현-계획)
+5. [마이그레이션 가이드](#마이그레이션-가이드)
+6. [운영 가이드](#운영-가이드)
+7. [트러블슈팅](#트러블슈팅)
+8. [향후 계획](#향후-계획)
+
+## 개요
+
+### 배경
+- 용도별로 둠이맥스를 여러 번 clone하여 사용 중 (공간 낭비, 관리 어려움)
+- 서버, 터미널, 모바일 등 다양한 환경에서 각기 다른 설정 필요
+- 둠이맥스 내장 프로파일 시스템을 활용하여 효율적 관리 체계 구축
+
+### 목표
+1. **단일 둠이맥스 설치**로 모든 환경 지원
+2. **프로파일별 독립적 설정** 관리
+3. **디스크 공간 절약** 및 유지보수 간소화
+4. **빠른 설정 전환** 가능
+
+## 현재 상황 분석
+
+### 기존 구조 (비효율적)
+```
+~/
+├── doomemacs/              # 메인 둠이맥스
+├── doomemacs-junghan0611/  # 중복 설치
+├── doomemacs-starter/      # 또 다른 중복
+└── repos/gh/
+    └── dotdoom-starter/    # starter 설정 파일
+```
+
+**문제점**:
+- 둠이맥스 core 중복 (각 ~300MB)
+- 패키지 중복 설치 (각 프로파일별 500MB~1GB)
+- 업데이트 시 모든 설치본 개별 관리 필요
+- Git 저장소 동기화 복잡
+
+### 새로운 구조 (효율적)
+```
+~/
+├── doomemacs/              # 단일 둠이맥스 설치
+│   └── profiles/           # 프로파일 시스템
+├── .doom.d/                # 현재 full 설정
+│   └── profiles.el         # 프로파일 정의
+└── repos/gh/
+    ├── dotdoom-starter/    # starter 설정
+    ├── dotdoom-minimal/    # minimal 설정
+    └── dotdoom-android/    # android 설정
+```
+
+## 프로파일 전략
+
+### 프로파일 정의 (3개 통합 체계)
+
+#### 1. DEFAULT (Full Featured)
+**용도**: 메인 데스크톱 환경 (GUI)  
+**특징**:
+- 모든 기능 활성화
+- LSP, TreeSitter, 폰트 렌더링
+- 무거운 패키지 포함 (org-roam, jupyter, etc.)
+- 현재 사용 중인 설정
+
+**디렉토리**: `~/dotemacs/dotdoomemacs/`
+
+#### 2. STARTER (Universal Lightweight)
+**용도**: 범용 경량 버전 - 모든 환경 통합 지원  
+**지원 환경**:
+- 데스크톱 터미널 (Linux/macOS)
+- 원격 서버 (SSH)
+- Android Native GUI 앱
+- Termux 터미널
+
+**특징**:
+- 환경 자동 감지 및 최적화
+- Android 감지 시 Termux PATH 자동 연동
+- GUI/터미널 모드 자동 전환
+- 최소한의 LSP와 필수 패키지
+- 빠른 시작 속도
+- 기존 dotdoom-android- 설정 통합 예정
+
+**디렉토리**: `~/repos/gh/dotdoom-starter/`
+
+#### 3. MINIMAL (Debug/Test)
+**용도**: 문제 해결, 패키지 테스트  
+**특징**:
+- 최소 패키지만 로드
+- 빠른 재시작
+- 이슈 격리 용이
+- 성능 벤치마크 기준
+
+**디렉토리**: `~/repos/gh/dotdoom-minimal/` (생성 예정)
+
+### 프로파일 선택 기준
+
+```mermaid
+graph TD
+    A[환경 확인] --> B{용도?}
+    B -->|데스크톱 GUI Full| C[DEFAULT]
+    B -->|경량/범용| D[STARTER]
+    B -->|디버깅/테스트| E[MINIMAL]
+    
+    D --> F[자동 환경 감지]
+    F --> G{플랫폼?}
+    G -->|Linux/macOS 터미널| H[터미널 모드]
+    G -->|원격 SSH| I[서버 모드]
+    G -->|Android Native| J[GUI + Termux PATH]
+    G -->|Termux| K[터미널 + Android 최적화]
+```
+
+## 구현 계획
+
+### Phase 1: 기본 설정 (현재)
+- [x] profiles.el 파일 생성
+- [ ] doom sync 실행 및 검증
+- [ ] starter 프로파일 테스트
+- [ ] alias 설정
+
+### Phase 2: 마이그레이션
+- [ ] 기존 설정 백업
+- [ ] starter 설정 업데이트
+- [ ] minimal 프로파일 생성
+- [ ] 중복 설치 제거
+
+### Phase 3: 최적화
+- [ ] 공통 패키지 식별
+- [ ] 프로파일별 최적화
+- [ ] 시작 속도 벤치마크
+- [ ] 문서화 완료
+
+## 마이그레이션 가이드
+
+### 1. 백업
+```bash
+# 현재 설정 백업
+cp -r ~/.doom.d ~/.doom.d.backup-$(date +%Y%m%d)
+cp -r ~/doomemacs ~/doomemacs.backup-$(date +%Y%m%d)
+```
+
+### 2. profiles.el 설정
+```elisp
+;; ~/.doom.d/profiles.el
+((default  ; Full GUI 버전
+  ("DOOMDIR" . "~/dotemacs/dotdoomemacs"))
+ 
+ (starter  ; 통합 경량 버전 (터미널/Android/Termux)
+  ("DOOMDIR" . "~/repos/gh/dotdoom-starter"))
+ 
+ (minimal  ; 테스트/디버깅용
+  ("DOOMDIR" . "~/repos/gh/dotdoom-minimal")))
+```
+
+### 3. 프로파일 등록
+```bash
+# 프로파일 시스템 초기화
+cd ~/doomemacs
+bin/doom sync
+
+# 각 프로파일 동기화
+bin/doom sync --profile starter
+bin/doom sync --profile minimal
+```
+
+### 4. 검증
+```bash
+# 각 프로파일 테스트
+emacs --profile default  # 기본 설정
+emacs --profile starter  # 경량 버전
+emacs --profile minimal  # 최소 설정
+```
+
+### 5. 정리
+```bash
+# 중복 설치 제거 (검증 후!)
+rm -rf ~/doomemacs-junghan0611
+rm -rf ~/doomemacs-starter
+```
+
+## 운영 가이드
+
+### 일상 사용
+
+#### 프로파일별 실행
+```bash
+# .bashrc 또는 .zshrc에 추가
+alias e="emacs"                              # 기본 Full GUI
+alias es="emacs --profile starter"           # 통합 경량 (터미널/Android/Termux)
+alias em="emacs --profile minimal"           # 테스트/디버깅
+
+# Doom 명령
+alias doom="~/doomemacs/bin/doom"
+alias doom-starter="doom --profile starter"
+```
+
+#### 프로파일 전환
+```bash
+# 환경 변수로 제어
+export DOOMPROFILE=starter
+emacs  # starter 프로파일로 실행
+```
+
+### 유지보수
+
+#### 업데이트
+```bash
+# 둠이맥스 코어 업데이트
+cd ~/doomemacs
+git pull
+doom upgrade
+
+# 특정 프로파일만 업데이트
+doom upgrade --profile starter
+```
+
+#### 패키지 정리
+```bash
+# 프로파일별 패키지 정리
+doom gc --profile starter
+doom gc --profile minimal
+```
+
+### 개발 워크플로우
+
+#### A/B 테스팅
+```bash
+# 두 프로파일 동시 실행
+emacs --profile default &
+emacs --profile starter &
+```
+
+#### 설정 동기화
+```bash
+# Git으로 설정 관리
+cd ~/repos/gh/dotdoom-starter
+git add -A
+git commit -m "Update starter config"
+git push
+```
+
+## 트러블슈팅
+
+### 자주 발생하는 문제
+
+#### 1. 프로파일이 인식되지 않음
+**증상**: `emacs --profile starter` 실행 시 기본 설정으로 시작
+
+**해결**:
+```bash
+# profiles.el 위치 확인
+ls -la ~/.doom.d/profiles.el
+
+# 프로파일 캐시 재생성
+doom sync
+
+# 캐시 파일 확인
+ls ~/doomemacs/profiles/init.*.elc
+```
+
+#### 2. 패키지 충돌
+**증상**: 다른 프로파일 실행 후 패키지 오류
+
+**해결**:
+```bash
+# 프로파일별 패키지 디렉토리 확인
+ls ~/.local/share/doom/
+
+# 문제 프로파일 패키지 초기화
+rm -rf ~/.local/share/doom/starter/@
+doom sync --profile starter
+```
+
+#### 3. 설정이 적용되지 않음
+**증상**: 프로파일 설정 변경이 반영되지 않음
+
+**해결**:
+```bash
+# 바이트컴파일 제거
+doom clean --profile starter
+
+# 재동기화
+doom sync --profile starter
+```
+
+### 디버깅
+
+#### 프로파일 로드 과정 확인
+```bash
+# 디버그 모드로 실행
+emacs --debug-init --profile starter
+
+# Doom 디버그 정보
+doom doctor --profile starter
+```
+
+#### 프로파일별 로그 확인
+```bash
+# 각 프로파일 로그 위치
+tail -f ~/.local/share/doom/starter/@/doom.error.log
+```
+
+## 향후 계획
+
+### 단기 (1개월)
+- [ ] starter 프로파일 안정화
+- [ ] minimal 프로파일 구축
+- [ ] android-native 프로파일 최적화 (기존 설정 활용)
+- [ ] 성능 벤치마크 도구 개발
+
+### 중기 (3개월)
+- [ ] termux 프로파일 개발 (starter 기반)
+- [ ] android-native 방향키 이슈 해결
+- [ ] 프로파일 간 패키지 공유 연구
+- [ ] 자동 프로파일 선택 스크립트
+
+### 장기 (6개월)
+- [ ] Doom v3 마이그레이션 준비
+- [ ] Nix 기반 재현 가능한 환경 구축
+- [ ] 팀 공유용 프로파일 템플릿
+
+## 참고 자료
+
+### 공식 문서
+- [Doom Emacs Profiles](https://github.com/doomemacs/doomemacs/tree/master/profiles)
+- [Doom Emacs Documentation](https://docs.doomemacs.org/)
+
+### 관련 프로젝트
+- [Chemacs2](https://github.com/plexus/chemacs2) - 대체 프로파일 시스템
+- [Spacemacs Layers](https://www.spacemacs.org/layers/LAYERS.html) - 레이어 기반 설정
+
+### 커뮤니티
+- [Doom Emacs Discourse](https://discourse.doomemacs.org/)
+- [r/DoomEmacs](https://www.reddit.com/r/DoomEmacs/)
+
+## 변경 이력
+
+### v2.0.0 (2025-09-03)
+- 프로파일 단순화: 5개 → 3개
+- STARTER를 통합 경량 버전으로 재정의
+- Android Native와 Termux를 STARTER에 통합
+- 환경 자동 감지 전략 도입
+
+### v1.1.0 (2025-09-03)
+- Android Native 프로파일 추가 (기존 dotdoom-android- 활용)
+- Termux 프로파일 분리 계획 추가
+- 프로파일을 4개에서 5개로 확장
+
+### v1.0.0 (2025-09-03)
+- 초기 문서 작성
+- 4개 프로파일 전략 수립
+- 마이그레이션 가이드 포함
+
+---
+
+**작성**: Junghan Kim  
+**연락**: junghanacs@gmail.com  
+**웹사이트**: https://notes.junghanacs.com

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # rm -Rf ~/doomemacs
-git clone git@github.com:junghan0611/doomemacs.git ~/doomemacs
+git clone git@github.com:doomemacs/doomemacs.git ~/doomemacs-starter
 # ln -s ~/nosync/spell/hunspell-dict-ko/dict-ko-mydata.yaml ~/.dict-ko-mydata.yaml
 
 # doom clean      # Ensure your config isn't byte-compiled

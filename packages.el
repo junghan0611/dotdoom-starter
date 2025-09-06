@@ -134,9 +134,6 @@
 
 ;;;; llmclient
 
-(package! gptel)
-(package! gptel-quick :recipe (:host github :repo "karthink/gptel-quick"))
-
 ;;;; org extra
 
 (package! org-download)
@@ -164,8 +161,8 @@
 
 ;;;; transient
 
-(package! ccmenu :recipe (:host github :repo "junghan0611/ccmenu"))
-(package! casual-suite)
+;; (package! ccmenu :recipe (:host github :repo "junghan0611/ccmenu"))
+;; (package! casual-suite)
 (package! nov)
 
 ;;; org-mode for latex-preview-auto-mode

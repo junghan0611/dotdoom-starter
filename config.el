@@ -1402,12 +1402,9 @@ only those in the selected frame."
 (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
       doom-themes-enable-italic nil) ; if nil, italics is universally disabled
 
-(setq doom-themes-to-toggle
-      (let ((hr (nth 2 (decode-time))))
-        (if (or (< hr 6) (< 19 hr)) ; between 8 PM and 7 AM
-            '(doom-zenburn doom-flatwhite) ; load dark theme first
-          '(doom-homage-white doom-zenburn))))
-(setq doom-theme (car doom-themes-to-toggle))
+;; Starter profile - 터미널 중심 설정
+;; doom-dracula는 터미널 환경에서 가독성이 좋음
+(setq doom-theme 'doom-dracula)
 (doom-themes-visual-bell-config)
 
 (defun my/doom-themes-toggle () (interactive) (load-theme doom-theme t))
@@ -1680,8 +1677,8 @@ and if it is set to nil, then it would forcefully create the ID."
 ;;; LAST Options
 ;;;; ccmenu: context-menu with casual
 
-(when (display-graphic-p) ;; gui
-  (require 'ccmenu))
+; (when (display-graphic-p) ;; gui
+;   (require 'ccmenu))
 
 ;; (use-package! google-this
 ;;   :init
