@@ -65,11 +65,11 @@
 (load! "+user-info")
 
 ;;; Load 'Per-Machine' - User Configs
-
 ;; Most of my per-environment config done via =customize= and is in .custom.el.
 ;; However, some config is more involved, such as packages I just want in one
 ;; environment and not the others.  To that end, let's load a file that can contain
 ;; those customizations.
+
 (let ((per-machine-filename (concat doom-user-dir "per-machine.el")))
   (when (file-exists-p per-machine-filename)
     (load-file per-machine-filename)))
@@ -1274,7 +1274,8 @@ only those in the selected frame."
   (setq gptel-default-mode 'org-mode)
   (setq gptel-temperature 0.3) ; gptel 1.0, Perplexity 0.2
   (set-popup-rule! "^\\*ChatGPT\\*$" :side 'right :size 84 :vslot 100 :quit t) ; size 0.4
-  (setq gptel-api-key user-openai-api-key)
+
+  (load! "+gptel")
 
   (with-eval-after-load 'gptel-org
     (defun gptel-org-toggle-branching-context ()
