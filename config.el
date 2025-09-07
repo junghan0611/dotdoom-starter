@@ -568,7 +568,7 @@
    ("M-*" . tempel-insert))
   :config
   ;; (setq tempel-trigger-prefix "<") ; conflits with evil-shift
-  (setq tempel-path (expand-file-name "tempel-templates.eld" doom-user-dir))
+  (setq tempel-path (expand-file-name "/var/tempel-templates.eld" doom-user-dir))
 
   ;; Use concrete keys because of org mode
   ;; "M-RET" #'tempel-done
