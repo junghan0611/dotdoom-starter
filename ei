@@ -1,28 +1,109 @@
 #!/bin/bash
-# Simple Emacs Daemon wrapper
+# Emacs Interactive - Single Daemon Management
+# 오직 하나의 Emacs 데몬만 실행하도록 보장
+
+DAEMON_PID_FILE="$HOME/.ei-daemon.pid"
+
+check_daemon() {
+    # emacsclient로 연결 테스트
+    if emacsclient --eval 't' >/dev/null 2>&1; then
+        return 0  # 데몬 실행 중
+    else
+        return 1  # 데몬 없음
+    fi
+}
+
+kill_all_daemons() {
+    # 모든 Emacs 데몬 프로세스 종료
+    emacsclient --eval "(kill-emacs)" 2>/dev/null || true
+    pkill -f "emacs.*daemon" 2>/dev/null || true
+    rm -f "$DAEMON_PID_FILE"
+    sleep 1
+}
+
+start_daemon() {
+    if check_daemon; then
+        echo "⚠️  Emacs 데몬이 이미 실행 중입니다"
+        return 0
+    fi
+    
+    echo "🚀 Emacs 데몬 시작 중..."
+    # 혹시 모를 기존 데몬들 정리
+    kill_all_daemons
+    
+    emacs --daemon 2>/dev/null &
+    echo $! > "$DAEMON_PID_FILE"
+    
+    # 데몬 시작 대기 (최대 10초)
+    for i in {1..10}; do
+        if check_daemon; then
+            echo "✅ 데몬 시작 완료"
+            return 0
+        fi
+        sleep 1
+    done
+    
+    echo "❌ 데몬 시작 실패"
+    return 1
+}
 
 case "$1" in
     ""|c|connect)
-        # 데몬 연결 시도
-        if emacsclient -t "${@:2}" 2>/dev/null; then
-            exit 0
-        else
-            echo "데몬이 없습니다. 시작 중..."
-            emacs --daemon 2>/dev/null &
-            sleep 3
+        if check_daemon; then
             emacsclient -t "${@:2}"
+        else
+            echo "📡 데몬이 없습니다. 시작 중..."
+            if start_daemon; then
+                emacsclient -t "${@:2}"
+            else
+                echo "❌ 연결 실패"
+                exit 1
+            fi
+        fi
+        ;;
+    claude)
+        if check_daemon; then
+            emacsclient -t --eval "(progn (claude-code-mode 1) (message \"Claude Code 활성화됨\"))" "${@:2}"
+        else
+            echo "📡 데몬이 없습니다. 시작 중..."
+            if start_daemon; then
+                emacsclient -t --eval "(progn (claude-code-mode 1) (message \"Claude Code 활성화됨\"))" "${@:2}"
+            else
+                echo "❌ 연결 실패"
+                exit 1
+            fi
         fi
         ;;
     start)
-        echo "Emacs 데몬 시작 중..."
-        emacs --daemon 2>/dev/null &
-        sleep 2
-        echo "데몬 시작 완료"
+        start_daemon
         ;;
     stop)
-        emacsclient --eval "(kill-emacs)" 2>/dev/null || echo "데몬이 실행되지 않음"
+        echo "🛑 모든 Emacs 데몬 종료 중..."
+        kill_all_daemons
+        echo "✅ 종료 완료"
+        ;;
+    restart)
+        echo "🔄 데몬 재시작 중..."
+        kill_all_daemons
+        start_daemon
+        ;;
+    status)
+        if check_daemon; then
+            echo "✅ Emacs 데몬 실행 중"
+        else
+            echo "❌ Emacs 데몬 실행되지 않음"
+        fi
         ;;
     *)
-        echo "사용법: ed [start|stop|connect|c] [파일...]"
+        echo "사용법: ei [start|stop|restart|status|connect|c|claude] [파일...]"
+        echo ""
+        echo "명령어:"
+        echo "  (없음)   - 데몬에 연결 (없으면 자동 시작)"
+        echo "  claude   - Claude Code 활성화하여 연결 🎯"
+        echo "  start    - 데몬 시작 (중복 방지)"
+        echo "  stop     - 모든 데몬 종료"
+        echo "  restart  - 데몬 재시작"  
+        echo "  status   - 데몬 상태 확인"
+        echo "  c        - 연결 (alias)"
         ;;
 esac
