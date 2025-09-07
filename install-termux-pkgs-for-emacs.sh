@@ -9,8 +9,7 @@ pkg install python python-pip nodejs -y
 pkg install mcfly shfmt libvterm libtool ncdu -y
 pkg install hunspell aspell -y
 pkg install pandoc stow -y
-pkg install libtreesitter typst -y
-pkg install elixir -y
+pkg install tree-sitter typst -y
 pkg install translate-shell -y
 pkg install editorconfig shellcheck tidy gnuplot libxml2-utils -y
 pkg install neofetch imagemagick ffmpeg -y
