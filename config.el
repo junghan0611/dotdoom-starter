@@ -1698,4 +1698,14 @@ only those in the selected frame."
 
 (load! "+functions")
 
+;;; termux-fixes
+;; Fix async issues in Termux/Android
+(when (string-match-p "android" system-configuration)
+  (setq native-comp-async-report-warnings-errors nil)
+  (setq native-comp-warning-on-missing-source nil)
+  (setq async-bytecomp-allowed-packages nil)
+  (setq process-connection-type nil)
+  (setq gc-cons-threshold 100000000)
+  (setq gc-cons-percentage 0.6))
+
 ;;; user-keybindings

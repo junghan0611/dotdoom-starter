@@ -1,0 +1,29 @@
+#!/bin/bash
+# Emacs Interactive with Claude Code
+
+case "$1" in
+    ""|c|connect)
+        # 데몬 연결 후 Claude Code 활성화
+        if emacsclient -t --eval "(progn (claude-code-mode 1) (message \"Claude Code 활성화됨\"))" "${@:2}" 2>/dev/null; then
+            exit 0
+        else
+            echo "데몬이 없습니다. 시작 중..."
+            emacs --daemon 2>/dev/null &
+            sleep 3
+            emacsclient -t --eval "(progn (claude-code-mode 1) (message \"Claude Code 활성화됨\"))" "${@:2}"
+        fi
+        ;;
+    start)
+        echo "Emacs 데몬 시작 중..."
+        emacs --daemon 2>/dev/null &
+        sleep 2
+        echo "데몬 시작 완료"
+        ;;
+    stop)
+        emacsclient --eval "(kill-emacs)" 2>/dev/null || echo "데몬이 실행되지 않음"
+        ;;
+    *)
+        echo "사용법: eic [start|stop|connect|c] [파일...]"
+        echo "기본: Claude Code가 활성화된 상태로 연결"
+        ;;
+esac

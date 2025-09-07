@@ -1,0 +1,28 @@
+#!/bin/bash
+# Simple Emacs Daemon wrapper
+
+case "$1" in
+    ""|c|connect)
+        # 데몬 연결 시도
+        if emacsclient -t "${@:2}" 2>/dev/null; then
+            exit 0
+        else
+            echo "데몬이 없습니다. 시작 중..."
+            emacs --daemon 2>/dev/null &
+            sleep 3
+            emacsclient -t "${@:2}"
+        fi
+        ;;
+    start)
+        echo "Emacs 데몬 시작 중..."
+        emacs --daemon 2>/dev/null &
+        sleep 2
+        echo "데몬 시작 완료"
+        ;;
+    stop)
+        emacsclient --eval "(kill-emacs)" 2>/dev/null || echo "데몬이 실행되지 않음"
+        ;;
+    *)
+        echo "사용법: ed [start|stop|connect|c] [파일...]"
+        ;;
+esac
