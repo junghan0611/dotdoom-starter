@@ -124,8 +124,7 @@
        'face 'bold)))
 
   ;; doom-dashboard-banner
-  (when (display-graphic-p) ; gui
-    (setq +doom-dashboard-ascii-banner-fn 'emacs-dashboard-draw-ascii-banner-fn))
+(setq +doom-dashboard-ascii-banner-fn 'emacs-dashboard-draw-ascii-banner-fn)
 
 ;;; Leader key
 
@@ -612,11 +611,7 @@ only those in the selected frame."
      [remap winum-select-window-8]
      #'spacemacs/imenu-list-smart-focus)))
 
-;;;; laas
-;; https://github.com/tecosaur/LaTeX-auto-activating-snippets
-(use-package! laas
-  :hook ((LaTeX-mode . laas-mode)
-	 (org-mode . laas-mode)))
+;;;; buildin annotation with remember
 
 (use-package! remember
   :commands remember
@@ -766,16 +761,6 @@ only those in the selected frame."
   (setq org-agenda-sort-notime-is-late t) ; Org 9.4
   (setq org-agenda-sort-noeffort-is-high t) ; Org 9.4
 
-  ;; Time Clocking
-  ;; (require 'org-clock)
-  ;; (setq org-clock-idle-time 30) ; 10
-  ;; (setq org-clock-reminder-timer (run-with-timer
-  ;;                                 t (* org-clock-idle-time 20) ; 60
-  ;;                                 (lambda ()
-  ;;                                   (unless (org-clocking-p)
-  ;;                                     (when (fboundp 'alert)
-  ;;                                       (alert "Do you forget to clock-in?"
-  ;;                                              :title "Org Clock"))))))
   ;; (org-clock-auto-clockout-insinuate) ; auto-clockout
   ;; modeline 에 보이는 org clock 정보가 너무 길어서 줄임
   (setq org-clock-string-limit 30) ; default 0
@@ -1023,49 +1008,6 @@ only those in the selected frame."
   ;; (setq org-glossary-automatic nil) ;; disable auto-export
   )
 
-;;;; org-rainbow-tags
-
-(use-package! org-rainbow-tags
-  :after org
-  :init
-  (setq org-rainbow-tags-hash-start-index 0)
-  (setq org-rainbow-tags-extra-face-attributes
-        '(:inverse-video t :box nil :weight 'bold))
-  ;; :hook (org-mode . org-rainbow-tags-mode)
-  )
-
-;;;; org-download
-
-(use-package! org-download
-  :after org
-  :hook (;; (dired-mode . org-download-enable)
-         (org-mode . org-download-enable))
-  :commands (org-download-enable
-             org-download-yank
-             org-download-screenshot)
-  :config
-  (setq-default org-download-heading-lvl nil)
-  (setq org-download-method 'directory) ; doom 'attach
-  (setq-default org-download-image-dir (concat org-directory "screenshot" )) ;; share all devieces
-  (setq org-download-display-inline-images nil)
-  (setq org-download-timestamp"%Y%m%dT%H%M%S--") ;; denote id
-
-  ;; #+caption: "
-  ;; #+name: fig-"
-  ;; #+attr_html: :width 40% :align center"
-  ;; #+attr_latex: :width \\textwidth"
-  (setq org-download-image-attr-list
-        '("#+attr_html: :width 80% :align center"
-          "#+attr_latex: :width \\textwidth"
-          "#+attr_org: :width 800px"))
-
-  (defun kimim/org-download-annotate (link)
-    "Annotate LINK with the time of download."
-    (format "#+name: fig:%s\n#+caption: %s\n"
-            (file-name-base link) (file-name-base link)))
-  (setq org-download-annotate-function #'kimim/org-download-annotate)
-  )
-
 ;;;; org-journal
 
 (progn
@@ -1083,44 +1025,6 @@ only those in the selected frame."
   (setq org-journal-tag-alist '(("meet" . ?m) ("dev" . ?d) ("idea" . ?i) ("emacs" . ?e) ("discuss" . ?c) ("1on1" . ?o))) ; default nil
 
   )
-
-;; for smooth scroll of images in or mode
-;; (use-package! org-sliced-images
-;;   :after org
-;;   :config (org-sliced-images-mode))
-
-;; (use-package! org-latex-preview
-;;   :config
-;;   (setq org-startup-with-latex-preview t) ; doom nil
-;;   (setq org-highlight-latex-and-related '(native script entities)) ; doom org +pretty
-;;   ;; (setq org-highlight-latex-and-related '(native)) ; doom nil
-;;   ;; Increase preview width
-;;   (plist-put org-latex-preview-appearance-options
-;;              :page-width 0.8)
-
-;;   ;; Use dvisvgm to generate previews
-;;   ;; You don't need this, it's the default:
-;;   (setq org-latex-preview-process-default 'dvisvgm)
-
-;;   ;; Turn on auto-mode, it's built into Org and much faster/more featured than org-fragtog.
-;;   ;; (Remember to turn off/uninstall org-fragtog.)
-;;   (add-hook 'org-mode-hook 'org-latex-preview-auto-mode)
-
-;;   ;; Block C-n and C-p from opening up previews when using auto-mode
-;;   (add-hook 'org-latex-preview-auto-ignored-commands 'next-line)
-;;   (add-hook 'org-latex-preview-auto-ignored-commands 'previous-line)
-
-;;   ;; Enable consistent equation numbering
-;;   (setq org-latex-preview-numbered t)
-
-;;   ;; Bonus: Turn on live previews.  This shows you a live preview of a LaTeX
-;;   ;; fragment and updates the preview in real-time as you edit it.
-;;   ;; To preview only environments, set it to '(block edit-special) instead
-;;   (setq org-latex-preview-live t)
-
-;;   ;; More immediate live-previews -- the default delay is 1 second
-;;   (setq org-latex-preview-live-debounce 0.25)
-;;   )
 
 ;;;; citar
 
@@ -1173,7 +1077,7 @@ only those in the selected frame."
   (require 'denote-sequence)
   ;; (require 'denote-journal)
   (require 'denote-org)
-  ;; (require 'denote-markdown)
+  (require 'denote-markdown)
 
   (setq denote-file-type 'org)
   (setq denote-sort-components '(signature title keywords identifier))
@@ -1206,15 +1110,18 @@ only those in the selected frame."
                              (setq denote-rename-buffer-format "%t%b")
                              (denote-rename-buffer-mode +1)))
 
-  (use-package! consult-notes
-    :defer 2
-    :commands (consult-notes consult-notes-search-in-all-notes)
-    :config
-    (setq consult-notes-denote-display-id t)
-    (setq consult-notes-denote-dir t)
-    (setq consult-notes-denote-title-margin 2) ; 24
-    (consult-notes-denote-mode 1)
-    )
+  ;; for claude memory integration
+  (add-to-list 'denote-silo-directories (expand-file-name "~/claude-memory/"))
+
+  ;; (use-package! consult-notes
+  ;;   :defer 2
+  ;;   :commands (consult-notes consult-notes-search-in-all-notes)
+  ;;   :config
+  ;;   (setq consult-notes-denote-display-id t)
+  ;;   (setq consult-notes-denote-dir t)
+  ;;   (setq consult-notes-denote-title-margin 2) ; 24
+  ;;   (consult-notes-denote-mode 1)
+  ;;   )
 
   (use-package! citar-denote
     :demand t ;; Ensure minor mode is loaded
@@ -1249,7 +1156,7 @@ only those in the selected frame."
 
 (use-package! denote-search)
 
-;;; Ten with etags
+;;;; Ten with etags
 
 ;; (defun my/goto-etags ()
 ;;   (interactive)
@@ -1266,7 +1173,6 @@ only those in the selected frame."
   (add-to-list 'consult-buffer-sources 'consult-ten-glossary 'append) ; g
   )
 
-;;; llmclient
 ;;;; gptel
 
 (use-package! gptel
@@ -1293,7 +1199,6 @@ only those in the selected frame."
     (setq-default gptel-org-branching-context t))
   )
 
-;;; llmclient
 ;;;; claude-code
 
 (use-package! claude-code
@@ -1381,30 +1286,11 @@ only those in the selected frame."
 
 ;;;; themes
 
-;; use modus-themes built-in
-(progn
-  (setq modus-themes-bold-constructs t
-        modus-themes-subtle-line-numbers t
-        modus-themes-mode-line '(borderless)
-        modus-themes-syntax '(green-strings yellow-comments)
-        modus-themes-paren-match '(bold intense) ; underline
-        modus-themes-region '(bg-only no-extend)
-        modus-themes-org-blocks 'gray-background)
-
-  ;; (setq modus-themes-headings
-  ;;       (quote ((0 . (background overline 1.2)) ; variable-pitch
-  ;;               (1 . (background overline 1.2)) ; variable-pitch
-  ;;               (2 . (overline rainbow 1.1))
-  ;;               (3 . (overline 1.05))
-  ;;               (t . (monochrome)))))
-  )
-
 ;; doom-themes
 (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
       doom-themes-enable-italic nil) ; if nil, italics is universally disabled
 
 ;; Starter profile - 터미널 중심 설정
-;; doom-dracula는 터미널 환경에서 가독성이 좋음
 (setq doom-theme 'doom-dracula)
 (doom-themes-visual-bell-config)
 
@@ -1481,43 +1367,6 @@ only those in the selected frame."
     (eglot-inlay-hints-mode -1))
   )
 
-;;;; core fuctions
-
-;;;###autoload
-(defun my/consult-fd ()
-  (interactive)
-  (consult-fd "."))
-
-;; spacemacs/layers/+completion/compleseus/funcs.el
-;;;###autoload
-(defun my/compleseus-search (use-initial-input initial-directory)
-  (let* ((initial-input
-          (if use-initial-input
-              (doom-pcre-quote ;; rxt-quote-pcre
-               (if (region-active-p)
-                   (buffer-substring-no-properties
-                    (region-beginning) (region-end))
-                 (or (thing-at-point 'symbol t) ""))) ""))
-         (default-directory
-          (or initial-directory
-              (read-directory-name "Start from directory: "))))
-    (consult-ripgrep default-directory initial-input)))
-
-;;;###autoload
-(defun +default/search-cwd-symbol-at-point ()
-  "Search current folder."
-  (interactive)
-  (my/compleseus-search t default-directory))
-
-;;;###autoload
-(defun my/org-store-link-id-optional (&optional arg)
-  "Stores a link, reversing the value of `org-id-link-to-org-use-id'.
-If it's globally set to create the ID property, then it wouldn't,
-and if it is set to nil, then it would forcefully create the ID."
-  (interactive "P")
-  (let ((org-id-link-to-org-use-id (not org-id-link-to-org-use-id)))
-    (org-store-link arg :interactive)))
-
 ;;;; fortune
 
 ;; not work on termux
@@ -1538,18 +1387,19 @@ and if it is set to nil, then it would forcefully create the ID."
 ;;       (setq xclip-method 'termux-clipboard-get)))
 ;;     (xclip-mode 1)))
 
-;;;; DONT vterm for TERMUX
+;;;; vterm for TERMUX
 
-;; (when IS-TERMUX
-;;   (after! vterm
-;;     (setq vterm-shell (concat root-path "usr/bin/zsh")))
+(when IS-TERMUX
+  ;; (after! vterm
+  ;;   ;; (setq vterm-shell (concat root-path "usr/bin/zsh"))
+  ;;   )
 
-;;   (global-set-key (kbd "<M-SPC>") 'toggle-input-method)
-;;   (global-set-key
-;;    (kbd "M-<backtab>")
-;;    (lambda ()
-;;      (interactive)
-;;      (other-window -1))))
+  (global-set-key (kbd "<M-SPC>") 'toggle-input-method)
+  (global-set-key
+   (kbd "M-<backtab>")
+   (lambda ()
+     (interactive)
+     (other-window -1))))
 
 ;;;; term-keys
 
@@ -1843,5 +1693,9 @@ and if it is set to nil, then it would forcefully create the ID."
       :n "g [" #'evil-jump-backward
       ;; :n "g RET" #'tabgo
       )
+
+;;;; load functions
+
+(load! "+functions")
 
 ;;; user-keybindings

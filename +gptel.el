@@ -134,8 +134,8 @@
     (auto-fill-mode -1)
     (doom-mark-buffer-as-real-h)))
 
-;;;; 333
+;;;; load fuctions
 
-(provide '+gptel)
+(provide '+functions)
 
 ;;; +gptel.el ends here

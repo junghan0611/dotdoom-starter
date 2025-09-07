@@ -89,75 +89,34 @@
 
 ;; Disable tty module
 (package! evil-terminal-cursor-changer :disable t) ; conflict on kitty
-(package! kkp :disable t) ; conflict on term-keys
+;; (package! kkp :disable t) ; conflict on term-keys
 
 ;;; additional packages
 
-;;;; completion
+(package! denote)
+(package! denote-org)
 
-;;;; ui
+(package! denote-silo)
+(package! denote-sequence)
+(package! denote-markdown)
+
+(package! denote-explore)
+(package! denote-search)
+(package! citar-denote)
+;; (package! consult-notes)
 
 (unpin! doom-themes)
 (package! doom-themes :recipe (:host github :repo "junghan0611/doom-themes" :branch "ko"))
 (package! outli :recipe (:host github :repo "jdtsmith/outli" :files ("*.el")))
 
-;;;; for ccmenu
-
-;; (package! transpose-frame)
-;; (package! webpaste)
-;; (package! google-translate)
-;; (package! password-store-menu)
-;; (package! google-this)
-
-;;;; denote
-
-(package! denote)
-(package! denote-org)
-(package! denote-silo)
-(package! denote-sequence)
-(package! denote-markdown)
-(package! denote-journal)
-
-(package! denote-explore)
-(package! denote-search)
-(package! consult-notes)
-(package! citar-denote)
-
-;;;; template
-
 (package! tempel)
 (package! tempel-collection)
 (package! imenu-list :recipe (:host github :repo "junghan0611/imenu-list" :branch "master"))
-(package! laas)
-
-;;;; llmclient
 
 (package! claude-code :recipe (:host github :repo "stevemolitor/claude-code.el" ))
 
-;;;; org extra
-
-(package! org-download)
-(package! org-rainbow-tags)
 (package! org-glossary :recipe (:host github :repo "tecosaur/org-glossary" :files ("*.el" "*.org" "*.texi")))
 (package! ten :recipe (:host sourcehut :repo "nobiot/ten")) ;; https://git.sr.ht/~nobiot/ten
-;; (package! org-fragtog)          ;; interactive toggling of inline latex formulas
-;; (package! org-transclusion)
-
-;;;; code
-
 (package! aggressive-indent)
-
-;;;; tools
-
 (package! dired-preview)
 (package! jinx) ; spell checker
-;; (package! term-keys :recipe (:host github :repo "junghan0611/term-keys"))
-
-;;;; workspaces
-
-;; (package! tabgo)
-
-;;;; transient
-
-;; (package! ccmenu :recipe (:host github :repo "junghan0611/ccmenu"))
-;; (package! casual-suite)
