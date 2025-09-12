@@ -1744,8 +1744,7 @@ only those in the selected frame."
 ;;; bugfix treesit
 
 (after! treesit
-  (setq treesit-extra-load-path (list (concat doom-profile-data-dir "/tree-sitter/")))
-
+  (setq treesit-extra-load-path (list (concat doom-profile-data-dir "/tree-sitter/"))))
 
 ;;; denote-silo
 
