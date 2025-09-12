@@ -114,6 +114,7 @@
 (package! imenu-list :recipe (:host github :repo "junghan0611/imenu-list" :branch "master"))
 
 (package! claude-code :recipe (:host github :repo "stevemolitor/claude-code.el" ))
+(package! claude-code-ide :recipe (:host github :repo "manzaltu/claude-code-ide.el" ))
 
 (package! org-glossary :recipe (:host github :repo "tecosaur/org-glossary" :files ("*.el" "*.org" "*.texi")))
 (package! ten :recipe (:host sourcehut :repo "nobiot/ten")) ;; https://git.sr.ht/~nobiot/ten

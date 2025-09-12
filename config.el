@@ -1222,13 +1222,33 @@ only those in the selected frame."
 
   (claude-code-mode)
 
+  (after! vterm
+    (define-key claude-code-command-map (kbd "M-RET") 'claude-code--vterm-send-alt-return))
+
   (add-hook 'claude-code-start-hook
             (lambda ()
               ;; Only increase scrollback for vterm backend
               (when (eq claude-code-terminal-backend 'vterm)
-                (setq-local x-gtk-use-native-input t)
+                ;; (setq-local x-gtk-use-native-input t)
                 (setq-local vterm-max-scrollback 100000))))
   )
+
+
+;;;; claude-code-ide
+
+(use-package! claude-code-ide
+  :init
+  (setq claude-code-ide-window-side 'right
+        claude-code-ide-window-width 90)
+  :config
+  (setq claude-code-ide-terminal-backend 'vterm)
+  (setq claude-code-ide-use-ide-diff nil)
+  (claude-code-ide-emacs-tools-setup)
+
+  (after! vterm
+    (define-key vterm-mode-map (kbd "M-RET") 'claude-code-ide-insert-newline)
+    (define-key vterm-mode-map (kbd "C-g") 'claude-code-ide-send-escape))
+  ) ; optionally enable Emacs MCP tools
 
 ;;;; doom-modeline
 
