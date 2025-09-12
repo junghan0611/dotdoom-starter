@@ -126,7 +126,7 @@
        (markdown +tree-sitter)          ; writing docs for people to ignore
        (org                         ; organize your plain life in plain text
         +hugo                     ; use Emacs for hugo blogging
-        +jupyter                    ; ipython/jupyter support for babel
+        ;; +jupyter                    ; ipython/jupyter support for babel
         +pandoc                     ; export-with-pandoc support
         +gnuplot                    ; who doesn't like pretty pictures
         +present                    ; using org-mode for presentations

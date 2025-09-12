@@ -1444,6 +1444,14 @@ only those in the selected frame."
   (show-paren-mode -1)
   )
 
+;;; tramp
+
+(progn
+  (require 'tramp)
+  (tramp-set-completion-function "ssh"
+                                 '(
+                                   (tramp-parse-sconfig "~/.ssh/config"))))
+
 ;;; global-unset-key
 
 (global-unset-key (kbd "<f2>"))
@@ -1732,5 +1740,16 @@ only those in the selected frame."
   (setq process-connection-type nil)
   (setq gc-cons-threshold 100000000)
   (setq gc-cons-percentage 0.6))
+
+;;; bugfix treesit
+
+(after! treesit
+  (setq treesit-extra-load-path (list (concat doom-profile-data-dir "/tree-sitter/")))
+
+
+;;; denote-silo
+
+(after! denote
+  (add-to-list 'denote-silo-directories (expand-file-name "~/claude-memory/")))
 
 ;;; user-keybindings
