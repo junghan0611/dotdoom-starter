@@ -1624,6 +1624,29 @@ only those in the selected frame."
   (setq vterm-always-compile-module t)
   (map! :map vterm-mode-map "M-y" #'vterm-yank-pop))
 
+;;;; 'w' window
+
+
+(map! :leader
+      :prefix "w"
+      "1" nil "2" nil "3" nil "4" nil "5" nil "6" nil "7" nil "8" nil "9" nil "0" nil "-" nil "b" nil "d" nil "r" nil "R" nil "m" nil "<" nil ">" nil "_" nil "|" nil
+      "C-=" nil "C-_" nil "C-b" nil "C-c" nil "C-f" nil "C-h" nil "C-j" nil "C-k" nil "C-l" nil "C-w" nil "C-n" nil "C-o" nil "C-p" nil "C-q" nil "C-r" nil "C-s" nil "C-t" nil "C-u" nil "C-v" nil "C-x" nil "C-S-h" nil "C-S-j" nil "C-S-k" nil "C-S-l" nil "C-S-r" nil "C-S-s" nil "C-S-w" nil "C-<down>" nil "C-<left>" nil "C-<right>" nil "C-<up>" nil
+      "TAB" #'evil-window-prev
+      "." #'window-transient
+      "c" #'window-cleanup+
+      "g" #'golden-ratio
+
+      ;; "D" #'delete-window ; block delete workspace
+      "M" #'ace-swap-window
+      ;; "W" #'ace-window
+      "m" #'toggle-maximize-buffer
+      "=" #'balance-windows-area
+      :desc "window-vsplit" "/" #'evil-window-vsplit
+      ;; :desc "window-vsplit" "v" #'evil-window-vsplit
+      ;; :desc "window-vsplit-follow" "V" #'+evil/window-vsplit-and-follow
+      :desc "window-layout-toggle" "-" 'spacemacs/window-layout-toggle
+      :desc "delete-other-window" "O" 'delete-other-windows)
+
 ;;;; mode-map
 
 (map! :map cdlatex-mode-map
