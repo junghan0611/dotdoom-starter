@@ -120,3 +120,5 @@
 (package! aggressive-indent)
 (package! dired-preview)
 (package! jinx) ; spell checker
+
+(package! clipetty) ; osc52 support

@@ -1403,6 +1403,11 @@ only those in the selected frame."
 
 ;;;; term-keys
 
+(use-package! clipetty
+  :hook (after-init . global-clipetty-mode)
+  :config
+  (setq clipetty-assume-nested-mux nil))
+
 ;; (use-package! term-keys
 ;;   :unless window-system
 ;;   :config
