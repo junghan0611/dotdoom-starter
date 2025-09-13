@@ -990,24 +990,6 @@ only those in the selected frame."
   (evil-define-key '(insert normal) text-mode-map (kbd "M-m") #'my/insert-white-space)
   )
 
-;;;; org-glossary
-
-(use-package! org-glossary
-  :after org
-  :init
-  (setq org-glossary-idle-update-period 1.0) ; 0.5
-  (setq org-glossary-autodetect-in-headings t) ; 2024-06-13 new
-  ;; :hook (org-mode . org-glossary-mode)
-  :config
-  (setq org-glossary-collection-root (concat org-directory "dict/"))
-  ;; (setq org-glossary-global-terms "global")
-
-  (define-key org-mode-map (kbd "C-}") 'org-glossary-insert-term-reference)
-  (define-key org-mode-map (kbd "C-{") 'org-glossary-create-definition)
-  (define-key org-mode-map (kbd "C-\"") 'org-glossary-create-definition)
-  ;; (setq org-glossary-automatic nil) ;; disable auto-export
-  )
-
 ;;;; org-journal
 
 (progn
@@ -1023,7 +1005,6 @@ only those in the selected frame."
   (setq org-journal-file-type 'weekly)
 
   (setq org-journal-tag-alist '(("meet" . ?m) ("dev" . ?d) ("idea" . ?i) ("emacs" . ?e) ("discuss" . ?c) ("1on1" . ?o))) ; default nil
-
   )
 
 ;;;; citar
@@ -1163,15 +1144,15 @@ only those in the selected frame."
 ;;   (let ((xref-backend-functions '(etags--xref-backend t)))
 ;;     (call-interactively 'xref-find-definitions)))
 
-(use-package! ten
-  :defer 2
-  ;; :hook ((org-mode Info-mode) . ten-font-lock-mode) ;; text-mode
-  :init
-  (setq ten-exclude-regexps '("/\\."))
-  :config
-  (require 'consult-ten)
-  (add-to-list 'consult-buffer-sources 'consult-ten-glossary 'append) ; g
-  )
+;; (use-package! ten
+;;   :defer 2
+;;   ;; :hook ((org-mode Info-mode) . ten-font-lock-mode) ;; text-mode
+;;   :init
+;;   (setq ten-exclude-regexps '("/\\."))
+;;   :config
+;;   (require 'consult-ten)
+;;   (add-to-list 'consult-buffer-sources 'consult-ten-glossary 'append) ; g
+;;   )
 
 ;;;; gptel
 
@@ -1214,11 +1195,13 @@ only those in the selected frame."
   (setq claude-code-notification-function #'my-claude-notify-with-sound)
 
   ;; optional IDE integration with Monet
-  ;; (require 'monet)
-  ;; (add-hook 'claude-code-process-environment-functions #'monet-start-server-function)
-  ;; (monet-mode 1)
+  (when (locate-library "monet")
+    (require 'monet)
+    (add-hook 'claude-code-process-environment-functions #'monet-start-server-function)
+    (monet-mode 1))
 
-  (set-popup-rule! "^\\*claude" :vslot -15 :width 90 :side 'right :ttl t :select t :quit nil :modeline t)
+  ;; (set-popup-rule! "^\\*claude" :vslot -15 :width 90 :side 'right :ttl t :select t :quit nil :modeline t)
+  (set-popup-rule! "^\\*claude" :vslot -15 :size 0.4 :side 'bottom :ttl t :select t :quit nil :modeline t)
 
   (claude-code-mode)
 
@@ -1238,8 +1221,9 @@ only those in the selected frame."
 
 (use-package! claude-code-ide
   :init
-  (setq claude-code-ide-window-side 'right
-        claude-code-ide-window-width 90)
+  ;; Open Claude at the bottom with custom height
+  (setq claude-code-ide-window-side 'bottom
+        claude-code-ide-window-height 50)
   :config
   (setq claude-code-ide-terminal-backend 'vterm)
   (setq claude-code-ide-use-ide-diff nil)
@@ -1756,7 +1740,8 @@ only those in the selected frame."
 
 ;;; termux-fixes
 ;; Fix async issues in Termux/Android
-(when (string-match-p "android" system-configuration)
+
+(when IS-TERMUX
   (setq native-comp-async-report-warnings-errors nil)
   (setq native-comp-warning-on-missing-source nil)
   (setq async-bytecomp-allowed-packages nil)

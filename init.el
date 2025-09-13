@@ -144,6 +144,7 @@
        (javascript +tree-sitter) ; all(hope(abandon(ye(who(enter(here))))))
        (web +tree-sitter) ; the tubes
        (yaml +tree-sitter) ; JSON, but readable
+       (zig +tree-sitter)              ; C, but simpler
 
        ;; :email
        ;;(mu4e +org +gmail)
