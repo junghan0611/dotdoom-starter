@@ -136,38 +136,6 @@
 
 (defun my/call-localleader ()
   (interactive)
-  (setq unread-command-events (listify-key-sequence ",")))
-(map! :leader (:desc "+major-mode" "m" #'my/call-localleader))
-;; (global-set-key (kbd "M-m") #'my/call-localleader)
-
-;;;; Font Test:
-
-;; Font test: " & ' ∀ ∃ ∅ ∈ ∉ ∏ ∑ √ ∞ ∧ ∨ ∩ ∪ ∫ ² ³ µ · × ∴ ∼
-;; ≅ ≈ ≠ ≡ ≤ ≥ < > ⊂ ⊃ ⊄ ⊆ ⊇ ⊥ ∂ ∇ ∈ ∝ ⊕ ⊗ ← → ↑ ↓ ↔ ⇐ ⇒ ⇔
-;; □ ■ | © ¬ ± ° · ˜ Γ Δ α β γ δ ε φ ∀, ∃, ￢(~), ∨, ∧,⊂, ∈,
-;; ⇒, ⇔ 𝑀＜1
-;; 𝑻𝑼𝑽𝗔𝗕𝗖𝗗 𝞉𝞩𝟃 ϑϕϰ ⊰⊱⊲⊳⊴⊵⫕ 𝚢𝚣𝚤𝖿𝗀𝗁𝗂
-
-;;; Input-method +Hangul
-
-;; +------------+------------+
-;; | 일이삼사오 | 일이삼사오 |
-;; +------------+------------+
-;; | ABCDEFGHIJ | ABCDEFGHIJ |
-;; +------------+------------+
-;; | 1234567890 | 1234567890 |
-;; +------------+------------+
-;; | 일이삼사오 | 일이삼사오 |
-;; | abcdefghij | abcdefghij |
-;; +------------+------------+
-(progn
-  (setq default-input-method "korean-hangul")
-  (set-language-environment "Korean")
-
-  ;; (setq default-transient-input-method "TeX")
-
-  (set-keyboard-coding-system 'utf-8)
-  (setq locale-coding-system 'utf-8)
   (prefer-coding-system 'utf-8)
   (set-charset-priority 'unicode)
   (set-default-coding-systems 'utf-8)
@@ -182,10 +150,6 @@
   (setq x-select-request-type '(UTF8_STRING COMPOUND_TEXT TEXT STRING))
 
   (setq-default line-spacing 3)
-
-  ;; (setenv "LANG" "en_US.UTF-8")
-  ;; (setenv "LC_ALL" "en_US.UTF-8")
-  ;; (setenv "LANG" "ko_KR.UTF-8")
 
   ;; 날짜 표시를 영어로한다. org mode에서 time stamp 날짜에 영향을 준다.
   (setq system-time-locale "C")
@@ -203,18 +167,51 @@
     (defun my/set-emoji-symbol-font ()
       (interactive)
 
+      ;; 터미널에서 폰트 스케일 조정 (이모지 크기 일정하게)
+      (unless (display-graphic-p)
+        (setq face-font-rescale-alist
+              '(("Noto Color Emoji" . 0.9)
+                ("Noto Emoji" . 0.9)
+                ("Symbola" . 0.9))))
+
       (set-fontset-font "fontset-default" 'hangul (font-spec :family (face-attribute 'default :family)))
 
       (when (display-graphic-p) ; gui
         (set-fontset-font t 'unicode (font-spec :family "Symbola") nil 'prepend) ;; 2024-09-16 테스트 -- 𝑀＜1
         (set-fontset-font t 'mathematical (font-spec :family "Symbola") nil 'prepend) ; best
-
-        ;; (set-fontset-font t 'emoji (font-spec :family "Apple Color Emoji") nil 'prepend)
         (set-fontset-font t 'emoji (font-spec :family "Noto Color Emoji") nil)
         (set-fontset-font t 'emoji (font-spec :family "Noto Emoji") nil 'prepend) ; Top
         )
       (unless (display-graphic-p) ; terminal
-        (set-fontset-font "fontset-default" 'emoji (font-spec :family "Noto Emoji") nil 'prepend))
+        ;; 터미널에서는 Noto Color Emoji 사용 (컬러 이모지 지원시)
+        (set-fontset-font "fontset-default" 'emoji (font-spec :family "Noto Emoji") nil)
+        (set-fontset-font "fontset-default" 'emoji (font-spec :family "Noto Color Emoji") 'append)
+        ;; 폴백 폰트 설정 (Noto Emoji가 없는 경우)
+        (set-fontset-font "fontset-default" 'unicode (font-spec :family "DejaVu Sans Mono") nil 'append)
+        ;; 이모지 문자의 너비를 2로 고정 (double-width)
+        ;; 주요 이모지 범위들
+        (dolist (range '((#x1F300 . #x1F6FF)  ; Misc Symbols and Pictographs
+                        (#x1F700 . #x1F77F)  ; Alchemical Symbols
+                        (#x1F780 . #x1F7FF)  ; Geometric Shapes Extended
+                        (#x1F900 . #x1F9FF)  ; Supplemental Symbols and Pictographs
+                        (#x1FA00 . #x1FA6F)  ; Chess Symbols
+                        (#x1FA70 . #x1FAFF)  ; Symbols and Pictographs Extended-A
+                        (#x2600 . #x26FF)    ; Miscellaneous Symbols
+                        (#x2700 . #x27BF)    ; Dingbats
+                        (#xFE00 . #xFE0F)    ; Variation Selectors
+                        (#x1F000 . #x1F02F)  ; Mahjong Tiles
+                        (#x1F030 . #x1F09F)  ; Domino Tiles
+                        (#x1F0A0 . #x1F0FF))) ; Playing Cards
+          (set-char-table-range char-width-table range 2))
+        ;; 특정 이모지들을 유니코드 코드포인트로 너비 설정
+        (dolist (codepoint '(#x1F600 #x1F603 #x1F604 #x1F601 #x1F606 #x1F605 #x1F602 #x1F923 #x1F60A #x1F607
+                            #x1F642 #x1F643 #x1F609 #x1F60C #x1F60D #x1F970 #x1F618 #x1F617 #x1F619 #x1F61A
+                            #x1F60B #x1F61B #x1F61C #x1F92A #x1F61D #x1F911 #x1F917 #x1F92D #x1F92B #x1F914
+                            #x1F525 #x1F4AF #x2728 #x2B50 #x1F31F #x1F4AB #x1F308 #x2600 #x1F31E #x1F31D
+                            #x2764 #x1F9E1 #x1F49B #x1F49A #x1F499 #x1F49C #x1F5A4 #x1F90D #x1F90E #x1F494
+                            #x2705 #x274C #x2B55 #x1F534 #x1F7E0 #x1F7E1 #x1F7E2 #x1F535 #x1F7E3 #x26AB
+                            #x26AA #x1F7E4 #x1F536 #x1F537 #x1F538 #x1F539 #x1F53A #x1F53B #x1F4A0 #x1F532))
+          (set-char-table-range char-width-table codepoint 2)))
 
       (set-fontset-font t 'symbol (font-spec :family "Symbola") nil 'prepend)
       (set-fontset-font t 'symbol (font-spec :family "Noto Sans Symbols 2") nil 'prepend)
@@ -1205,14 +1202,13 @@ only those in the selected frame."
 
   (claude-code-mode)
 
-  (after! vterm
-    (define-key claude-code-command-map (kbd "M-RET") 'claude-code--vterm-send-alt-return))
-
   (add-hook 'claude-code-start-hook
             (lambda ()
               ;; Only increase scrollback for vterm backend
               (when (eq claude-code-terminal-backend 'vterm)
                 ;; (setq-local x-gtk-use-native-input t)
+                (define-key claude-code-command-map (kbd "M-RET") 'claude-code--vterm-send-alt-return)
+                (define-key vterm-mode-map (kbd "M-RET") 'claude-code--vterm-send-alt-return)
                 (setq-local vterm-max-scrollback 100000))))
   )
 
@@ -1296,6 +1292,48 @@ only those in the selected frame."
 
 ;; Starter profile - 터미널 중심 설정
 (setq doom-theme 'doom-dracula)
+
+;; 터미널에서 테마 색상 충돌 방지
+(unless (display-graphic-p)
+  ;; 터미널에서 배경색 투명도 유지
+  (setq-default frame-background-mode 'dark)
+  ;; 터미널 색상 팔레트 활용
+  (setq xterm-color-preserve-properties t)
+
+  ;; Ghostty 터미널 전용 설정
+  (cond
+   ;; xterm-ghostty terminfo 사용시
+   ((string-match "ghostty" (or (getenv "TERM") ""))
+    ;; Ghostty는 24비트 트루컬러 지원 (이미 terminfo에 정의됨)
+    (setenv "COLORTERM" "truecolor")
+    ;; 배경 투명도 유지
+    (set-face-background 'default "unspecified-bg" nil)
+    ;; 터미널 자체 색상 테마 우선
+    (setq-default terminal-ansi-color-vector
+                  [unspecified "#282a36" "#ff5555" "#50fa7b" "#f1fa8c"
+                               "#6272a4" "#ff79c6" "#8be9fd" "#f8f8f2"])
+    ;; Ghostty는 256색상 이상 지원 (terminfo pairs=0x7fff)
+    (setq xterm-color-use-bold-for-bright nil)
+    ;; Ghostty 최적화 설정
+    (setq-default
+     ;; 트루컬러 활용
+     term-file-aliases '(("xterm-ghostty" . "xterm-direct"))
+     ;; 더 나은 마우스 지원
+     xterm-mouse-mode t
+     ;; 클립보드 통합 (OSC 52)
+     xclip-method 'osc52
+     ;; 부드러운 스크롤
+     mouse-wheel-progressive-speed nil))
+
+   ;; 일반 256color 터미널
+   ((string-match "256color" (or (getenv "TERM") ""))
+    (setq xterm-color-names-bright
+          ["#3B4252" "#BF616A" "#A3BE8C" "#EBCB8B"
+           "#81A1C1" "#B48EAD" "#88C0D0" "#E5E9F0"])
+    (setq xterm-color-names
+          ["#2E3440" "#BF616A" "#A3BE8C" "#EBCB8B"
+           "#81A1C1" "#B48EAD" "#88C0D0" "#D8DEE9"]))))
+
 (doom-themes-visual-bell-config)
 
 (defun my/doom-themes-toggle () (interactive) (load-theme doom-theme t))
