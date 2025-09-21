@@ -44,8 +44,8 @@
 
        :ui
        doom              ; what makes DOOM look the way it does
-       doom-dashboard    ; a nifty splash screen for Emacs
-       doom-quit         ; DOOM quit-message prompts when you quit Emacs
+       ;; doom-dashboard    ; a nifty splash screen for Emacs
+       ;; doom-quit         ; DOOM quit-message prompts when you quit Emacs
        hl-todo           ; highlight TODO/FIXME/NOTE/DEPRECATED/HACK/REVIEW/XXX/BUG
        ;; indent-guides     ; highlighted indent columns
        ;; minimap           ; show a map of the code on the side
@@ -95,7 +95,7 @@
        :tools
        biblio
        ;; debugger ; FIXME stepping through code, to help you add bugs
-       ;; (:unless IS-TERMUX (direnv))
+       direnv
 
        (docker +tree-sitter)
        (eval +overlay)     ; run code, run (also, repls)
@@ -153,7 +153,7 @@
        :app
        calendar
        ;; emms
-       (rss +org +youtube)        ; emacs as an RSS reader
+       (rss +org)        ; emacs as an RSS reader
 
        :config
        ;; literate ; use manually

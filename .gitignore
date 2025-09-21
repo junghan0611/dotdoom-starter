@@ -9,3 +9,5 @@ per-machine.el
 user-keys.el
 ccmenu
 tempel-templates.eld
+.claude
++office.el
