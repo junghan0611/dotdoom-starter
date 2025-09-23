@@ -1,25 +1,20 @@
-#!/bin/bash
-# Doom Emacs Profile Sync 스크립트
-# profiles.el 캐시 재생성 및 패키지 동기화
+#!/usr/bin/env bash
+# Doom Emacs Starter Sync 스크립트 (분리된 설치 버전)
 
-echo "=== Doom Emacs Starter Profile Sync ==="
+echo "=== Doom Emacs Starter Sync ==="
 
-# 1. 환경 변수 설정
-export DOOMPROFILE=starter
+# 환경 변수 설정
 export DOOMDIR="$HOME/repos/gh/dotdoom-starter"
+DOOM_BIN="$HOME/doomemacs-starter/bin/doom"
 
-echo "Profile: $DOOMPROFILE"
 echo "DOOMDIR: $DOOMDIR"
+echo "Doom Bin: $DOOM_BIN"
 
-# 2. Doom profiles sync (캐시 생성)
+# 패키지 동기화 (대화형 프롬프트 없이)
 echo ""
-echo "Generating profile cache..."
-doom profiles sync  
-
-# 3. 프로파일별 동기화
-echo ""
-echo "Syncing starter profile packages..."
-doom sync --profile starter
+echo "Syncing starter packages..."
+echo $DOOM_BIN
+$DOOM_BIN sync
 
 echo ""
 echo "=== Sync Complete ==="
@@ -28,3 +23,4 @@ echo "사용법:"
 echo "  1. 직접 실행: ./start-emacs.sh"
 echo "  2. 환경변수 설정: export DOOMPROFILE=starter && emacs"
 echo "  3. 명령줄 옵션: emacs --profile starter"
+

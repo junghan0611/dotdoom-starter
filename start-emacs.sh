@@ -14,8 +14,7 @@ else
     EMACS_BIN="emacs"
 fi
 
-# Doom profile 설정
-export DOOMPROFILE=starter
+# Doom 설정 (분리된 설치 사용)
 export DOOMDIR="$HOME/repos/gh/dotdoom-starter"
 
 # Termux 환경 감지
@@ -40,7 +39,6 @@ fi
 
 echo "EMACS: $EMACS_BIN"
 echo "DOOMDIR: $DOOMDIR"
-echo "DOOMPROFILE: $DOOMPROFILE"
 
-# Emacs 실행
-exec $EMACS_BIN $MODE $ARGS
+# Emacs 실행 (--init-directory로 분리된 Doom 사용)
+exec $EMACS_BIN --init-directory=$HOME/doomemacs-starter $MODE $ARGS
