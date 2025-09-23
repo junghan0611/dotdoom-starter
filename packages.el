@@ -126,3 +126,5 @@
 (package! jinx) ; spell checker
 
 (package! clipetty) ; osc52 support
+
+(package! password-store-menu)

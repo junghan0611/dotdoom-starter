@@ -35,23 +35,23 @@
 
 ;;;; authinfo
 
-(let ((auth-gpg (expand-file-name "~/.authinfo.gpg"))
-      (auth-file (expand-file-name "~/.authinfo")))
-  (cond
-   ;; gpg 파일이 있으면 그것을 auth-source로 사용
-   ((file-exists-p auth-gpg)
-    (setq auth-sources (list auth-gpg)
-          auth-source-cache-expiry nil))
-   ;; gpg는 없고 일반 파일은 이미 있으면 그대로 사용
-   ((file-exists-p auth-file)
-    (setq auth-sources (list auth-file)
-          auth-source-cache-expiry nil))
-   ;; 둘 다 없으면 일반 파일 새로 생성 후 사용
-   (t
-    (with-temp-buffer
-      (write-file auth-file))
-    (setq auth-sources (list auth-file)
-          auth-source-cache-expiry nil))))
+;; (let ((auth-gpg (expand-file-name "~/.authinfo.gpg"))
+;;       (auth-file (expand-file-name "~/.authinfo")))
+;;   (cond
+;;    ;; gpg 파일이 있으면 그것을 auth-source로 사용
+;;    ((file-exists-p auth-gpg)
+;;     (setq auth-sources (list auth-gpg)
+;;           auth-source-cache-expiry nil))
+;;    ;; gpg는 없고 일반 파일은 이미 있으면 그대로 사용
+;;    ((file-exists-p auth-file)
+;;     (setq auth-sources (list auth-file)
+;;           auth-source-cache-expiry nil))
+;;    ;; 둘 다 없으면 일반 파일 새로 생성 후 사용
+;;    (t
+;;     (with-temp-buffer
+;;       (write-file auth-file))
+;;     (setq auth-sources (list auth-file)
+;;           auth-source-cache-expiry nil))))
 
 ;; (setq user-mail-address "junghanacs@gmail.com")
 ;; (setq-default epa-file-encrypt-to '("B5ADD9F47612A9DB"))

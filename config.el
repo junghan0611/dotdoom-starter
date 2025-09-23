@@ -1201,6 +1201,7 @@ only those in the selected frame."
   :init
   ;; Open Claude at the bottom with custom height
   (setq claude-code-ide-window-side 'bottom
+        claude-code-ide-window-width 80
         claude-code-ide-window-height 50)
   :config
   (setq claude-code-ide-terminal-backend 'vterm)
@@ -1219,7 +1220,7 @@ only those in the selected frame."
 (setq doom-modeline-minor-modes nil)
 (setq doom-modeline-support-imenu t)
 (setq doom-modeline-enable-word-count nil)
-;; (setq doom-modeline-continuous-word-count-modes '(markdown-mode gfm-mod)) ; org-mode
+(setq doom-modeline-continuous-word-count-modes '(markdown-mode gfm-mod)) ; org-mode
 
 (after! doom-modeline
   (setq doom-modeline-icon nil)
@@ -1308,7 +1309,7 @@ only those in the selected frame."
 
 (defun my/doom-themes-toggle ()
   (interactive)
-  (setq doom-theme 'doom-zenburn)
+  (setq doom-theme 'doom-one)
   (doom-themes-visual-bell-config)
   (load-theme doom-theme t))
 (add-hook 'doom-first-input-hook #'my/doom-themes-toggle)
@@ -1807,5 +1808,18 @@ only those in the selected frame."
           (:name "🗓️ Today"
            :query "date:today"
            :key "t"))))
+
+;;;; pass + auth
+
+(after! pass
+  (setq pass-username-field "login"
+        password-store-password-length 24))
+
+(use-package! password-store-menu
+  :after pass
+  :config (password-store-menu-enable)
+  :custom (password-store-menu-key "C-c C-p"))
+
+(setq auth-sources '(password-store "~/.authinfo.gpg"))
 
 ;;; user-keybindings
