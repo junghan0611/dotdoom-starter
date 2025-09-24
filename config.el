@@ -1816,9 +1816,11 @@ only those in the selected frame."
         password-store-password-length 24))
 
 (use-package! password-store-menu
-  :after pass
-  :config (password-store-menu-enable)
-  :custom (password-store-menu-key "C-c C-p"))
+  :defer 2
+  :commands (password-store-menu-enable)
+  :custom (password-store-menu-key "C-c C-p")
+  :config
+  (password-store-menu-enable))
 
 (setq auth-sources '(password-store "~/.authinfo.gpg"))
 
