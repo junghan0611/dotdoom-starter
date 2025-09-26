@@ -128,3 +128,9 @@
 (package! clipetty) ; osc52 support
 
 (package! password-store-menu)
+
+;;;; ACP (Agent Client Protocol)
+
+(package! shell-maker)
+(package! acp :recipe (:host github :repo "xenodium/acp.el"))
+(package! agent-shell :recipe (:host github :repo "xenodium/agent-shell"))
