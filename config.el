@@ -143,13 +143,6 @@
     (defun my/set-emoji-symbol-font ()
       (interactive)
 
-      ;; 터미널에서 폰트 스케일 조정 (이모지 크기 일정하게)
-      (unless (display-graphic-p)
-        (setq face-font-rescale-alist
-              '(("Noto Color Emoji" . 0.9)
-                ("Noto Emoji" . 0.9)
-                ("Symbola" . 0.9))))
-
       (set-fontset-font "fontset-default" 'hangul (font-spec :family (face-attribute 'default :family)))
 
       (when (display-graphic-p) ; gui
@@ -164,6 +157,14 @@
         (set-fontset-font "fontset-default" 'emoji (font-spec :family "Noto Color Emoji") 'append)
         ;; 폴백 폰트 설정 (Noto Emoji가 없는 경우)
         (set-fontset-font "fontset-default" 'unicode (font-spec :family "DejaVu Sans Mono") nil 'append)
+
+        ;; 터미널에서 폰트 스케일 조정 (이모지 크기 일정하게)
+        (unless (display-graphic-p)
+          (setq face-font-rescale-alist
+                '(("Noto Color Emoji" . 0.9)
+                  ("Noto Emoji" . 0.9)
+                  ("Symbola" . 0.9))))
+
         ;; 이모지 문자의 너비를 2로 고정 (double-width)
         ;; 주요 이모지 범위들
         (dolist (range '((#x1F300 . #x1F6FF)  ; Misc Symbols and Pictographs
@@ -1343,11 +1344,14 @@ only those in the selected frame."
     (global-set-key [remap ispell-word] #'jinx-correct))
   )
 
-;; (setq rmh-elfeed-org-files '("path/to/your/elfeed/file.org")) ; default ~/org/elfeed.org
-;; gc copy-link
+;;;; Elfeed
+
 (after! elfeed
   ;; +rss-enable-sliced-images ;  default t
-  (setq elfeed-search-filter "@6-months-ago") ;;  "", "@1-month-ago +unread"
+  (setq rmh-elfeed-org-files (list (my/org-elfeed-file))) ; default ~/org/elfeed.org
+  (setq elfeed-search-filter "@6-months-ago") ; "" "@1-month-ago +unread"
+  ;; (setq elfeed-search-title-max-width 90) ; default 70
+  ;; (add-hook 'elfeed-search-mode-hook #'elfeed-update)
   )
 
 ;;;; eglot configuration
@@ -1765,7 +1769,6 @@ only those in the selected frame."
   (when (file-exists-p user-keys-filename)
     (load-file user-keys-filename)))
 
-;;; Agentic Workflows
 
 ;;;; Notmuch 이메일 설정
 
@@ -1827,9 +1830,11 @@ only those in the selected frame."
 ;; https://github.com/xenodium/agent-shell/issues/27
 
 (progn
+  (require 'shell-maker)
   (require 'acp)
   (require 'agent-shell)
 
   (setq agent-shell-anthropic-authentication
         (agent-shell-anthropic-make-authentication :login t)))
 
+;;; END

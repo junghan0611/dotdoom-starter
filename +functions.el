@@ -135,6 +135,31 @@ These annotations are skipped for remote paths."
 
 
 
+;;; my/open/workspaces
+
+;;;;###autoload
+(defun my/open-workspaces ()
+  (interactive)
+
+  (message "my/open-workspaces")
+  (+workspace/new-named "work")
+  (find-file "~/repos/work")
+
+  (+workspace/new-named "repos")
+  (find-file user-project-directory)
+
+  (+workspace/new-named "dots")
+  (find-file doom-user-dir)
+
+  (+workspace/new-named "feed")
+  (elfeed)
+
+  (+workspace/switch-to-0))
+
+;; (unless IS-DEMO
+;;   (when (display-graphic-p) ; gui
+;;     (add-hook 'doom-first-input-hook #'my/open-workspaces)))
+
 ;;; provide
 
 (provide '+functions)
