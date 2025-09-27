@@ -73,12 +73,6 @@
   (when (file-exists-p per-machine-filename)
     (load-file per-machine-filename)))
 
-;;; Load 'user-keys'
-
-(let ((user-keys-filename (concat doom-user-dir "user-keys.el")))
-  (when (file-exists-p user-keys-filename)
-    (load-file user-keys-filename)))
-
 ;;; GENERAL SETTINGS
 
 (use-package! server
@@ -1400,12 +1394,9 @@ only those in the selected frame."
 ;;       (setq xclip-method 'termux-clipboard-get)))
 ;;     (xclip-mode 1)))
 
-;;;; vterm for TERMUX
+;;;; TERMUX
 
 (when IS-TERMUX
-  ;; (after! vterm
-  ;;   ;; (setq vterm-shell (concat root-path "usr/bin/zsh"))
-  ;;   )
 
   (global-set-key (kbd "<M-SPC>") 'toggle-input-method)
   (global-set-key
@@ -1768,6 +1759,13 @@ only those in the selected frame."
 (after! denote
   (add-to-list 'denote-silo-directories (expand-file-name "~/claude-memory/")))
 
+;;; Load 'user-keys'
+
+(let ((user-keys-filename (concat doom-user-dir "user-keys.el")))
+  (when (file-exists-p user-keys-filename)
+    (load-file user-keys-filename)))
+
+;;; Agentic Workflows
 
 ;;;; Notmuch 이메일 설정
 
@@ -1826,43 +1824,12 @@ only those in the selected frame."
 
 ;;;; ACP (Agent Client Protocol)
 ;; https://agentclientprotocol.com/
-
-;; 2025-09-26
 ;; https://github.com/xenodium/agent-shell/issues/27
+
 (progn
   (require 'acp)
   (require 'agent-shell)
 
-  (setq agent-shell-anthropic-key nil)
+  (setq agent-shell-anthropic-authentication
+        (agent-shell-anthropic-make-authentication :login t)))
 
-  (defun acp-make-claude-client-with-subscription ()
-    "Create a Claude Code ACP client using subscription authentication.
-
-  This allows Claude Max/Pro subscribers to use their existing subscription
-  instead of requiring a separate API key. The claude-code-acp tool will
-  prompt for login when authentication is needed.
-
-  See https://www.anthropic.com/claude-code"
-    (acp-make-client :command "claude-code-acp"
-                     ;; Explicitly set empty ANTHROPIC_API_KEY to ensure subscription auth
-                     :environment-variables (list "ANTHROPIC_API_KEY=")))
-
-  (defun agent-shell-start-claude-code-agent ()
-    "Start an interactive Claude Code agent shell."
-    (interactive)
-    (let ((api-key (agent-shell-anthropic-key)))
-      (agent-shell--start
-       :new-session t
-       :mode-line-name "Claude Code"
-       :buffer-name "Claude Code"
-       :shell-prompt "Claude Code> "
-       :shell-prompt-regexp "Claude Code> "
-       :icon-name "anthropic.png"
-       :welcome-function #'agent-shell--claude-code-welcome-message
-       :client-maker (lambda ()
-                       (if api-key
-                           (acp-make-claude-client :api-key api-key)
-                         (acp-make-claude-client-with-subscription))))))
-  )
-
-;;; user-keybindings
