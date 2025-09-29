@@ -1200,7 +1200,7 @@ only those in the selected frame."
         claude-code-ide-window-height 50)
   :config
   (setq claude-code-ide-terminal-backend 'vterm)
-  (setq claude-code-ide-use-ide-diff nil)
+  ;; (setq claude-code-ide-use-ide-diff nil)
   (claude-code-ide-emacs-tools-setup)
 
   (after! vterm
