@@ -110,9 +110,9 @@
         :models gptel--openrouter-models))
 
 (setq gptel-backend gptel-openrouter-backend)
-(setq gptel-model 'openai/gpt-5-chat) ; 2025-08-22
+(setq gptel-model 'google/gemini-2.5-flash)
 
-;;;;
+;;;; gptel-mode-hook
 
 (add-hook! 'gptel-mode-hook
   (defun gptel-mode-set-local-keys ()

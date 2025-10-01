@@ -55,6 +55,9 @@
 
 ;;; doom-disabled-packages
 
+(package! cuda-mode :disable t)
+(package! opencl-mode :disable t)
+
 (package! diredfl :disable t) ; conflict @denote
 (package! dirvish :disable t)
 (package! code-review :disable t) ; not working
