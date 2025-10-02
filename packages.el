@@ -55,6 +55,7 @@
 
 ;;; doom-disabled-packages
 
+(package! demangle-mode :disable t)
 (package! cuda-mode :disable t)
 (package! opencl-mode :disable t)
 
