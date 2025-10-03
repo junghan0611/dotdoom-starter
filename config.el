@@ -112,90 +112,98 @@
 
 (defun my/call-localleader ()
   (interactive)
-  (prefer-coding-system 'utf-8)
-  (set-charset-priority 'unicode)
-  (set-default-coding-systems 'utf-8)
-  (set-terminal-coding-system 'utf-8)
-  (setq-default buffer-file-coding-system 'utf-8-unix)
+  (setq unread-command-events (listify-key-sequence ",")))
 
-  (set-selection-coding-system 'utf-8) ;; important
-  (setq coding-system-for-read 'utf-8)
-  (setq coding-system-for-write 'utf-8)
+(map! :leader (:desc "+major-mode" "m" #'my/call-localleader))
 
-  ;; Treat clipboard input as UTF-8 string first; compound text next, etc.
-  (setq x-select-request-type '(UTF8_STRING COMPOUND_TEXT TEXT STRING))
+(after! evil
+  ;; (global-set-key (kbd "M-m") #'my/call-localleader)
+  (evil-define-key '(normal visual) prog-mode-map (kbd "C-,") 'my/call-localleader))
 
-  (setq-default line-spacing 3)
+;;; Input System : Hangul
 
-  ;; 날짜 표시를 영어로한다. org mode에서 time stamp 날짜에 영향을 준다.
-  (setq system-time-locale "C")
+(prefer-coding-system 'utf-8)
+(set-charset-priority 'unicode)
+(set-default-coding-systems 'utf-8)
+(set-terminal-coding-system 'utf-8)
+(setq-default buffer-file-coding-system 'utf-8-unix)
 
-  (setq input-method-verbose-flag nil
-        input-method-highlight-flag nil)
+(set-selection-coding-system 'utf-8) ;; important
+(setq coding-system-for-read 'utf-8)
+(setq coding-system-for-write 'utf-8)
 
-  (global-set-key (kbd "<S-SPC>") 'toggle-input-method)
-  ;; (global-set-key (kbd "<Alt_R>") 'toggle-input-method)
-  (global-set-key (kbd "<Hangul>") 'toggle-input-method)
-  ;; (global-unset-key (kbd "S-SPC"))
+;; Treat clipboard input as UTF-8 string first; compound text next, etc.
+(setq x-select-request-type '(UTF8_STRING COMPOUND_TEXT TEXT STRING))
 
-  (unless (string-equal system-type "android")
+(setq-default line-spacing 3)
+
+;; 날짜 표시를 영어로한다. org mode에서 time stamp 날짜에 영향을 준다.
+(setq system-time-locale "C")
+
+(setq input-method-verbose-flag nil
+      input-method-highlight-flag nil)
+
+(global-set-key (kbd "<S-SPC>") 'toggle-input-method)
+;; (global-set-key (kbd "<Alt_R>") 'toggle-input-method)
+(global-set-key (kbd "<Hangul>") 'toggle-input-method)
+;; (global-unset-key (kbd "S-SPC"))
+
+(unless (string-equal system-type "android")
 ;;;###autoload
-    (defun my/set-emoji-symbol-font ()
-      (interactive)
+  (defun my/set-emoji-symbol-font ()
+    (interactive)
 
-      (set-fontset-font "fontset-default" 'hangul (font-spec :family (face-attribute 'default :family)))
+    (set-fontset-font "fontset-default" 'hangul (font-spec :family (face-attribute 'default :family)))
 
-      (when (display-graphic-p) ; gui
-        (set-fontset-font t 'unicode (font-spec :family "Symbola") nil 'prepend) ;; 2024-09-16 테스트 -- 𝑀＜1
-        (set-fontset-font t 'mathematical (font-spec :family "Symbola") nil 'prepend) ; best
-        (set-fontset-font t 'emoji (font-spec :family "Noto Color Emoji") nil)
-        (set-fontset-font t 'emoji (font-spec :family "Noto Emoji") nil 'prepend) ; Top
-        )
-      (unless (display-graphic-p) ; terminal
-        ;; 터미널에서는 Noto Color Emoji 사용 (컬러 이모지 지원시)
-        (set-fontset-font "fontset-default" 'emoji (font-spec :family "Noto Emoji") nil)
-        (set-fontset-font "fontset-default" 'emoji (font-spec :family "Noto Color Emoji") 'append)
-        ;; 폴백 폰트 설정 (Noto Emoji가 없는 경우)
-        (set-fontset-font "fontset-default" 'unicode (font-spec :family "DejaVu Sans Mono") nil 'append)
+    (when (display-graphic-p) ; gui
+      (set-fontset-font t 'unicode (font-spec :family "Symbola") nil 'prepend) ;; 2024-09-16 테스트 -- 𝑀＜1
+      (set-fontset-font t 'mathematical (font-spec :family "Symbola") nil 'prepend) ; best
+      (set-fontset-font t 'emoji (font-spec :family "Noto Color Emoji") nil)
+      (set-fontset-font t 'emoji (font-spec :family "Noto Emoji") nil 'prepend) ; Top
+      )
 
-        ;; 터미널에서 폰트 스케일 조정 (이모지 크기 일정하게)
-        (unless (display-graphic-p)
-          (setq face-font-rescale-alist
-                '(("Noto Color Emoji" . 0.9)
-                  ("Noto Emoji" . 0.9)
-                  ("Symbola" . 0.9))))
+    (unless (display-graphic-p) ; terminal
+      ;; 터미널에서는 Noto Color Emoji 사용 (컬러 이모지 지원시)
+      (set-fontset-font "fontset-default" 'emoji (font-spec :family "Noto Emoji") nil)
+      ;; 폴백 폰트 설정 (Noto Emoji가 없는 경우)
+      ;; (set-fontset-font "fontset-default" 'unicode (font-spec :family "DejaVu Sans Mono") nil 'append)
 
-        ;; 이모지 문자의 너비를 2로 고정 (double-width)
-        ;; 주요 이모지 범위들
-        (dolist (range '((#x1F300 . #x1F6FF)  ; Misc Symbols and Pictographs
-                        (#x1F700 . #x1F77F)  ; Alchemical Symbols
-                        (#x1F780 . #x1F7FF)  ; Geometric Shapes Extended
-                        (#x1F900 . #x1F9FF)  ; Supplemental Symbols and Pictographs
-                        (#x1FA00 . #x1FA6F)  ; Chess Symbols
-                        (#x1FA70 . #x1FAFF)  ; Symbols and Pictographs Extended-A
-                        (#x2600 . #x26FF)    ; Miscellaneous Symbols
-                        (#x2700 . #x27BF)    ; Dingbats
-                        (#xFE00 . #xFE0F)    ; Variation Selectors
-                        (#x1F000 . #x1F02F)  ; Mahjong Tiles
-                        (#x1F030 . #x1F09F)  ; Domino Tiles
-                        (#x1F0A0 . #x1F0FF))) ; Playing Cards
-          (set-char-table-range char-width-table range 2))
-        ;; 특정 이모지들을 유니코드 코드포인트로 너비 설정
-        (dolist (codepoint '(#x1F600 #x1F603 #x1F604 #x1F601 #x1F606 #x1F605 #x1F602 #x1F923 #x1F60A #x1F607
-                            #x1F642 #x1F643 #x1F609 #x1F60C #x1F60D #x1F970 #x1F618 #x1F617 #x1F619 #x1F61A
-                            #x1F60B #x1F61B #x1F61C #x1F92A #x1F61D #x1F911 #x1F917 #x1F92D #x1F92B #x1F914
-                            #x1F525 #x1F4AF #x2728 #x2B50 #x1F31F #x1F4AB #x1F308 #x2600 #x1F31E #x1F31D
-                            #x2764 #x1F9E1 #x1F49B #x1F49A #x1F499 #x1F49C #x1F5A4 #x1F90D #x1F90E #x1F494
-                            #x2705 #x274C #x2B55 #x1F534 #x1F7E0 #x1F7E1 #x1F7E2 #x1F535 #x1F7E3 #x26AB
-                            #x26AA #x1F7E4 #x1F536 #x1F537 #x1F538 #x1F539 #x1F53A #x1F53B #x1F4A0 #x1F532))
-          (set-char-table-range char-width-table codepoint 2)))
+      ;; 터미널에서 폰트 스케일 조정 (이모지 크기 일정하게)
+      (setq face-font-rescale-alist
+            '(("Noto Color Emoji" . 0.9)
+              ("Noto Emoji" . 0.9)
+              ("Symbola" . 0.9)))
 
-      (set-fontset-font t 'symbol (font-spec :family "Symbola") nil 'prepend)
-      (set-fontset-font t 'symbol (font-spec :family "Noto Sans Symbols 2") nil 'prepend)
-      (set-fontset-font t 'symbol (font-spec :family "Noto Sans Symbols") nil 'prepend))
+      ;; 이모지 문자의 너비를 2로 고정 (double-width)
+      ;; 주요 이모지 범위들
+      (dolist (range '((#x1F300 . #x1F6FF)  ; Misc Symbols and Pictographs
+                       (#x1F700 . #x1F77F)  ; Alchemical Symbols
+                       (#x1F780 . #x1F7FF)  ; Geometric Shapes Extended
+                       (#x1F900 . #x1F9FF)  ; Supplemental Symbols and Pictographs
+                       (#x1FA00 . #x1FA6F)  ; Chess Symbols
+                       (#x1FA70 . #x1FAFF)  ; Symbols and Pictographs Extended-A
+                       (#x2600 . #x26FF)    ; Miscellaneous Symbols
+                       (#x2700 . #x27BF)    ; Dingbats
+                       (#xFE00 . #xFE0F)    ; Variation Selectors
+                       (#x1F000 . #x1F02F)  ; Mahjong Tiles
+                       (#x1F030 . #x1F09F)  ; Domino Tiles
+                       (#x1F0A0 . #x1F0FF))) ; Playing Cards
+        (set-char-table-range char-width-table range 2))
+      ;; 특정 이모지들을 유니코드 코드포인트로 너비 설정
+      (dolist (codepoint '(#x1F600 #x1F603 #x1F604 #x1F601 #x1F606 #x1F605 #x1F602 #x1F923 #x1F60A #x1F607
+                           #x1F642 #x1F643 #x1F609 #x1F60C #x1F60D #x1F970 #x1F618 #x1F617 #x1F619 #x1F61A
+                           #x1F60B #x1F61B #x1F61C #x1F92A #x1F61D #x1F911 #x1F917 #x1F92D #x1F92B #x1F914
+                           #x1F525 #x1F4AF #x2728 #x2B50 #x1F31F #x1F4AB #x1F308 #x2600 #x1F31E #x1F31D
+                           #x2764 #x1F9E1 #x1F49B #x1F49A #x1F499 #x1F49C #x1F5A4 #x1F90D #x1F90E #x1F494
+                           #x2705 #x274C #x2B55 #x1F534 #x1F7E0 #x1F7E1 #x1F7E2 #x1F535 #x1F7E3 #x26AB
+                           #x26AA #x1F7E4 #x1F536 #x1F537 #x1F538 #x1F539 #x1F53A #x1F53B #x1F4A0 #x1F532))
+        (set-char-table-range char-width-table codepoint 2)))
 
-    (add-hook 'after-setting-font-hook #'my/set-emoji-symbol-font))
-  )
+    (set-fontset-font t 'symbol (font-spec :family "Symbola") nil 'prepend)
+    (set-fontset-font t 'symbol (font-spec :family "Noto Sans Symbols 2") nil 'prepend)
+    (set-fontset-font t 'symbol (font-spec :family "Noto Sans Symbols") nil 'prepend))
+
+  (add-hook 'after-setting-font-hook #'my/set-emoji-symbol-font))
 
 ;;; better default
 
@@ -297,6 +305,9 @@
 
 (add-hook 'backtrace-mode-hook 'display-line-numbers-mode)
 (add-hook 'backtrace-mode-hook 'visual-line-mode)
+
+(unless (display-graphic-p)
+  (global-visual-line-mode t))
 
 ;;;; which-key
 
@@ -1484,11 +1495,8 @@ only those in the selected frame."
   :doc "Bibliograpic functions keymap."
 
   "b" #'org-cite-insert
-
   "c" #'citar-open
-
   "d" #'citar-denote-dwim
-  ;; "e" #'citar-open-entry
   "e" #'citar-denote-open-reference-entry
 
   "a" #'citar-denote-add-reference
