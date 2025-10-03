@@ -68,7 +68,7 @@
 (package! flymake-popon :disable t)
 (package! flycheck-popup-tip :disable t) ; conflict
 (package! flycheck-plantuml :disable t)
-;; (package! flycheck :disable t)
+(package! flycheck :disable t)
 (package! lsp-mode :disable t) ; use eglot
 
 (package! nose :disable t) ; python module
@@ -76,10 +76,7 @@
 
 (package! vundo :disable t)
 (package! undo-fu-session :disable t)
-
-;; app rss
 (package! elfeed-goodies :disable t)
-
 (package! solaire-mode :disable t)
 ;; (package! ace-window :disable t)
 
@@ -91,7 +88,6 @@
 (package! evil-goggles :disable t)
 ;; (package! evil-mc :disable t)
 
-;; Disable tty module
 (package! evil-terminal-cursor-changer :disable t) ; conflict on kitty
 ;; (package! kkp :disable t) ; conflict on term-keys
 
@@ -117,12 +113,6 @@
 (package! tempel-collection)
 (package! imenu-list :recipe (:host github :repo "junghan0611/imenu-list" :branch "master"))
 
-(package! claude-code :recipe (:host github :repo "stevemolitor/claude-code.el" ))
-(unless IS-TERMUX
-  (package! monet :recipe (:host github :repo "stevemolitor/monet" )))
-
-(package! claude-code-ide :recipe (:host github :repo "manzaltu/claude-code-ide.el" ))
-
 ;; (package! org-glossary :recipe (:host github :repo "tecosaur/org-glossary" :files ("*.el" "*.org" "*.texi")))
 ;; (package! ten :recipe (:host sourcehut :repo "nobiot/ten")) ;; https://git.sr.ht/~nobiot/ten
 (package! aggressive-indent)
@@ -133,7 +123,21 @@
 
 (package! password-store-menu)
 
-;;;; ACP (Agent Client Protocol)
+(package! casual)
+
+;;;; AI AGENT
+
+;;;;; ClaudeCode
+
+;; Option 1
+(package! claude-code :recipe (:host github :repo "stevemolitor/claude-code.el" ))
+(unless IS-TERMUX
+  (package! monet :recipe (:host github :repo "stevemolitor/monet" )))
+
+;; Option 2
+(package! claude-code-ide :recipe (:host github :repo "manzaltu/claude-code-ide.el" ))
+
+;;;;; ACP (Agent Client Protocol)
 
 (package! shell-maker)
 (package! acp :recipe (:host github :repo "xenodium/acp.el"))

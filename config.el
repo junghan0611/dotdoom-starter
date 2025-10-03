@@ -122,6 +122,11 @@
 
 ;;; Input System : Hangul
 
+(setq default-input-method "korean-hangul")
+(set-language-environment "Korean")
+(set-keyboard-coding-system 'utf-8)
+(setq locale-coding-system 'utf-8)
+
 (prefer-coding-system 'utf-8)
 (set-charset-priority 'unicode)
 (set-default-coding-systems 'utf-8)
@@ -129,6 +134,7 @@
 (setq-default buffer-file-coding-system 'utf-8-unix)
 
 (set-selection-coding-system 'utf-8) ;; important
+(set-clipboard-coding-system 'utf-8)
 (setq coding-system-for-read 'utf-8)
 (setq coding-system-for-write 'utf-8)
 
@@ -137,16 +143,27 @@
 
 (setq-default line-spacing 3)
 
-;; 날짜 표시를 영어로한다. org mode에서 time stamp 날짜에 영향을 준다.
-(setq system-time-locale "C")
+(setenv "LANG" "ko_KR.UTF-8")
+(setenv "LC_ALL" "ko_KR.UTF-8")
+
+(setq system-time-locale "C") ;; 날짜 표시를 영어로한다. org mode에서 time stamp 날짜에 영향을 준다.
 
 (setq input-method-verbose-flag nil
       input-method-highlight-flag nil)
 
 (global-set-key (kbd "<S-SPC>") 'toggle-input-method)
-;; (global-set-key (kbd "<Alt_R>") 'toggle-input-method)
 (global-set-key (kbd "<Hangul>") 'toggle-input-method)
-;; (global-unset-key (kbd "S-SPC"))
+
+;; +------------+------------+
+;; | 일이삼사오 | 일이삼사오 |
+;; +------------+------------+
+;; | ABCDEFGHIJ | ABCDEFGHIJ |
+;; +------------+------------+
+;; | 1234567890 | 1234567890 |
+;; +------------+------------+
+;; | 일이삼사오 | 일이삼사오 |
+;; | abcdefghij | abcdefghij |
+;; +------------+------------+
 
 (unless (string-equal system-type "android")
 ;;;###autoload
@@ -176,28 +193,29 @@
 
       ;; 이모지 문자의 너비를 2로 고정 (double-width)
       ;; 주요 이모지 범위들
-      (dolist (range '((#x1F300 . #x1F6FF)  ; Misc Symbols and Pictographs
-                       (#x1F700 . #x1F77F)  ; Alchemical Symbols
-                       (#x1F780 . #x1F7FF)  ; Geometric Shapes Extended
-                       (#x1F900 . #x1F9FF)  ; Supplemental Symbols and Pictographs
-                       (#x1FA00 . #x1FA6F)  ; Chess Symbols
-                       (#x1FA70 . #x1FAFF)  ; Symbols and Pictographs Extended-A
-                       (#x2600 . #x26FF)    ; Miscellaneous Symbols
-                       (#x2700 . #x27BF)    ; Dingbats
-                       (#xFE00 . #xFE0F)    ; Variation Selectors
-                       (#x1F000 . #x1F02F)  ; Mahjong Tiles
-                       (#x1F030 . #x1F09F)  ; Domino Tiles
-                       (#x1F0A0 . #x1F0FF))) ; Playing Cards
-        (set-char-table-range char-width-table range 2))
+      ;; (dolist (range '((#x1F300 . #x1F6FF)  ; Misc Symbols and Pictographs
+      ;;                  (#x1F700 . #x1F77F)  ; Alchemical Symbols
+      ;;                  (#x1F780 . #x1F7FF)  ; Geometric Shapes Extended
+      ;;                  (#x1F900 . #x1F9FF)  ; Supplemental Symbols and Pictographs
+      ;;                  (#x1FA00 . #x1FA6F)  ; Chess Symbols
+      ;;                  (#x1FA70 . #x1FAFF)  ; Symbols and Pictographs Extended-A
+      ;;                  (#x2600 . #x26FF)    ; Miscellaneous Symbols
+      ;;                  (#x2700 . #x27BF)    ; Dingbats
+      ;;                  (#xFE00 . #xFE0F)    ; Variation Selectors
+      ;;                  (#x1F000 . #x1F02F)  ; Mahjong Tiles
+      ;;                  (#x1F030 . #x1F09F)  ; Domino Tiles
+      ;;                  (#x1F0A0 . #x1F0FF))) ; Playing Cards
+      ;;   (set-char-table-range char-width-table range 2))
       ;; 특정 이모지들을 유니코드 코드포인트로 너비 설정
-      (dolist (codepoint '(#x1F600 #x1F603 #x1F604 #x1F601 #x1F606 #x1F605 #x1F602 #x1F923 #x1F60A #x1F607
-                           #x1F642 #x1F643 #x1F609 #x1F60C #x1F60D #x1F970 #x1F618 #x1F617 #x1F619 #x1F61A
-                           #x1F60B #x1F61B #x1F61C #x1F92A #x1F61D #x1F911 #x1F917 #x1F92D #x1F92B #x1F914
-                           #x1F525 #x1F4AF #x2728 #x2B50 #x1F31F #x1F4AB #x1F308 #x2600 #x1F31E #x1F31D
-                           #x2764 #x1F9E1 #x1F49B #x1F49A #x1F499 #x1F49C #x1F5A4 #x1F90D #x1F90E #x1F494
-                           #x2705 #x274C #x2B55 #x1F534 #x1F7E0 #x1F7E1 #x1F7E2 #x1F535 #x1F7E3 #x26AB
-                           #x26AA #x1F7E4 #x1F536 #x1F537 #x1F538 #x1F539 #x1F53A #x1F53B #x1F4A0 #x1F532))
-        (set-char-table-range char-width-table codepoint 2)))
+      ;; (dolist (codepoint '(#x1F600 #x1F603 #x1F604 #x1F601 #x1F606 #x1F605 #x1F602 #x1F923 #x1F60A #x1F607
+      ;;                      #x1F642 #x1F643 #x1F609 #x1F60C #x1F60D #x1F970 #x1F618 #x1F617 #x1F619 #x1F61A
+      ;;                      #x1F60B #x1F61B #x1F61C #x1F92A #x1F61D #x1F911 #x1F917 #x1F92D #x1F92B #x1F914
+      ;;                      #x1F525 #x1F4AF #x2728 #x2B50 #x1F31F #x1F4AB #x1F308 #x2600 #x1F31E #x1F31D
+      ;;                      #x2764 #x1F9E1 #x1F49B #x1F49A #x1F499 #x1F49C #x1F5A4 #x1F90D #x1F90E #x1F494
+      ;;                      #x2705 #x274C #x2B55 #x1F534 #x1F7E0 #x1F7E1 #x1F7E2 #x1F535 #x1F7E3 #x26AB
+      ;;                      #x26AA #x1F7E4 #x1F536 #x1F537 #x1F538 #x1F539 #x1F53A #x1F53B #x1F4A0 #x1F532))
+      ;;   (set-char-table-range char-width-table codepoint 2))
+      )
 
     (set-fontset-font t 'symbol (font-spec :family "Symbola") nil 'prepend)
     (set-fontset-font t 'symbol (font-spec :family "Noto Sans Symbols 2") nil 'prepend)
@@ -1616,26 +1634,20 @@ only those in the selected frame."
 ;;;; vterm-mode-map
 
 (after! vterm
-  ;; Compile Vterm without asking.
-  (setq vterm-always-compile-module t)
+  (setq vterm-always-compile-module t) ;; Compile Vterm without asking.
   (map! :map vterm-mode-map "M-y" #'vterm-yank-pop))
 
 ;;;; 'w' window
 
-
 (map! :leader
       :prefix "w"
       "1" nil "2" nil "3" nil "4" nil "5" nil "6" nil "7" nil "8" nil "9" nil "0" nil "-" nil "b" nil "d" nil "r" nil "R" nil "m" nil "<" nil ">" nil "_" nil "|" nil
-      "C-=" nil "C-_" nil "C-b" nil "C-c" nil "C-f" nil "C-h" nil "C-j" nil "C-k" nil "C-l" nil "C-w" nil "C-n" nil "C-o" nil "C-p" nil "C-q" nil "C-r" nil "C-s" nil "C-t" nil "C-u" nil "C-v" nil "C-x" nil "C-S-h" nil "C-S-j" nil "C-S-k" nil "C-S-l" nil "C-S-r" nil "C-S-s" nil "C-S-w" nil "C-<down>" nil "C-<left>" nil "C-<right>" nil "C-<up>" nil
+      "C-=" nil "C-_" nil "C-b" nil "C-c" nil "C-f" nil "C-h" nil "C-j" nil "C-k" nil "C-l" nil "C-w" nil "C-n" nil "C-o" nil "C-p" nil "C-q" nil "C-r" nil "C-s" nil
+      "C-t" nil "C-u" nil "C-v" nil "C-x" nil "C-S-h" nil "C-S-j" nil "C-S-k" nil "C-S-l" nil "C-S-r" nil "C-S-s" nil "C-S-w" nil "C-<down>" nil "C-<left>" nil "C-<right>" nil "C-<up>" nil
       "TAB" #'evil-window-prev
-      "." #'window-transient
-      "c" #'window-cleanup+
-      "g" #'golden-ratio
-
-      ;; "D" #'delete-window ; block delete workspace
-      "M" #'ace-swap-window
-      ;; "W" #'ace-window
+      "d" #'delete-window
       "m" #'toggle-maximize-buffer
+      "M" #'ace-swap-window
       "=" #'balance-windows-area
       :desc "window-vsplit" "/" #'evil-window-vsplit
       ;; :desc "window-vsplit" "v" #'evil-window-vsplit
@@ -1645,11 +1657,7 @@ only those in the selected frame."
 
 ;;;; mode-map
 
-(map! :map cdlatex-mode-map
-      :i "TAB" #'cdlatex-tab)
-
 (map! (:map org-mode-map
-       "<f12>" #'org-transclusion-mode
        :ni "C-c H" #'org-insert-heading
        :ni "C-c S" #'org-insert-subheading
        :i "C-n" #'next-line
@@ -1684,36 +1692,37 @@ only those in the selected frame."
        :n "zu" #'outline-up-heading)
       )
 
-;; BUG Reset Here! modules/config/default/+emacs-bindings.el
-(map!
- (:after smartparens
-  :map smartparens-mode-map
+;;;; Smartparens
 
-  ;; Doom's Default - /modules/config/default/+emacs-bindings.el
-  "C-M-a"           #'sp-beginning-of-sexp
-  "C-M-e"           #'sp-end-of-sexp
-  "C-M-f"           #'sp-forward-sexp
-  "C-M-b"           #'sp-backward-sexp
-  "C-M-n"           #'sp-next-sexp
-  "C-M-p"           #'sp-previous-sexp
-  "C-M-u"           #'sp-up-sexp
-  "C-M-d"           #'sp-down-sexp
-  "C-M-k"           #'sp-kill-sexp
-  "C-M-t"           #'sp-transpose-sexp
-  "C-M-<backspace>" #'sp-splice-sexp
+;; (map!
+;;  (:after smartparens
+;;   :map smartparens-mode-map
 
-  "C-<right>" #'sp-forward-slurp-sexp
-  "C-<left>" #'sp-forward-barf-sexp
-  "M-<left>" #'sp-backward-slurp-sexp
-  "M-<right>" #'sp-backward-barf-sexp
+;;   ;; Doom's Default - /modules/config/default/+emacs-bindings.el
+;;   "C-M-a"           #'sp-beginning-of-sexp
+;;   "C-M-e"           #'sp-end-of-sexp
+;;   "C-M-f"           #'sp-forward-sexp
+;;   "C-M-b"           #'sp-backward-sexp
+;;   "C-M-n"           #'sp-next-sexp
+;;   "C-M-p"           #'sp-previous-sexp
+;;   "C-M-u"           #'sp-up-sexp
+;;   "C-M-d"           #'sp-down-sexp
+;;   "C-M-k"           #'sp-kill-sexp
+;;   "C-M-t"           #'sp-transpose-sexp
+;;   "C-M-<backspace>" #'sp-splice-sexp
 
-  "M-<up>"  #'sp-splice-sexp-killing-backward
-  "M-<down>" #'sp-splice-sexp-killing-forward
+;;   "C-<right>" #'sp-forward-slurp-sexp
+;;   "C-<left>" #'sp-forward-barf-sexp
+;;   "M-<left>" #'sp-backward-slurp-sexp
+;;   "M-<right>" #'sp-backward-barf-sexp
 
-  "C-c (" #'sp-wrap-round
-  ;; "C-c [" #'sp-wrap-square ; conflict org-mode-map
-  ;; "C-c {" #'sp-wrap-curly
-  ))
+;;   "M-<up>"  #'sp-splice-sexp-killing-backward
+;;   "M-<down>" #'sp-splice-sexp-killing-forward
+
+;;   "C-c (" #'sp-wrap-round
+;;   ;; "C-c [" #'sp-wrap-square ; conflict org-mode-map
+;;   ;; "C-c {" #'sp-wrap-curly
+;;   ))
 
 ;;; Custom EVIL Keys
 

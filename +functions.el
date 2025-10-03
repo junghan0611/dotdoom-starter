@@ -112,7 +112,9 @@ These annotations are skipped for remote paths."
 
   (keymap-set vertico-map "M-," #'vertico-sort-modified))
 
-;;; spacemacs/window-layout-toggle
+;;; Window and Layout
+
+;;;; spacemacs/window-layout-toggle
 
 ;;;###autoload
 (defun spacemacs/window-layout-toggle ()
@@ -132,8 +134,6 @@ These annotations are skipped for remote paths."
         ;; need to call `select-window'
         (window-state-put second-window-state (funcall splitter)))
     (error "Can't toggle window layout when the number of windows isn't two.")))
-
-
 
 ;;; my/open/workspaces
 

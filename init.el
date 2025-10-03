@@ -44,7 +44,7 @@
 
        :ui
        doom              ; what makes DOOM look the way it does
-       ;; doom-dashboard    ; a nifty splash screen for Emacs
+       doom-dashboard    ; a nifty splash screen for Emacs
        ;; doom-quit         ; DOOM quit-message prompts when you quit Emacs
        hl-todo           ; highlight TODO/FIXME/NOTE/DEPRECATED/HACK/REVIEW/XXX/BUG
        ;; indent-guides     ; highlighted indent columns
@@ -71,8 +71,8 @@
        multiple-cursors  ; editing in many places at once
        rotate-text       ; cycle region at point between text candidates
        snippets          ; my elves. They type so I don't have to
-       ;;word-wrap         ; soft wrapping with language-aware indent
        (whitespace +trim)  ; a butler for your whitespace
+       ;;word-wrap         ; soft wrapping with language-aware indent
 
        :emacs
        dired             ; making dired pretty [functional]
@@ -84,8 +84,6 @@
 
        :term
        eshell            ; the elisp shell that works everywhere
-       ;;shell             ; simple shell REPL for Emacs
-       ;;term              ; basic terminal emulator for Emacs
        vterm             ; the best terminal emulation in Emacs
 
        :checkers
@@ -102,11 +100,11 @@
        (eval +overlay)     ; run code, run (also, repls)
        lookup
        llm                 ; when I said you needed friends, I didn't mean...
-       ;; (lsp +eglot)
+       (lsp +eglot)
 
        magit ; +forge a git porcelain for Emacs
 
-       ;; make              ; run make tasks from Emacs
+       make              ; run make tasks from Emacs
        (pass +auth)              ; password manager for nerds
        ;; (:unless IS-TERMUX (pdf)) ; pdf enhancements
        ;;terraform         ; infrastructure as code
@@ -149,13 +147,13 @@
        (cc +tree-sitter)
 
        :email
-       ;;(mu4e +org +gmail)
        (notmuch +org)
+       ;;(mu4e +org +gmail)
 
        :app
        calendar
-       ;; emms
        (rss +org)        ; emacs as an RSS reader
+       ;; emms
 
        :config
        ;; literate ; use manually
