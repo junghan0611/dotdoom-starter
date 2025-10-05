@@ -100,9 +100,12 @@
 (package! denote-sequence)
 (package! denote-markdown)
 
-(package! denote-explore)
+(package! denote-explore :recipe (:host github :repo "pprevos/denote-explore"))
+
 (package! denote-search)
+(package! denote-regexp)
 (package! citar-denote)
+
 ;; (package! consult-notes)
 
 (unpin! doom-themes)

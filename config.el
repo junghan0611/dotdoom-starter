@@ -102,6 +102,35 @@
 ;; ;; do both in `lisp-interaction-mode'.
 ;; (setq doom-scratch-initial-major-mode 'emacs-lisp-mode)
 
+;;;; Dashboard - Terminal Optimized
+
+(setq +doom-dashboard-ascii-banner-fn nil)
+
+;; Dashboard 위젯 구성
+(setq +doom-dashboard-functions
+      '(doom-dashboard-widget-banner
+        doom-dashboard-widget-shortmenu
+        my/dashboard-widget-fortune ;; fortune
+        doom-dashboard-widget-loaded
+        doom-dashboard-widget-footer))
+
+;; Fortune 위젯: Kevin Kelly 명언 또는 fortune 명령어 출력
+(defun my/dashboard-widget-fortune ()
+  "Display fortune quote or Kevin Kelly's wisdom."
+  (let* ((quotestring
+          (if (executable-find "fortune")
+              ;; fortune 명령어가 있으면 사용 (90% advice, 10% 랜덤)
+              (string-join
+               (mapcar
+                (lambda (l) (concat "\n " (string-fill l 72)))
+                (string-lines
+                 (shell-command-to-string "fortune -c 90% advice 10% ."))))
+            ;; fortune 없으면 Kevin Kelly 기본 명언
+            "\n The only way to fight against getting old is to remain astonished.\n                                                      — Kevin Kelly")))
+    (+doom-dashboard--center
+     (- +doom-dashboard--width 2)
+     (insert quotestring "\n"))))
+
 ;;; Leader key
 
 ;; Over-ride or add to Doom Emacs default key bindings
@@ -193,28 +222,28 @@
 
       ;; 이모지 문자의 너비를 2로 고정 (double-width)
       ;; 주요 이모지 범위들
-      ;; (dolist (range '((#x1F300 . #x1F6FF)  ; Misc Symbols and Pictographs
-      ;;                  (#x1F700 . #x1F77F)  ; Alchemical Symbols
-      ;;                  (#x1F780 . #x1F7FF)  ; Geometric Shapes Extended
-      ;;                  (#x1F900 . #x1F9FF)  ; Supplemental Symbols and Pictographs
-      ;;                  (#x1FA00 . #x1FA6F)  ; Chess Symbols
-      ;;                  (#x1FA70 . #x1FAFF)  ; Symbols and Pictographs Extended-A
-      ;;                  (#x2600 . #x26FF)    ; Miscellaneous Symbols
-      ;;                  (#x2700 . #x27BF)    ; Dingbats
-      ;;                  (#xFE00 . #xFE0F)    ; Variation Selectors
-      ;;                  (#x1F000 . #x1F02F)  ; Mahjong Tiles
-      ;;                  (#x1F030 . #x1F09F)  ; Domino Tiles
-      ;;                  (#x1F0A0 . #x1F0FF))) ; Playing Cards
-      ;;   (set-char-table-range char-width-table range 2))
+      (dolist (range '((#x1F300 . #x1F6FF)  ; Misc Symbols and Pictographs
+                       (#x1F700 . #x1F77F)  ; Alchemical Symbols
+                       (#x1F780 . #x1F7FF)  ; Geometric Shapes Extended
+                       (#x1F900 . #x1F9FF)  ; Supplemental Symbols and Pictographs
+                       (#x1FA00 . #x1FA6F)  ; Chess Symbols
+                       (#x1FA70 . #x1FAFF)  ; Symbols and Pictographs Extended-A
+                       (#x2600 . #x26FF)    ; Miscellaneous Symbols
+                       (#x2700 . #x27BF)    ; Dingbats
+                       (#xFE00 . #xFE0F)    ; Variation Selectors
+                       (#x1F000 . #x1F02F)  ; Mahjong Tiles
+                       (#x1F030 . #x1F09F)  ; Domino Tiles
+                       (#x1F0A0 . #x1F0FF))) ; Playing Cards
+        (set-char-table-range char-width-table range 2))
       ;; 특정 이모지들을 유니코드 코드포인트로 너비 설정
-      ;; (dolist (codepoint '(#x1F600 #x1F603 #x1F604 #x1F601 #x1F606 #x1F605 #x1F602 #x1F923 #x1F60A #x1F607
-      ;;                      #x1F642 #x1F643 #x1F609 #x1F60C #x1F60D #x1F970 #x1F618 #x1F617 #x1F619 #x1F61A
-      ;;                      #x1F60B #x1F61B #x1F61C #x1F92A #x1F61D #x1F911 #x1F917 #x1F92D #x1F92B #x1F914
-      ;;                      #x1F525 #x1F4AF #x2728 #x2B50 #x1F31F #x1F4AB #x1F308 #x2600 #x1F31E #x1F31D
-      ;;                      #x2764 #x1F9E1 #x1F49B #x1F49A #x1F499 #x1F49C #x1F5A4 #x1F90D #x1F90E #x1F494
-      ;;                      #x2705 #x274C #x2B55 #x1F534 #x1F7E0 #x1F7E1 #x1F7E2 #x1F535 #x1F7E3 #x26AB
-      ;;                      #x26AA #x1F7E4 #x1F536 #x1F537 #x1F538 #x1F539 #x1F53A #x1F53B #x1F4A0 #x1F532))
-      ;;   (set-char-table-range char-width-table codepoint 2))
+      (dolist (codepoint '(#x1F600 #x1F603 #x1F604 #x1F601 #x1F606 #x1F605 #x1F602 #x1F923 #x1F60A #x1F607
+                           #x1F642 #x1F643 #x1F609 #x1F60C #x1F60D #x1F970 #x1F618 #x1F617 #x1F619 #x1F61A
+                           #x1F60B #x1F61B #x1F61C #x1F92A #x1F61D #x1F911 #x1F917 #x1F92D #x1F92B #x1F914
+                           #x1F525 #x1F4AF #x2728 #x2B50 #x1F31F #x1F4AB #x1F308 #x2600 #x1F31E #x1F31D
+                           #x2764 #x1F9E1 #x1F49B #x1F49A #x1F499 #x1F49C #x1F5A4 #x1F90D #x1F90E #x1F494
+                           #x2705 #x274C #x2B55 #x1F534 #x1F7E0 #x1F7E1 #x1F7E2 #x1F535 #x1F7E3 #x26AB
+                           #x26AA #x1F7E4 #x1F536 #x1F537 #x1F538 #x1F539 #x1F53A #x1F53B #x1F4A0 #x1F532))
+        (set-char-table-range char-width-table codepoint 2))
       )
 
     (set-fontset-font t 'symbol (font-spec :family "Symbola") nil 'prepend)
@@ -247,7 +276,7 @@
 ;; Prefer ripgrep, then ugrep, and fall back to regular grep.
 (setq xref-search-program
       (cond ((or (executable-find "ripgrep") (executable-find "rg")) 'ripgrep)
-       ((executable-find "ugrep") 'ugrep) (t 'grep)))
+            ((executable-find "ugrep") 'ugrep) (t 'grep)))
 
 ;;; overide doomemacs
 
@@ -324,9 +353,6 @@
 (add-hook 'backtrace-mode-hook 'display-line-numbers-mode)
 (add-hook 'backtrace-mode-hook 'visual-line-mode)
 
-(unless (display-graphic-p)
-  (global-visual-line-mode t))
-
 ;;;; which-key
 
 (after! which-key
@@ -334,10 +360,10 @@
    which-key-max-description-length 29 ; doom 27, spacemacs 36
    which-key-idle-delay 0.4
    which-key-idle-secondary-delay 0.01
-  ;;  which-key-ellipsis ".."
-  ;;  which-key-allow-multiple-replacements nil
-  ;;  which-key-use-C-h-commands t) ; paging key maps
-  ))
+   ;;  which-key-ellipsis ".."
+   ;;  which-key-allow-multiple-replacements nil
+   ;;  which-key-use-C-h-commands t) ; paging key maps
+   ))
 
 ;;;; popup-rule
 
@@ -1212,6 +1238,8 @@ only those in the selected frame."
             (lambda ()
               ;; Only increase scrollback for vterm backend
               (when (eq claude-code-terminal-backend 'vterm)
+                (visual-line-mode -1)
+                (toggle-truncate-lines 1)
                 ;; (setq-local x-gtk-use-native-input t)
                 (define-key claude-code-command-map (kbd "M-RET") 'claude-code--vterm-send-alt-return)
                 (define-key vterm-mode-map (kbd "M-RET") 'claude-code--vterm-send-alt-return)
