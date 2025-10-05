@@ -1473,14 +1473,7 @@ only those in the selected frame."
   :config
   (setq clipetty-assume-nested-mux nil))
 
-;; (use-package! term-keys
-;;   :unless window-system
-;;   :config
-;;   (unless (display-graphic-p) ; terminal
-;;     (term-keys-mode t)))
-
-;; README /doomemacs-junghan0611/lisp/doom-ui.el
-;; Terminal Mode
+;;;; Terminal Mode
 (unless (display-graphic-p) ; terminal
   (setq visible-cursor nil)
   (xterm-mouse-mode -1) ; important
@@ -1488,6 +1481,12 @@ only those in the selected frame."
   (setq hscroll-step 0)
   (show-paren-mode -1)
   )
+
+;;;; git / magit
+
+;; Enforce git commit conventions.
+;; See: http://chris.beams.io/posts/git-commit
+(setq git-commit-summary-max-length 72) ; defaults to Github's max commit message length
 
 ;;; tramp
 
