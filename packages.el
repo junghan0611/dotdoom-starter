@@ -100,33 +100,35 @@
 (package! denote-sequence)
 (package! denote-markdown)
 
-(package! denote-explore :recipe (:host github :repo "pprevos/denote-explore"))
-
 (package! denote-search)
 (package! denote-regexp)
 (package! citar-denote)
 
-;; (package! consult-notes)
+(package! consult-notes)
+
+(package! denote-explore :recipe (:host github :repo "pprevos/denote-explore"))
+
+;;;; UI
 
 (unpin! doom-themes)
 (package! doom-themes :recipe (:host github :repo "junghan0611/doom-themes" :branch "ko"))
+(package! dired-preview)
+
+;;;; Editing
+
 (package! outli :recipe (:host github :repo "jdtsmith/outli" :files ("*.el")))
 
 (package! tempel)
 (package! tempel-collection)
 (package! imenu-list :recipe (:host github :repo "junghan0611/imenu-list" :branch "master"))
-
-;; (package! org-glossary :recipe (:host github :repo "tecosaur/org-glossary" :files ("*.el" "*.org" "*.texi")))
-;; (package! ten :recipe (:host sourcehut :repo "nobiot/ten")) ;; https://git.sr.ht/~nobiot/ten
 (package! aggressive-indent)
-(package! dired-preview)
-(package! jinx) ; spell checker
 
 (package! clipetty) ; osc52 support
 
-(package! password-store-menu)
+;;;; Transient Menu
 
 (package! casual)
+(package! password-store-menu)
 
 ;;;; AI AGENT
 
@@ -145,3 +147,10 @@
 (package! shell-maker)
 (package! acp :recipe (:host github :repo "xenodium/acp.el"))
 (package! agent-shell :recipe (:host github :repo "xenodium/agent-shell"))
+
+;;; DEPRECATED
+
+;; (package! org-glossary :recipe (:host github :repo "tecosaur/org-glossary" :files ("*.el" "*.org" "*.texi")))
+;; (package! ten :recipe (:host sourcehut :repo "nobiot/ten")) ;; https://git.sr.ht/~nobiot/ten
+
+;;; END

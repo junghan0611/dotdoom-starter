@@ -88,13 +88,13 @@
 
        :checkers
        (syntax +flymake) ; tasing you for every semicolon you forget
-       ;; spell +flyspell ; +hunspell - tasing you for misspelling mispelling
+       ;; (spell +flyspell) ; +hunspell - tasing you for misspelling mispelling
        ;; grammar           ; tasing grammar mistake every you make
 
        :tools
        biblio
-       ;; debugger ; FIXME stepping through code, to help you add bugs
        direnv
+       ;; debugger ; FIXME stepping through code, to help you add bugs
 
        (docker +tree-sitter)
        (eval +overlay)     ; run code, run (also, repls)
@@ -125,12 +125,12 @@
        (markdown +tree-sitter)          ; writing docs for people to ignore
        (org                         ; organize your plain life in plain text
         +hugo                     ; use Emacs for hugo blogging
-        ;; +jupyter                    ; ipython/jupyter support for babel
         +pandoc                     ; export-with-pandoc support
         +gnuplot                    ; who doesn't like pretty pictures
         +present                    ; using org-mode for presentations
         +contacts
         +journal
+        ;; +jupyter                    ; ipython/jupyter support for babel
         ;; +pretty
         ;; +noter                      ; enhanced PDF notetaking
         ;; +pomodoro                 ; be fruitful with the tomato technique

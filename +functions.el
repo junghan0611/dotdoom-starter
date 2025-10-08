@@ -160,6 +160,71 @@ These annotations are skipped for remote paths."
 ;;   (when (display-graphic-p) ; gui
 ;;     (add-hook 'doom-first-input-hook #'my/open-workspaces)))
 
+;;;; py3status integration
+;; Based on ElleNajit's org-clock integration for i3status
+;; https://github.com/ElleNajt/emacs-config
+
+(defun junghan/org-text-element->string (elt)
+  "Convert org text element to string."
+  (cond
+   ((stringp elt) elt)
+   ((and (consp elt)
+         (symbolp (car elt)))
+    (-> elt (caddr) (junghan/org-text-element->string) (s-trim) (concat " ")))))
+
+(defun junghan/org-element-title (elt)
+  "Get title from org element."
+  (let ((title (org-element-property :title elt)))
+    (cond
+     ((stringp title) title)
+     ((listp title)
+      (->> title
+           (mapcar #'junghan/org-text-element->string)
+           (s-join "")
+           (s-trim))))))
+
+(defun junghan/minutes->hours:minutes (minutes)
+  "Convert MINUTES to H:MM format."
+  (format "%d:%02d"
+          (floor (/ minutes 60))
+          (mod minutes 60)))
+
+(defmacro junghan/at-org-clocked-in-item (&rest body)
+  "Execute BODY at currently clocked-in org item."
+  `(when (org-clocking-p)
+     (let ((m org-clock-marker))
+       (with-current-buffer (marker-buffer m)
+         (save-mark-and-excursion
+           (goto-char m)
+           (org-back-to-heading t)
+           ,@body)))))
+
+(defun junghan/org-element-clocked-in-task ()
+  "Get org element of currently clocked-in task."
+  (junghan/at-org-clocked-in-item
+   (org-element-at-point)))
+
+(defun junghan/org-current-clocked-in-task-message ()
+  "Return current clocked-in task with time. Format: (Task) [H:MM]"
+  (interactive)
+  (if (org-clocking-p)
+      (format "(%s) [%s]"
+              (->> (junghan/org-element-clocked-in-task)
+                   (junghan/org-element-title)
+                   (substring-no-properties)
+                   (s-trim))
+              (junghan/minutes->hours:minutes
+               (org-clock-get-clocked-time)))
+    ""))
+
+(defun junghan/update-org-clocked-in-task-file ()
+  "Write current task to file for py3status."
+  (interactive)
+  (let ((current-task (junghan/org-current-clocked-in-task-message))
+        (task-file (expand-file-name "current-task" doom-emacs-dir)))
+    (with-temp-file task-file
+      (insert current-task))))
+
 ;;; provide
 
 (provide '+functions)
