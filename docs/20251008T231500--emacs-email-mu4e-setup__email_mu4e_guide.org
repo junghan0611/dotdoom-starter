@@ -1,0 +1,171 @@
+#+title: Emacs Email mu4e Setup
+#+date: [2025-10-08 Tue 23:15]
+#+filetags: :email:mu4e:mbsync:doom:
+#+identifier: 20251008T231500
+
+* mu4e 설정 과정
+
+** 개요
+
+Emacs에서 mu4e를 사용하여 Gmail을 읽는 설정 과정입니다.
+
+** 필요한 것
+
+- NixOS with home-manager
+- Gmail App Password
+- pass (password-store)
+- Doom Emacs
+
+** 설정 단계
+
+*** 1. NixOS 설정 (modules/email.nix)
+
+=modules/email.nix= 파일 생성:
+
+#+begin_src nix
+# Email configuration (mu4e + mbsync)
+{ config, lib, pkgs, ... }:
+
+{
+  # mbsync configuration for Gmail
+  home.file.".mbsyncrc".text = ''
+    # ACCOUNT INFORMATION
+    IMAPAccount gmail
+    Host imap.gmail.com
+    User junghanacs@gmail.com
+    PassCmd "pass show personal/email/junghanacs-gmail/app-password"
+    AuthMechs LOGIN
+    SSLType IMAPS
+    CertificateFile ${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt
+
+    # REMOTE STORAGE
+    IMAPStore gmail-remote
+    Account gmail
+
+    # LOCAL STORAGE
+    MaildirStore gmail-local
+    Path ~/Maildir/
+    Inbox ~/Maildir/INBOX
+
+    # CHANNELS
+    Channel gmail-inbox
+    Far :gmail-remote:
+    Near :gmail-local:
+    Patterns "INBOX"
+    Create Both
+    Expunge Both
+    SyncState *
+    MaxMessages 1000
+    MaxSize 200k
+    ExpireUnread yes
+
+    # ... (trash, sent 채널 생략)
+  '';
+
+  # Create Maildir directories
+  home.activation.createMailDirs = lib.hm.dag.entryAfter ["writeBoundary"] ''
+    $DRY_RUN_CMD mkdir -p ~/Maildir/{INBOX,cur,new,tmp}
+  '';
+}
+#+end_src
+
+*** 2. Gmail App Password 저장
+
+pass에 Gmail App Password 저장:
+
+#+begin_src bash
+pass insert personal/email/junghanacs-gmail/app-password
+# Password 입력: ***REMOVED***
+#+end_src
+
+*** 3. NixOS 적용
+
+#+begin_src bash
+sudo nixos-rebuild switch --flake .#nuc
+#+end_src
+
+*** 4. 메일 동기화
+
+mbsync로 Gmail 동기화:
+
+#+begin_src bash
+mbsync -a
+#+end_src
+
+결과:
+- ~/Maildir/INBOX: 208개 새 메일
+- 총 1,004개 메시지
+- 42MB
+
+*** 5. mu 데이터베이스 초기화
+
+mu 초기화 및 인덱싱:
+
+#+begin_src bash
+# 초기화
+mu init --maildir=~/Maildir --my-address=junghanacs@gmail.com
+
+# 인덱싱
+mu index
+#+end_src
+
+결과:
+- 데이터베이스: ~/.cache/mu/xapian
+- 1,004개 메시지 인덱싱 완료
+
+*** 6. Emacs mu4e 실행
+
+Emacs에서:
+
+#+begin_example
+SPC o m    (mu4e 열기)
+u          (메일 업데이트)
+#+end_example
+
+** 문제 해결
+
+*** 에러: Mu server process ended with exit code 1
+
+*원인:* mu 데이터베이스가 초기화되지 않음
+
+*해결:*
+#+begin_src bash
+mu init --maildir=~/Maildir --my-address=junghanacs@gmail.com
+mu index
+#+end_src
+
+** 자동화 (선택)
+
+*** systemd timer로 자동 동기화
+
+#+begin_src nix
+# modules/email.nix에 추가
+systemd.user.services.mbsync = {
+  Unit.Description = "Mailbox synchronization";
+  Service = {
+    Type = "oneshot";
+    ExecStart = "${pkgs.isync}/bin/mbsync -a";
+  };
+};
+
+systemd.user.timers.mbsync = {
+  Unit.Description = "Mailbox synchronization timer";
+  Timer = {
+    OnBootSec = "5m";
+    OnUnitActiveSec = "15m";
+  };
+  Install.WantedBy = [ "timers.target" ];
+};
+#+end_src
+
+** 참고
+
+- mbsync 설정: ~/.mbsyncrc
+- Maildir: ~/Maildir/
+- mu 데이터베이스: ~/.cache/mu/xapian
+- pass 경로: personal/email/junghanacs-gmail/app-password
+
+** 관련 링크
+
+- [[https://github.com/junghan0611/nixos-config][nixos-config]]
+- [[https://github.com/junghan0611/dotdoom-starter][dotdoom-starter]]
