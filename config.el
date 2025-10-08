@@ -804,15 +804,6 @@ only those in the selected frame."
          (("Effort_ALL" . "0:15 0:30 0:45 1:00 2:00 3:00 4:00 5:00 6:00 8:00")
           ("STYLE_ALL" . "habit"))))
 
-  ;; py3status integration (ElleNajit)
-  ;; Auto-update current task file for i3status bar
-  (add-hook 'org-clock-in-hook #'junghan/update-org-clocked-in-task-file)
-  (add-hook 'org-clock-out-hook #'junghan/update-org-clocked-in-task-file)
-  (add-hook 'org-after-todo-state-change-hook #'junghan/update-org-clocked-in-task-file)
-
-  ;; Update every minute
-  (run-at-time "1 min" 60 #'junghan/update-org-clocked-in-task-file)
-
 ;;;; org-tag and category
 
   ;; (setq org-auto-align-tags nil) ; default t, use doom's custom
@@ -1559,5 +1550,15 @@ only those in the selected frame."
 ;;; Load "+keybindings"
 
 (load! "+keybindings")
+
+;;; py3status integration (ElleNajit)
+
+(with-eval-after-load 'org-clock
+  (add-hook 'org-clock-in-hook #'junghan/update-org-clocked-in-task-file)
+  (add-hook 'org-clock-out-hook #'junghan/update-org-clocked-in-task-file)
+  (add-hook 'org-after-todo-state-change-hook #'junghan/update-org-clocked-in-task-file)
+
+  ;; Update every minute
+  (run-at-time "1 min" 60 #'junghan/update-org-clocked-in-task-file))
 
 ;;; END

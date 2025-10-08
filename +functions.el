@@ -160,7 +160,7 @@ These annotations are skipped for remote paths."
 ;;   (when (display-graphic-p) ; gui
 ;;     (add-hook 'doom-first-input-hook #'my/open-workspaces)))
 
-;;;; py3status integration
+;;; py3status integration
 ;; Based on ElleNajit's org-clock integration for i3status
 ;; https://github.com/ElleNajt/emacs-config
 
