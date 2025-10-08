@@ -1,21 +1,21 @@
-# DOTDOOM-STARTER 경량화 리팩토링 계획
+* DOTDOOM-STARTER 경량화 리팩토링 계획
+*작성일*: 2025-09-06 *목표*: Doom Emacs 기본에 충실한 초경량 터미널 중심
+설정
 
-**작성일**: 2025-09-06
-**목표**: Doom Emacs 기본에 충실한 초경량 터미널 중심 설정
+** 핵심 철학
 
-## 핵심 철학
-
-> "개발은 VSCode/IntelliJ, 편집은 Emacs"
+#+begin_quote
+"개발은 VSCode/IntelliJ, 편집은 Emacs"
+#+end_quote
 
 - Tree-sitter 빌트인 활용 (Emacs 29+)
 - LSP 제거, Syntax highlighting만
 - 터미널 모드 최적화
 - 문서 작성과 설정 파일 편집에 집중
 
-## 1. 제거할 모듈 (init.el)
-
-### :tools 섹션
-```elisp
+** 1. 제거할 모듈 (init.el)
+*** :tools 섹션
+#+begin_src elisp
 ;; 제거
 - debugger          ; 디버거 불필요
 - editorconfig      ; 프로젝트별 설정 불필요
@@ -23,10 +23,10 @@
 - lookup            ; 문서 조회 불필요
 - lsp               ; Language Server Protocol 제거
 - pass              ; 패스워드 관리 불필요
-```
+#+end_src
 
-### :lang 섹션
-```elisp
+*** :lang 섹션
+#+begin_src elisp
 ;; 제거 (모든 프로그래밍 언어)
 - cc
 - clojure  
@@ -49,12 +49,11 @@
 + (yaml +tree-sitter)
 + sh
 + dockerfile
-```
+#+end_src
 
-## 2. Tree-sitter 빌트인 설정
-
-### 언어 소스 설정
-```elisp
+** 2. Tree-sitter 빌트인 설정
+*** 언어 소스 설정
+#+begin_src elisp
 ;; config.org에 추가
 (setq treesit-language-source-alist
   '((bash "https://github.com/tree-sitter/tree-sitter-bash")
@@ -71,17 +70,16 @@
     (yaml-mode . yaml-ts-mode)
     (toml-mode . toml-ts-mode)
     (dockerfile-mode . dockerfile-ts-mode)))
-```
+#+end_src
 
-### Tree-sitter 문법 설치
-```bash
+*** Tree-sitter 문법 설치
+#+begin_src sh
 # 필요한 문법 자동 설치
 M-x treesit-install-language-grammar
-```
+#+end_src
 
-## 3. 최종 모듈 구성
-
-```elisp
+** 3. 최종 모듈 구성
+#+begin_src elisp
 (doom! :input
        :completion
        (corfu +orderless)  ; 가벼운 자동완성
@@ -132,12 +130,11 @@ M-x treesit-install-language-grammar
 
        :config
        (default +bindings +smartparens))
-```
+#+end_src
 
-## 4. 패키지 정리 (packages.el)
-
-### 제거할 패키지
-```elisp
+** 4. 패키지 정리 (packages.el)
+*** 제거할 패키지
+#+begin_src elisp
 ;; 개발 도구
 - conjure, cider, sly     ; REPL 도구
 - copilot, tabnine       ; AI 자동완성
@@ -151,10 +148,10 @@ M-x treesit-install-language-grammar
 - rust-mode
 - go-mode
 - js2-mode
-```
+#+end_src
 
-### 유지/추가 패키지
-```elisp
+*** 유지/추가 패키지
+#+begin_src elisp
 ;; 문서 도구
 + org-roam           ; 지식 관리
 + org-modern        ; 모던 Org UI
@@ -171,12 +168,11 @@ M-x treesit-install-language-grammar
 + vterm          ; 터미널
 + magit         ; Git
 + forge        ; GitHub/GitLab
-```
+#+end_src
 
-## 5. 성능 최적화
-
-### 시작 최적화
-```elisp
+** 5. 성능 최적화
+*** 시작 최적화
+#+begin_src elisp
 ;; early-init.el
 (setq gc-cons-threshold most-positive-fixnum
       gc-cons-percentage 0.6)
@@ -186,10 +182,10 @@ M-x treesit-install-language-grammar
 
 ;; Tree-sitter 우선
 (setq treesit-font-lock-level 4)
-```
+#+end_src
 
-### 터미널 모드 최적화
-```elisp
+*** 터미널 모드 최적화
+#+begin_src elisp
 ;; 불필요한 UI 제거
 (when (not (display-graphic-p))
   (setq-default 
@@ -198,11 +194,10 @@ M-x treesit-install-language-grammar
   (menu-bar-mode -1)
   (tool-bar-mode -1)
   (scroll-bar-mode -1))
-```
+#+end_src
 
-## 6. Termux/Android 통합
-
-```elisp
+** 6. Termux/Android 통합
+#+begin_src elisp
 ;; 기존 유지
 (defconst IS-ANDROID (string-equal system-type "android"))
 (defconst IS-TERMUX (and IS-ANDROID (getenv "TERMUX_VERSION")))
@@ -216,17 +211,16 @@ M-x treesit-install-language-grammar
   ;; 경량 설정
   (setq treesit-extra-load-path '("/data/data/com.termux/files/usr/lib"))
   (setq native-comp-speed -1))  ; 네이티브 컴파일 비활성화
-```
+#+end_src
 
-## 7. 예상 결과
+** 7. 예상 결과
+*** 성능 개선
+- *패키지 용량*: 220MB → 50-70MB (70% 감소)
+- *시작 시간*: < 0.5초
+- *메모리 사용*: 50-80MB (최소)
+- *배터리 효율*: Termux에서 크게 개선
 
-### 성능 개선
-- **패키지 용량**: 220MB → 50-70MB (70% 감소)
-- **시작 시간**: < 0.5초
-- **메모리 사용**: 50-80MB (최소)
-- **배터리 효율**: Termux에서 크게 개선
-
-### 주요 기능
+*** 주요 기능
 - ✅ 빠른 파일 편집
 - ✅ Org-mode 문서 작성
 - ✅ 설정 파일 관리 (JSON/YAML/TOML)
@@ -235,43 +229,47 @@ M-x treesit-install-language-grammar
 - ✅ 쉘 스크립트 작성
 - ❌ 코드 개발 (IDE 사용 권장)
 
-## 8. 구현 순서
+** 8. 구현 순서
+1. *백업 생성*
 
-1. **백업 생성**
-   ```bash
+   #+begin_src sh
    cp -r ~/repos/gh/dotdoom-starter ~/repos/gh/dotdoom-starter.bak
-   ```
+   #+end_src
 
-2. **init.el 수정**
+2. *init.el 수정*
+
    - 불필요한 모듈 제거
    - Tree-sitter 모듈 활성화
 
-3. **packages.el 정리**
+3. *packages.el 정리*
+
    - 개발 도구 패키지 제거
    - 문서/설정 도구만 유지
 
-4. **config.org 수정**
+4. *config.org 수정*
+
    - Tree-sitter 설정 추가
    - LSP 관련 설정 제거
    - 터미널 최적화 설정
 
-5. **테스트**
-   ```bash
+5. *테스트*
+
+   #+begin_src sh
    doom sync --profile starter
    ./start-emacs.sh
-   ```
+   #+end_src
 
-6. **성능 측정**
-   - 시작 시간: `M-x emacs-init-time`
-   - 메모리 사용: `M-x memory-report`
+6. *성능 측정*
 
-## 9. 참고 사항
+   - 시작 시간: =M-x emacs-init-time=
+   - 메모리 사용: =M-x memory-report=
 
+** 9. 참고 사항
 - Doom Emacs v3.0 tree-sitter 지원 활용
 - Emacs 29+ 빌트인 기능 우선
 - 모듈별 독립성 유지
 - 프로파일 시스템으로 실험/롤백 가능
 
----
+--------------
 
-**다음 단계**: 이 계획에 따라 직접 구현 진행
+*다음 단계*: 이 계획에 따라 직접 구현 진행

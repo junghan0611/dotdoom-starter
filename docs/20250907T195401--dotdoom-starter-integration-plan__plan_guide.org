@@ -1,20 +1,17 @@
-# DOTDOOM-STARTER 통합 계획
+* DOTDOOM-STARTER 통합 계획
+*작성일*: 2025-09-03\\
+*목적*: Android 설정을 starter로 통합하고 최소 핵심 버전으로 재구성
 
-**작성일**: 2025-09-03  
-**목적**: Android 설정을 starter로 통합하고 최소 핵심 버전으로 재구성
+** 설계 철학
+*** 핵심 원칙
+1. *최소주의*: 필수 기능만 유지
+2. *범용성*: 모든 환경에서 동작
+3. *확장성*: user-profiles로 개인화
+4. *자동화*: 환경 감지 및 최적화
 
-## 설계 철학
-
-### 핵심 원칙
-1. **최소주의**: 필수 기능만 유지
-2. **범용성**: 모든 환경에서 동작
-3. **확장성**: user-profiles로 개인화
-4. **자동화**: 환경 감지 및 최적화
-
-## 구조 설계
-
-### 기본 구조
-```
+** 구조 설계
+*** 기본 구조
+#+begin_example
 dotdoom-starter/
 ├── config.el          # 핵심 설정 (최소화)
 ├── init.el            # 모듈 선택 (필수만)
@@ -25,12 +22,11 @@ dotdoom-starter/
     ├── server.el      # 서버 전용
     ├── terminal.el    # 터미널 전용
     └── user.el        # 사용자 개인 설정
-```
+#+end_example
 
-## 통합 작업
-
-### 1단계: 코어 설정 정리
-```elisp
+** 통합 작업
+*** 1단계: 코어 설정 정리
+#+begin_src elisp
 ;; config.el - 최소 핵심만
 (setq doom-font (font-spec :family "monospace" :size 12)
       doom-theme 'doom-one)
@@ -48,10 +44,10 @@ dotdoom-starter/
 ;; 사용자 설정 (있으면)
 (when (file-exists-p (expand-file-name "profiles/user.el" doom-private-dir))
   (load! "profiles/user"))
-```
+#+end_src
 
-### 2단계: Android 기능 통합
-```elisp
+*** 2단계: Android 기능 통합
+#+begin_src elisp
 ;; profiles/android.el
 ;;; Android Native GUI + Termux 통합
 
@@ -65,10 +61,10 @@ dotdoom-starter/
   (setq default-directory "/storage/emulated/0/")
   ;; 터치 최적화
   (global-set-key [touch-drag] 'mouse-set-region))
-```
+#+end_src
 
-### 3단계: init.el 최소화
-```elisp
+*** 3단계: init.el 최소화
+#+begin_src elisp
 ;; init.el - 필수 모듈만
 (doom! :input
        ;;chinese
@@ -124,36 +120,34 @@ dotdoom-starter/
 
        :config
        (default +bindings +smartparens))
-```
+#+end_src
 
-## 마이그레이션 단계
-
-### Phase 1: 준비 (현재)
-- [x] 전략 수립
+** 마이그레이션 단계
+*** Phase 1: 준비 (현재)
+- [X] 전략 수립
 - [ ] 기존 설정 분석
 - [ ] 핵심/개인 설정 분리
 
-### Phase 2: 통합
+*** Phase 2: 통합
 - [ ] dotdoom-starter 백업
 - [ ] 핵심 설정만 남기기
 - [ ] android 설정 profiles/android.el로 이동
 - [ ] 개인 설정 profiles/user.el.example 생성
 
-### Phase 3: 테스트
+*** Phase 3: 테스트
 - [ ] Linux 터미널 테스트
 - [ ] SSH 서버 테스트
 - [ ] Android Native 테스트 (에뮬레이터)
 - [ ] Termux 테스트 (가능시)
 
-### Phase 4: 문서화
+*** Phase 4: 문서화
 - [ ] README 업데이트
 - [ ] user-profiles 가이드 작성
 - [ ] 환경별 설정 예시
 
-## 사용자 커스터마이징 가이드
-
-### profiles/user.el 예시
-```elisp
+** 사용자 커스터마이징 가이드
+*** profiles/user.el 예시
+#+begin_src elisp
 ;;; profiles/user.el -*- lexical-binding: t; -*-
 ;;; 사용자 개인 설정
 
@@ -169,24 +163,21 @@ dotdoom-starter/
       "f p" #'my-custom-function)
 
 ;; 추가 패키지는 ../packages.el에
-```
+#+end_src
 
-## 장점
+** 장점
+1. *단일 코드베이스*: 하나의 starter로 모든 환경 지원
+2. *유지보수 용이*: 중복 코드 제거
+3. *확장 가능*: user-profiles로 개인화
+4. *자동 최적화*: 환경 감지하여 적절한 설정 로드
 
-1. **단일 코드베이스**: 하나의 starter로 모든 환경 지원
-2. **유지보수 용이**: 중복 코드 제거
-3. **확장 가능**: user-profiles로 개인화
-4. **자동 최적화**: 환경 감지하여 적절한 설정 로드
-
-## 주의사항
-
+** 주의사항
 - 개인 설정은 절대 커밋하지 않음
 - profiles/user.el은 .gitignore에 추가
 - profiles/user.el.example만 제공
 - 환경 감지 로직은 철저히 테스트
 
-## 참고
-
+** 참고
 - 기존 dotdoom-android- 설정 참조
 - 기존 dotdoom-starter 구조 활용
 - Doom Emacs 공식 모듈 문서
