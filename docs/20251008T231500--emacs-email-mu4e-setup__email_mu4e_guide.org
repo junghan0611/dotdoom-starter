@@ -75,7 +75,7 @@ pass에 Gmail App Password 저장:
 
 #+begin_src bash
 pass insert personal/email/junghanacs-gmail/app-password
-# Password 입력: ***REMOVED***
+# Password 입력: YOUR_APP_PASSWORD
 #+end_src
 
 *** 3. NixOS 적용
