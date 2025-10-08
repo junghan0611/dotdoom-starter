@@ -13,3 +13,6 @@ tempel-templates.eld
 +office.el
 CLAUDE.md
 inbox__human.org
+
+*.dat
+fortune
